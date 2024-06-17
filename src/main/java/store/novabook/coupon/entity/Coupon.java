@@ -1,15 +1,14 @@
 package store.novabook.coupon.entity;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class Coupon {
@@ -20,35 +19,37 @@ public class Coupon {
 	}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@Size(max = 16)
+	@NotNull
+	private String code;
 
-	@Column(nullable = false, length = 255)
+	@NotNull
+	@Size(max = 255)
 	private String name;
 
-	@Column(nullable = false)
+	@NotNull
 	private BigDecimal discountAmount;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, length = 50)
+	@NotNull
+	@Size(max = 10)
 	private DiscountType discountType;
 
-	@Column(nullable = false)
+	@NotNull
 	private BigDecimal maxDiscountAmount;
 
-	@Column(nullable = false)
+	@NotNull
 	private BigDecimal minPurchaseAmount;
 
-	@Column(nullable = false)
-	private ZonedDateTime startedAt;
+	@NotNull
+	private LocalDateTime startedAt;
 
-	@Column(nullable = false)
-	private ZonedDateTime expirationAt;
+	@NotNull
+	private LocalDateTime expirationAt;
 
-	@Column(nullable = false)
-	private ZonedDateTime createdAt = ZonedDateTime.now();
+	@NotNull
+	private LocalDateTime createdAt = LocalDateTime.now();
 
-	@Column
-	private ZonedDateTime updatedAt;
+	private LocalDateTime updatedAt;
 
 }
