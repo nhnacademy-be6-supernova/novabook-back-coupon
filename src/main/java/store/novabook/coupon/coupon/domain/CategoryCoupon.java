@@ -30,7 +30,7 @@ public class CategoryCoupon {
 	@Size(max = 16)
 	private String couponCode;
 
-	@MapsId("code")
+	@MapsId
 	@ManyToOne
 	@JoinColumn(name = "coupon_code")
 	@NotNull

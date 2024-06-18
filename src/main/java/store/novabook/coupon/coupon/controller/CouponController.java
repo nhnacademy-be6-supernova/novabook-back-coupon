@@ -22,6 +22,7 @@ public class CouponController {
 
 	private final CouponCommandService couponCommandService;
 
+	@PostMapping
 	public ResponseEntity<CreateCouponResponse> saveGeneralCoupon(@Valid @RequestBody CreateCouponRequest request) {
 		CreateCouponResponse response = couponCommandService.saveGeneralCoupon(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
