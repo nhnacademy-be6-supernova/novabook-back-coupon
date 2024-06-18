@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,11 +20,14 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import store.novabook.coupon.coupon.domain.Coupon;
 import store.novabook.coupon.coupon.domain.DiscountType;
 import store.novabook.coupon.coupon.dto.request.CreateBookCouponRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCategoryCouponRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
+import store.novabook.coupon.coupon.dto.request.UpdateCouponExpirationRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
+import store.novabook.coupon.coupon.repository.CouponRepository;
 import store.novabook.coupon.coupon.service.CouponService;
 
 @SpringBootTest
@@ -35,6 +39,9 @@ public class CouponControllerTest {
 
 	@MockBean
 	private CouponService couponService;
+
+	@MockBean
+	private CouponRepository couponRepository;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -127,8 +134,8 @@ public class CouponControllerTest {
 	@Test
 	@DisplayName("카테고리 쿠폰 생성 유효성 검사 실패")
 	public void saveCategoryCoupon_ShouldReturnBadRequest_WhenValidationFails() throws Exception {
-		CreateCategoryCouponRequest request = new CreateCategoryCouponRequest(null, // Invalid categoryId
-			"카테고리 쿠폰", 2000, DiscountType.PERCENT, 8000, 4000, LocalDateTime.now(), LocalDateTime.now().plusDays(15));
+		CreateCategoryCouponRequest request = new CreateCategoryCouponRequest(null, "카테고리 쿠폰", 2000,
+			DiscountType.PERCENT, 8000, 4000, LocalDateTime.now(), LocalDateTime.now().plusDays(15));
 
 		mockMvc.perform(post("/coupons/category").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
@@ -140,4 +147,44 @@ public class CouponControllerTest {
 
 		verify(couponService, never()).saveCategoryCoupon(any(CreateCategoryCouponRequest.class));
 	}
+
+	@Test
+	@DisplayName("쿠폰 만료 시간 업데이트 성공")
+	public void updateCouponExpiration_ShouldReturnOk() throws Exception {
+		UpdateCouponExpirationRequest request = new UpdateCouponExpirationRequest("C123456789012345");
+		Coupon coupon = Coupon.builder()
+			.code("C123456789012345")
+			.name("테스트 쿠폰")
+			.discountAmount(1000)
+			.discountType(DiscountType.AMOUNT)
+			.maxDiscountAmount(5000)
+			.minPurchaseAmount(10000)
+			.startedAt(LocalDateTime.now().minusDays(1))
+			.expirationAt(LocalDateTime.now().plusDays(10))
+			.build();
+
+		when(couponRepository.findById(any())).thenReturn(Optional.of(coupon));
+
+		mockMvc.perform(put("/coupons/expiration").contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(request))).andExpect(status().isOk()).andDo(print());
+
+		verify(couponService).updateCouponExpiration(any(UpdateCouponExpirationRequest.class));
+	}
+
+	@Test
+	@DisplayName("쿠폰 만료 시간 업데이트 유효성 검사 실패")
+	public void updateCouponExpiration_ShouldReturnBadRequest_WhenValidationFails() throws Exception {
+		UpdateCouponExpirationRequest request = new UpdateCouponExpirationRequest("");
+
+		mockMvc.perform(put("/coupons/expiration").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.errorCode").value("INVALID_REQUEST_ARGUMENT"))
+			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+			.andExpect(jsonPath("$.result.code").value("쿠폰 코드가 필요합니다."))
+			.andDo(print());
+
+		verify(couponService, never()).updateCouponExpiration(any(UpdateCouponExpirationRequest.class));
+	}
+
 }
