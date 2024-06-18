@@ -1,9 +1,15 @@
-package store.novabook.coupon.entity;
+package store.novabook.coupon.coupon.domain;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -15,7 +21,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CategoryCoupon {
+@EntityListeners(AuditingEntityListener.class)
+public class MemberCoupon {
 
 	@Id
 	@NotNull
@@ -28,12 +35,19 @@ public class CategoryCoupon {
 	@NotNull
 	private Coupon coupon;
 
-	private Long categoryId;
+	@NotNull
+	private Long userId;
 
-	@Column(nullable = false)
+	@NotNull
+	@Size(max = 8)
+	@Enumerated(EnumType.STRING)
+	private MemberCouponStatus status;
+
+	@NotNull
+	@CreatedDate
 	private LocalDateTime createdAt;
 
-	@Column
+	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
 }

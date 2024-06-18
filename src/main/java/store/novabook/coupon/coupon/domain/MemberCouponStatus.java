@@ -1,4 +1,4 @@
-package store.novabook.coupon.entity;
+package store.novabook.coupon.coupon.domain;
 
 public enum MemberCouponStatus {
 	ACTIVE,
