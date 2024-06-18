@@ -1,17 +1,22 @@
 package store.novabook.coupon.coupon.controller;
 
+import java.awt.print.Pageable;
+
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import store.novabook.coupon.coupon.dto.request.CreateBookCouponRequest;
-import store.novabook.coupon.coupon.dto.request.CreateCategoryCouponRequest;
+import store.novabook.coupon.coupon.dto.request.CreateCouponBookRequest;
+import store.novabook.coupon.coupon.dto.request.CreateCouponCategoryRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.UpdateCouponExpirationRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
@@ -31,23 +36,31 @@ public class CouponController {
 	}
 
 	@PostMapping("/book")
-	public ResponseEntity<CreateCouponResponse> saveBookCoupon(@Valid @RequestBody CreateBookCouponRequest request) {
+	public ResponseEntity<CreateCouponResponse> saveBookCoupon(@Valid @RequestBody CreateCouponBookRequest request) {
 		CreateCouponResponse response = couponService.saveBookCoupon(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
 	}
 
 	@PostMapping("/category")
 	public ResponseEntity<CreateCouponResponse> saveCategoryCoupon(
-		@Valid @RequestBody CreateCategoryCouponRequest request) {
+		@Valid @RequestBody CreateCouponCategoryRequest request) {
 		CreateCouponResponse response = couponService.saveCategoryCoupon(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	@PutMapping("/expiration")
-	public ResponseEntity<Void> updateCouponExpiration(
-		@Valid @RequestBody UpdateCouponExpirationRequest request) {
+	public ResponseEntity<Void> updateCouponExpiration(@Valid @RequestBody UpdateCouponExpirationRequest request) {
 		couponService.updateCouponExpiration(request);
 		return ResponseEntity.ok(null);
 	}
+
+	@GetMapping
+	public ResponseEntity<Page<ReadCouponResponse>> getCouponAll(
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<ReadCouponResponse> coupons = couponService.getAllCoupons(pageable);
+		return ResponseEntity.ok(coupons);
+	}
+
 }

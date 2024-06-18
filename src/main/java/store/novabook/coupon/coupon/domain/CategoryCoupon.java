@@ -54,10 +54,7 @@ public class CategoryCoupon {
 	}
 
 	public static CategoryCoupon of(Coupon coupon, Long categoryId) {
-		return CategoryCoupon.builder()
-			.coupon(coupon)
-			.categoryId(categoryId)
-			.build();
+		return CategoryCoupon.builder().coupon(coupon).categoryId(categoryId).build();
 	}
 
 }

@@ -17,8 +17,8 @@ import store.novabook.coupon.coupon.domain.BookCoupon;
 import store.novabook.coupon.coupon.domain.CategoryCoupon;
 import store.novabook.coupon.coupon.domain.Coupon;
 import store.novabook.coupon.coupon.domain.DiscountType;
-import store.novabook.coupon.coupon.dto.request.CreateBookCouponRequest;
-import store.novabook.coupon.coupon.dto.request.CreateCategoryCouponRequest;
+import store.novabook.coupon.coupon.dto.request.CreateCouponBookRequest;
+import store.novabook.coupon.coupon.dto.request.CreateCouponCategoryRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.UpdateCouponExpirationRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
@@ -57,7 +57,7 @@ public class CouponServiceImplTest {
 	@Test
 	@DisplayName("책 쿠폰 저장 성공")
 	public void saveBookCoupon_Success() {
-		CreateBookCouponRequest request = new CreateBookCouponRequest(1L, "책 쿠폰", 1500, DiscountType.AMOUNT, 7000, 5000,
+		CreateCouponBookRequest request = new CreateCouponBookRequest(1L, "책 쿠폰", 1500, DiscountType.AMOUNT, 7000, 5000,
 			LocalDateTime.now(), LocalDateTime.now().plusDays(20));
 		CreateCouponResponse response = couponService.saveBookCoupon(request);
 
@@ -72,7 +72,7 @@ public class CouponServiceImplTest {
 	@Test
 	@DisplayName("카테고리 쿠폰 저장 성공")
 	public void saveCategoryCoupon_Success() {
-		CreateCategoryCouponRequest request = new CreateCategoryCouponRequest(2L, "카테고리 쿠폰", 2000, DiscountType.PERCENT,
+		CreateCouponCategoryRequest request = new CreateCouponCategoryRequest(2L, "카테고리 쿠폰", 2000, DiscountType.PERCENT,
 			8000, 4000, LocalDateTime.now(), LocalDateTime.now().plusDays(15));
 		CreateCouponResponse response = couponService.saveCategoryCoupon(request);
 

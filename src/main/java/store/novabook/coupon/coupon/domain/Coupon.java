@@ -18,8 +18,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.coupon.coupon.dto.request.CreateBookCouponRequest;
-import store.novabook.coupon.coupon.dto.request.CreateCategoryCouponRequest;
+import store.novabook.coupon.coupon.dto.request.CreateCouponBookRequest;
+import store.novabook.coupon.coupon.dto.request.CreateCouponCategoryRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 
 @Entity
@@ -98,7 +98,7 @@ public class Coupon {
 			.build();
 	}
 
-	public static Coupon of(String code, CreateBookCouponRequest request) {
+	public static Coupon of(String code, CreateCouponBookRequest request) {
 		return Coupon.builder()
 			.code(code)
 			.name(request.name())
@@ -111,7 +111,7 @@ public class Coupon {
 			.build();
 	}
 
-	public static Coupon of(String code, CreateCategoryCouponRequest request) {
+	public static Coupon of(String code, CreateCouponCategoryRequest request) {
 		return Coupon.builder()
 			.code(code)
 			.name(request.name())

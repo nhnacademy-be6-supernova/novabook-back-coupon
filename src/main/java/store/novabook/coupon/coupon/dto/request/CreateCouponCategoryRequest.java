@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import store.novabook.coupon.coupon.domain.DiscountType;
 
-public record CreateCategoryCouponRequest(@NotNull(message = "카테고리 ID는 필수 입력 항목입니다.") Long categoryId,
+public record CreateCouponCategoryRequest(@NotNull(message = "카테고리 ID는 필수 입력 항목입니다.") Long categoryId,
 										  @NotNull(message = "이름은 필수 입력 항목입니다.") @Size(max = 255, message = "이름은 255자 이하로 입력해야 합니다.") String name,
 										  @NotNull(message = "할인 금액은 필수 입력 항목입니다.") long discountAmount,
 										  @NotNull(message = "할인 유형은 필수 입력 항목입니다.") DiscountType discountType,

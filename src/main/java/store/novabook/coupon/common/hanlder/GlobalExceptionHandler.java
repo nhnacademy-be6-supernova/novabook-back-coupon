@@ -20,18 +20,18 @@ import store.novabook.coupon.common.exception.dto.ValidErrorResponse;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e,
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
 		HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidErrorResponse.from(e));
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidErrorResponse.from(exception));
 	}
 
 	@ExceptionHandler(NotFoundException.class)
-	public ResponseEntity<ErrorResponse> handle(NotFoundException e, HttpServletRequest request) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(e));
+	public ResponseEntity<ErrorResponse> handle(NotFoundException exception, HttpServletRequest request) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(exception));
 	}
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handle(Exception e, HttpServletRequest request) {
+	public ResponseEntity<ErrorResponse> handle(Exception exception, HttpServletRequest request) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
 	}

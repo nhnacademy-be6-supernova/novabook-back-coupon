@@ -12,8 +12,8 @@ import store.novabook.coupon.coupon.domain.BookCoupon;
 import store.novabook.coupon.coupon.domain.CategoryCoupon;
 import store.novabook.coupon.coupon.domain.Coupon;
 import store.novabook.coupon.coupon.domain.CouponType;
-import store.novabook.coupon.coupon.dto.request.CreateBookCouponRequest;
-import store.novabook.coupon.coupon.dto.request.CreateCategoryCouponRequest;
+import store.novabook.coupon.coupon.dto.request.CreateCouponBookRequest;
+import store.novabook.coupon.coupon.dto.request.CreateCouponCategoryRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.UpdateCouponExpirationRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
@@ -42,18 +42,18 @@ public class CouponServiceImpl implements CouponService {
 	}
 
 	@Override
-	public CreateCouponResponse saveBookCoupon(CreateBookCouponRequest createBookCouponRequest) {
-		Coupon coupon = Coupon.of(codeGenerator.generateUniqueCode(CouponType.BOOK), createBookCouponRequest);
+	public CreateCouponResponse saveBookCoupon(CreateCouponBookRequest createCouponBookRequest) {
+		Coupon coupon = Coupon.of(codeGenerator.generateUniqueCode(CouponType.BOOK), createCouponBookRequest);
 		Coupon saved = couponRepository.save(coupon);
-		bookCouponRepository.save(BookCoupon.of(saved, createBookCouponRequest.bookId()));
+		bookCouponRepository.save(BookCoupon.of(saved, createCouponBookRequest.bookId()));
 		return CreateCouponResponse.fromEntity(saved);
 	}
 
 	@Override
-	public CreateCouponResponse saveCategoryCoupon(CreateCategoryCouponRequest createCategoryCouponRequest) {
-		Coupon coupon = Coupon.of(codeGenerator.generateUniqueCode(CouponType.CATEGORY), createCategoryCouponRequest);
+	public CreateCouponResponse saveCategoryCoupon(CreateCouponCategoryRequest createCouponCategoryRequest) {
+		Coupon coupon = Coupon.of(codeGenerator.generateUniqueCode(CouponType.CATEGORY), createCouponCategoryRequest);
 		Coupon saved = couponRepository.save(coupon);
-		categoryCouponRepository.save(CategoryCoupon.of(saved, createCategoryCouponRequest.categoryId()));
+		categoryCouponRepository.save(CategoryCoupon.of(saved, createCouponCategoryRequest.categoryId()));
 		return CreateCouponResponse.fromEntity(saved);
 	}
 
