@@ -1,4 +1,4 @@
-package store.novabook.coupon.util;
+package store.novabook.coupon.common.util;
 
 import java.security.SecureRandom;
 

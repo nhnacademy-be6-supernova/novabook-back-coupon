@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.NotFoundException;
+import store.novabook.coupon.common.util.CouponCodeGenerator;
 import store.novabook.coupon.coupon.domain.BookCoupon;
 import store.novabook.coupon.coupon.domain.CategoryCoupon;
 import store.novabook.coupon.coupon.domain.Coupon;
@@ -26,7 +27,6 @@ import store.novabook.coupon.coupon.repository.BookCouponRepository;
 import store.novabook.coupon.coupon.repository.CategoryCouponRepository;
 import store.novabook.coupon.coupon.repository.CouponRepository;
 import store.novabook.coupon.coupon.service.CouponService;
-import store.novabook.coupon.util.CouponCodeGenerator;
 
 @Service
 @RequiredArgsConstructor
@@ -88,9 +88,8 @@ public class CouponServiceImpl implements CouponService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetCouponCategoryResponse> getCouponCategryAll(Pageable pageable) {
-		Page<Coupon> coupons = couponRepository.findAllByCodeStartsWith(CouponType.CATEGORY.getPrefix(), pageable);
-		return null;
-		// return coupons.map(GetCouponCategoryResponse::fromEntity);
+		Page<CategoryCoupon> coupons = categoryCouponRepository.findAll(pageable);
+		return coupons.map(GetCouponCategoryResponse::fromEntity);
 	}
 
 }
