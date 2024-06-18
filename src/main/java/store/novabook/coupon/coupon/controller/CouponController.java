@@ -40,5 +40,4 @@ public class CouponController {
 		CreateCouponResponse response = couponCommandService.saveCategoryCoupon(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
-
 }
