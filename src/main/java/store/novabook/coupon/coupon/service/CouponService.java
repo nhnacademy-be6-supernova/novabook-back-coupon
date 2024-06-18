@@ -1,8 +1,7 @@
 package store.novabook.coupon.coupon.service;
 
-import java.awt.print.Pageable;
-
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import store.novabook.coupon.coupon.dto.request.CreateCouponBookRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCouponCategoryRequest;

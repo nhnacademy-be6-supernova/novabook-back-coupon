@@ -1,8 +1,7 @@
 package store.novabook.coupon.coupon.controller;
 
-import java.awt.print.Pageable;
-
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,20 +57,20 @@ public class CouponController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Page<GetCouponResponse>> getCouponGeneralAll(@PageableDefault(size = 10) Pageable pageable) {
+	public ResponseEntity<Page<GetCouponResponse>> getCouponGeneralAll(@PageableDefault(size = 5) Pageable pageable) {
 		Page<GetCouponResponse> coupons = couponService.getCouponGeneralAll(pageable);
 		return ResponseEntity.ok(coupons);
 	}
 
 	@GetMapping
-	public ResponseEntity<Page<GetCouponBookResponse>> getCouponBookAll(@PageableDefault(size = 10) Pageable pageable) {
+	public ResponseEntity<Page<GetCouponBookResponse>> getCouponBookAll(@PageableDefault(size = 5) Pageable pageable) {
 		Page<GetCouponBookResponse> coupons = couponService.getCouponBookAll(pageable);
 		return ResponseEntity.ok(coupons);
 	}
 
 	@GetMapping
 	public ResponseEntity<Page<GetCouponCategoryResponse>> getCouponCategoryAll(
-		@PageableDefault(size = 10) Pageable pageable) {
+		@PageableDefault(size = 5) Pageable pageable) {
 		Page<GetCouponCategoryResponse> coupons = couponService.getCouponCategryAll(pageable);
 		return ResponseEntity.ok(coupons);
 	}
