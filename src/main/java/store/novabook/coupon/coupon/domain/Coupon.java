@@ -125,4 +125,8 @@ public class Coupon {
 			.build();
 	}
 
+	public void updateExprationAt(LocalDateTime expirationAt) {
+		this.expirationAt = expirationAt;
+	}
+
 }
