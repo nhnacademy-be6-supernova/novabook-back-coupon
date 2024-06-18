@@ -36,7 +36,7 @@ public class MemberCoupon {
 	private Coupon coupon;
 
 	@NotNull
-	private Long userId;
+	private Long memberId;
 
 	@NotNull
 	@Size(max = 8)
