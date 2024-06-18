@@ -42,7 +42,6 @@ public class Coupon {
 
 	@Enumerated(EnumType.STRING)
 	@NotNull
-	@Size(max = 10)
 	private DiscountType discountType;
 
 	@NotNull
