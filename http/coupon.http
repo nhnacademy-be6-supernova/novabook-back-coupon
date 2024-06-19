@@ -73,3 +73,10 @@ GET http://localhost:8087/coupons/category/2
 Content-Type: application/json
 
 
+### 멤버 쿠폰 등록
+POST http://localhost:8087/coupons/members/1
+Content-Type: application/json
+
+{
+  "couponCode": "GUO0F0PLGDXHZU8K"
+}

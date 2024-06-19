@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import store.novabook.coupon.common.exception.BadRequestException;
 import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.NotFoundException;
@@ -21,6 +22,7 @@ import store.novabook.coupon.coupon.service.MemberCouponService;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class MemberCouponServiceImpl implements MemberCouponService {
 
 	private final MemberCouponRepository memberCouponRepository;
@@ -36,6 +38,7 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 		}
 
 		MemberCoupon memberCoupon = MemberCoupon.of(memberId, coupon, MemberCouponStatus.UNUSED);
+		log.info("memberCoupon : {}", memberCoupon);
 		MemberCoupon saved = memberCouponRepository.save(memberCoupon);
 		return CreateMemberCouponResponse.fromEntity(saved);
 	}

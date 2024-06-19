@@ -10,29 +10,29 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Getter
+@ToString
 public class MemberCoupon {
 
 	@Id
-	@NotNull
-	@Size(max = 16)
-	private String couponCode;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-	@MapsId
 	@ManyToOne
 	@JoinColumn(name = "coupon_code")
 	@NotNull
@@ -42,7 +42,6 @@ public class MemberCoupon {
 	private Long memberId;
 
 	@NotNull
-	@Size(max = 8)
 	@Enumerated(EnumType.STRING)
 	private MemberCouponStatus status;
 
@@ -54,8 +53,7 @@ public class MemberCoupon {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public MemberCoupon(String couponCode, Coupon coupon, Long memberId, MemberCouponStatus status) {
-		this.couponCode = couponCode;
+	public MemberCoupon(Coupon coupon, Long memberId, MemberCouponStatus status) {
 		this.coupon = coupon;
 		this.memberId = memberId;
 		this.status = status;
@@ -63,7 +61,6 @@ public class MemberCoupon {
 
 	public static MemberCoupon of(Long memberId, Coupon coupon, MemberCouponStatus status) {
 		return MemberCoupon.builder()
-			.couponCode(coupon.getCode())
 			.coupon(coupon)
 			.memberId(memberId)
 			.status(status)
