@@ -27,7 +27,7 @@ import store.novabook.coupon.coupon.repository.CategoryCouponRepository;
 import store.novabook.coupon.coupon.repository.CouponRepository;
 
 @SpringBootTest
-@Sql(scripts = {"/test-coupon.sql"})
+@Sql(scripts = {"/store/novabook/coupon/coupon/controller/test-coupon.sql"})
 public class CouponServiceImplTest {
 
 	@Autowired
@@ -86,7 +86,7 @@ public class CouponServiceImplTest {
 
 	@Test
 	@DisplayName("쿠폰 만료 시간 업데이트 성공")
-	@Sql("/test-coupon.sql")
+	@Sql("/store/novabook/coupon/coupon/controller/test-coupon.sql")
 	public void updateCouponExpiration_Success() {
 		UpdateCouponExpirationRequest request = new UpdateCouponExpirationRequest("C123456789012345");
 		couponService.updateCouponExpiration(request);
