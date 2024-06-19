@@ -6,7 +6,7 @@ import store.novabook.coupon.coupon.domain.CategoryCoupon;
 import store.novabook.coupon.coupon.domain.Coupon;
 
 @Builder
-public record CreateCouponResponse(String code, String name) {
+public record CreateCouponResponse(String code) {
 	public static CreateCouponResponse fromEntity(Coupon coupon) {
 		return CreateCouponResponse.builder()
 			.code(coupon.getCode())
