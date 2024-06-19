@@ -31,7 +31,7 @@ public class CouponController {
 
 	private final CouponService couponService;
 
-	@PostMapping
+	@PostMapping("/general")
 	public ResponseEntity<CreateCouponResponse> saveGeneralCoupon(@Valid @RequestBody CreateCouponRequest request) {
 		CreateCouponResponse response = couponService.saveGeneralCoupon(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -56,19 +56,19 @@ public class CouponController {
 		return ResponseEntity.ok(null);
 	}
 
-	@GetMapping
+	@GetMapping("/general")
 	public ResponseEntity<Page<GetCouponResponse>> getCouponGeneralAll(@PageableDefault(size = 5) Pageable pageable) {
 		Page<GetCouponResponse> coupons = couponService.getCouponGeneralAll(pageable);
 		return ResponseEntity.ok(coupons);
 	}
 
-	@GetMapping
+	@GetMapping("/book")
 	public ResponseEntity<Page<GetCouponBookResponse>> getCouponBookAll(@PageableDefault(size = 5) Pageable pageable) {
 		Page<GetCouponBookResponse> coupons = couponService.getCouponBookAll(pageable);
 		return ResponseEntity.ok(coupons);
 	}
 
-	@GetMapping
+	@GetMapping("/category")
 	public ResponseEntity<Page<GetCouponCategoryResponse>> getCouponCategoryAll(
 		@PageableDefault(size = 5) Pageable pageable) {
 		Page<GetCouponCategoryResponse> coupons = couponService.getCouponCategryAll(pageable);
