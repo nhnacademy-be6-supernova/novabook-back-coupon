@@ -1,5 +1,6 @@
 package store.novabook.coupon.coupon.controller;
 
+import static org.hamcrest.collection.IsCollectionWithSize.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -7,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,11 +34,15 @@ import store.novabook.coupon.coupon.dto.request.CreateCouponCategoryRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.UpdateCouponExpirationRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponBookResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponCategoryResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 import store.novabook.coupon.coupon.repository.CouponRepository;
 import store.novabook.coupon.coupon.service.CouponService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Sql("insert-coupons.sql")
 public class CouponControllerTest {
 
 	@Autowired
@@ -57,7 +68,8 @@ public class CouponControllerTest {
 		given(couponService.saveGeneralCoupon(any(CreateCouponRequest.class))).willReturn(response);
 
 		mockMvc.perform(
-				post("/coupons").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
+				post("/coupons/general").contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.code").value("G123456789012345"))
 			.andDo(print());
@@ -70,7 +82,8 @@ public class CouponControllerTest {
 			1000, DiscountType.AMOUNT, 5000, 10000, LocalDateTime.now(), LocalDateTime.now().plusDays(10));
 
 		mockMvc.perform(
-				post("/coupons").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
+				post("/coupons/general").contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.errorCode").value("INVALID_REQUEST_ARGUMENT"))
 			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
@@ -187,4 +200,62 @@ public class CouponControllerTest {
 		verify(couponService, never()).updateCouponExpiration(any(UpdateCouponExpirationRequest.class));
 	}
 
+	@Test
+	@DisplayName("일반 쿠폰 조회 성공")
+	public void getCouponGeneralAll_ShouldReturnOk() throws Exception {
+		Pageable pageable = PageRequest.of(0, 5);
+		List<GetCouponResponse> couponList = List.of(
+			new GetCouponResponse("G123456789012345", "일반 쿠폰 1", 1000, DiscountType.AMOUNT, 5000, 10000,
+				LocalDateTime.now(), LocalDateTime.now().plusDays(10))
+		);
+		Page<GetCouponResponse> page = new PageImpl<>(couponList, pageable, couponList.size());
+
+		given(couponService.getCouponGeneralAll(any(Pageable.class))).willReturn(page);
+
+		mockMvc.perform(get("/coupons/general").param("page", "0").param("size", "5"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.content", hasSize(1)))
+			.andExpect(jsonPath("$.content[0].code").value("G123456789012345"))
+			.andExpect(jsonPath("$.content[0].name").value("일반 쿠폰 1"));
+	}
+
+	@Test
+	@DisplayName("책 쿠폰 조회 성공")
+	public void getCouponBookAll_ShouldReturnOk() throws Exception {
+		Pageable pageable = PageRequest.of(0, 5);
+		List<GetCouponBookResponse> couponList = List.of(
+			new GetCouponBookResponse(1L, "B123456789012345", "책 쿠폰 1", 1500, DiscountType.AMOUNT, 7000, 5000,
+				LocalDateTime.now(), LocalDateTime.now().plusDays(20))
+		);
+		Page<GetCouponBookResponse> page = new PageImpl<>(couponList, pageable, couponList.size());
+
+		given(couponService.getCouponBookAll(any(Pageable.class))).willReturn(page);
+
+		mockMvc.perform(get("/coupons/book").param("page", "0").param("size", "5"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.content", hasSize(1)))
+			.andExpect(jsonPath("$.content[0].code").value("B123456789012345"))
+			.andExpect(jsonPath("$.content[0].name").value("책 쿠폰 1"))
+			.andExpect(jsonPath("$.content[0].bookId").value(1L));
+	}
+
+	@Test
+	@DisplayName("카테고리 쿠폰 조회 성공")
+	public void getCouponCategoryAll_ShouldReturnOk() throws Exception {
+		Pageable pageable = PageRequest.of(0, 5);
+		List<GetCouponCategoryResponse> couponList = List.of(
+			new GetCouponCategoryResponse(2L, "C123456789012345", "카테고리 쿠폰 1", 2000, DiscountType.PERCENT, 8000, 4000,
+				LocalDateTime.now(), LocalDateTime.now().plusDays(15))
+		);
+		Page<GetCouponCategoryResponse> page = new PageImpl<>(couponList, pageable, couponList.size());
+
+		given(couponService.getCouponCategryAll(any(Pageable.class))).willReturn(page);
+
+		mockMvc.perform(get("/coupons/category").param("page", "0").param("size", "5"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.content", hasSize(1)))
+			.andExpect(jsonPath("$.content[0].code").value("C123456789012345"))
+			.andExpect(jsonPath("$.content[0].name").value("카테고리 쿠폰 1"))
+			.andExpect(jsonPath("$.content[0].categoryId").value(2L));
+	}
 }

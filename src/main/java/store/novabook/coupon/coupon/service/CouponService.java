@@ -8,7 +8,9 @@ import store.novabook.coupon.coupon.dto.request.CreateCouponCategoryRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.UpdateCouponExpirationRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponBookAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponBookResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponCategoryAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponCategoryResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 
@@ -27,4 +29,8 @@ public interface CouponService {
 	Page<GetCouponBookResponse> getCouponBookAll(Pageable pageable);
 
 	Page<GetCouponCategoryResponse> getCouponCategryAll(Pageable pageable);
+
+	GetCouponBookAllResponse getCouponBook(Long bookId);
+
+	GetCouponCategoryAllResponse getCouponCategory(Long categoryId);
 }

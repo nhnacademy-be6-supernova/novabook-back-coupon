@@ -11,7 +11,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
-import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.common.exception.dto.ErrorResponse;
 import store.novabook.coupon.common.exception.dto.ValidErrorResponse;
@@ -30,10 +29,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(exception));
 	}
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handle(Exception exception, HttpServletRequest request) {
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-			.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
-	}
+	// @ExceptionHandler(Exception.class)
+	// public ResponseEntity<ErrorResponse> handle(Exception exception, HttpServletRequest request) {
+	// 	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	// 		.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
+	// }
 
 }
