@@ -1,0 +1,75 @@
+### 일반 쿠폰 생성
+POST http://localhost:8087/coupons/general
+Content-Type: application/json
+
+{
+  "name": "일반 쿠폰",
+  "discountAmount": 1000,
+  "discountType": "AMOUNT",
+  "maxDiscountAmount": 5000,
+  "minPurchaseAmount": 10000,
+  "startedAt": "2024-01-01T00:00:00",
+  "expirationAt": "2025-12-31T23:59:59"
+}
+
+### 책 쿠폰 생성
+POST http://localhost:8087/coupons/book
+Content-Type: application/json
+
+{
+  "bookId": 1,
+  "name": "책 쿠폰",
+  "discountAmount": 1500,
+  "discountType": "AMOUNT",
+  "maxDiscountAmount": 7000,
+  "minPurchaseAmount": 5000,
+  "startedAt": "2024-01-01T00:00:00",
+  "expirationAt": "2024-12-31T23:59:59"
+}
+
+### 카테고리 쿠폰 생성
+POST http://localhost:8087/coupons/category
+Content-Type: application/json
+
+{
+  "categoryId": 3,
+  "name": "카테고리 쿠폰",
+  "discountAmount": 2000,
+  "discountType": "PERCENT",
+  "maxDiscountAmount": 8000,
+  "minPurchaseAmount": 4000,
+  "startedAt": "2024-01-01T00:00:00",
+  "expirationAt": "2024-12-31T23:59:59"
+}
+
+### 쿠폰 만료 시간 업데이트
+PUT http://localhost:8087/coupons/expiration
+Content-Type: application/json
+
+{
+  "code": "C94SWZD95NBCLU77"
+}
+
+### 모든 일반 쿠폰 조회
+GET http://localhost:8087/coupons/general?page=0&size=5
+Content-Type: application/json
+
+
+### 책 쿠폰 조회
+GET http://localhost:8087/coupons/book?page=0&size=5
+Content-Type: application/json
+
+
+### 모든 카테고리 쿠폰 조회
+GET http://localhost:8087/coupons/category?page=1&size=5
+Content-Type: application/json
+
+### 특정 책 쿠폰 조회
+GET http://localhost:8087/coupons/book/1
+Content-Type: application/json
+
+### 특정 카테고리 쿠폰 단건 조회
+GET http://localhost:8087/coupons/category/2
+Content-Type: application/json
+
+
