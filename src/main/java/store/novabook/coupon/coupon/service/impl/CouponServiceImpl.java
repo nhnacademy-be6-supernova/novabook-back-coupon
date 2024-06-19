@@ -2,6 +2,7 @@ package store.novabook.coupon.coupon.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -98,15 +99,19 @@ public class CouponServiceImpl implements CouponService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetCouponBookAllResponse getCouponBook(Long bookId) {
-		List<BookCoupon> bookCouponList = bookCouponRepository.findAllByBookIdAndCoupon_ExpirationAtAfter(bookId,
-			LocalDateTime.now());
+		List<BookCoupon> bookCouponList = Optional.ofNullable(
+				bookCouponRepository.findAllByBookIdAndCoupon_ExpirationAtAfter(bookId, LocalDateTime.now()))
+			.filter(list -> !list.isEmpty())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_COUPON_NOT_FOUND));
 		return GetCouponBookAllResponse.fromEntity(bookCouponList);
 	}
 
 	@Override
 	public GetCouponCategoryAllResponse getCouponCategory(Long categoryId) {
-		List<CategoryCoupon> categoryCouponList = categoryCouponRepository.findAllByCategoryIdAndCoupon_ExpirationAtAfter(
-			categoryId, LocalDateTime.now());
+		List<CategoryCoupon> categoryCouponList = Optional.ofNullable(
+				categoryCouponRepository.findAllByCategoryIdAndCoupon_ExpirationAtAfter(categoryId, LocalDateTime.now()))
+			.filter(list -> !list.isEmpty())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_COUPON_NOT_FOUND));
 		return GetCouponCategoryAllResponse.fromEntity(categoryCouponList);
 	}
 

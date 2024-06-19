@@ -9,7 +9,7 @@ Content-Type: application/json
   "maxDiscountAmount": 5000,
   "minPurchaseAmount": 10000,
   "startedAt": "2024-01-01T00:00:00",
-  "expirationAt": "2024-12-31T23:59:59"
+  "expirationAt": "2025-12-31T23:59:59"
 }
 
 ### 책 쿠폰 생성
@@ -62,4 +62,12 @@ Content-Type: application/json
 
 ### 모든 카테고리 쿠폰 조회
 GET http://localhost:8087/coupons/category?page=1&size=5
+Content-Type: application/json
+
+### 특정 책 쿠폰 조회
+GET http://localhost:8087/coupons/book/1
+Content-Type: application/json
+
+### 특정 카테고리 쿠폰 단건 조회
+GET http://localhost:8087/coupons/category/2g
 Content-Type: application/json
