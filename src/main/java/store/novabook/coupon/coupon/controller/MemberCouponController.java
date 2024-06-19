@@ -1,5 +1,7 @@
 package store.novabook.coupon.coupon.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,9 +46,10 @@ public class MemberCouponController {
 	// 마이페이지 - 쿠폰함/쿠폰내역에서 사용. "미사용"/"사용" 에 따라 가져옴
 	@GetMapping("/members/{memberId}/coupons")
 	public ResponseEntity<GetMemberCouponResponse> getMemberCouponByStatus(@PathVariable Long memberId,
-		@RequestParam MemberCouponStatus status) {
-		GetMemberCouponResponse memberCouponResponse = memberCouponService.getMemberCouponAllByStatus(memberId, status);
+		@RequestParam MemberCouponStatus status, @PageableDefault(size = 5) Pageable pageable) {
+		GetMemberCouponResponse memberCouponResponse = memberCouponService.getMemberCouponAllByStatus(memberId, status,
+			pageable);
 
-		return null;
+		return ResponseEntity.ok(memberCouponResponse);
 	}
 }

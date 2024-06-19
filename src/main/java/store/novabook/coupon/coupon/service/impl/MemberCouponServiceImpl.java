@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +13,19 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.common.exception.BadRequestException;
 import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.NotFoundException;
-import store.novabook.coupon.coupon.domain.*;
+import store.novabook.coupon.coupon.domain.BookCoupon;
+import store.novabook.coupon.coupon.domain.CategoryCoupon;
+import store.novabook.coupon.coupon.domain.Coupon;
+import store.novabook.coupon.coupon.domain.CouponType;
+import store.novabook.coupon.coupon.domain.MemberCoupon;
+import store.novabook.coupon.coupon.domain.MemberCouponStatus;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
-import store.novabook.coupon.coupon.dto.response.*;
+import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponBookResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponCategoryResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
+import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
 import store.novabook.coupon.coupon.repository.CouponRepository;
 import store.novabook.coupon.coupon.repository.MemberCouponRepository;
 import store.novabook.coupon.coupon.repository.querydsl.BookCouponQueryRepository;
@@ -45,29 +57,40 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public GetMemberCouponByTypeResponse getMemberCouponAllByValid(Long memberId, Boolean validOnly) {
-		List<MemberCoupon> generalCoupons = memberCouponRepository.findAllByMemberIdAndCoupon_CodeStartsWithAndStatusMatchesAndCoupon_ExpirationAtBeforeAndCoupon_StartedAtAfter(memberId, CouponType.GENERAL.getPrefix(),MemberCouponStatus.UNUSED, LocalDateTime.now(), LocalDateTime.now());
-		List<BookCoupon> bookCoupons = bookCouponQueryRepository.findBookCouponsByMemberId(memberId, validOnly);
-		List<CategoryCoupon> categoryCoupons = categoryCouponQueryRepository.findCategoryCouponsByMemberId(memberId, validOnly);
+		List<MemberCoupon> generalCouponList = memberCouponRepository.findAllByMemberIdAndCoupon_CodeStartsWithAndStatusMatchesAndCoupon_ExpirationAtBeforeAndCoupon_StartedAtAfter(
+			memberId, CouponType.GENERAL.getPrefix(), MemberCouponStatus.UNUSED, LocalDateTime.now(),
+			LocalDateTime.now());
+		List<BookCoupon> bookCouponList = bookCouponQueryRepository.findBookCouponsByMemberId(memberId, validOnly);
+		List<CategoryCoupon> categoryCouponList = categoryCouponQueryRepository.findCategoryCouponsByMemberId(memberId,
+			validOnly);
 
-		List<GetCouponResponse> generalCouponResponses = generalCoupons.stream()
-				.map(mc -> GetCouponResponse.fromEntity(mc.getCoupon()))
-				.collect(Collectors.toList());
+		List<GetCouponResponse> generalCouponResponseList = generalCouponList.stream()
+			.map(mc -> GetCouponResponse.fromEntity(mc.getCoupon()))
+			.collect(Collectors.toList());
 
-		List<GetCouponBookResponse> bookCouponResponses = bookCoupons.stream()
-				.map(GetCouponBookResponse::fromEntity)
-				.collect(Collectors.toList());
+		List<GetCouponBookResponse> bookCouponResponseList = bookCouponList.stream()
+			.map(GetCouponBookResponse::fromEntity)
+			.collect(Collectors.toList());
 
-		List<GetCouponCategoryResponse> categoryCouponResponses = categoryCoupons.stream()
-				.map(GetCouponCategoryResponse::fromEntity)
-				.collect(Collectors.toList());
+		List<GetCouponCategoryResponse> categoryCouponResponseList = categoryCouponList.stream()
+			.map(GetCouponCategoryResponse::fromEntity)
+			.collect(Collectors.toList());
 
-		return new GetMemberCouponByTypeResponse(generalCouponResponses, bookCouponResponses, categoryCouponResponses);
+		return GetMemberCouponByTypeResponse.builder()
+			.generalCouponList(generalCouponResponseList)
+			.bookCouponList(bookCouponResponseList)
+			.categoryCouponList(categoryCouponResponseList)
+			.build();
 	}
 
 	@Override
-	public GetMemberCouponResponse getMemberCouponAllByStatus(Long memberId, MemberCouponStatus status) {
-		return null;
+	@Transactional(readOnly = true)
+	public GetMemberCouponResponse getMemberCouponAllByStatus(Long memberId, MemberCouponStatus status,
+		Pageable pageable) {
+		Page<MemberCoupon> memberCouponPage = memberCouponRepository.findAllByStatus(status, pageable);
+		return GetMemberCouponResponse.fromEntity(memberId, memberCouponPage);
 	}
 
 }

@@ -1,5 +1,7 @@
 package store.novabook.coupon.coupon.service;
 
+import org.springframework.data.domain.Pageable;
+
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
@@ -11,5 +13,5 @@ public interface MemberCouponService {
 
 	GetMemberCouponByTypeResponse getMemberCouponAllByValid(Long memberId, Boolean validOnly);
 
-	GetMemberCouponResponse getMemberCouponAllByStatus(Long memberId, MemberCouponStatus status);
+	GetMemberCouponResponse getMemberCouponAllByStatus(Long memberId, MemberCouponStatus status, Pageable pageable);
 }
