@@ -1,12 +1,12 @@
 package store.novabook.coupon.coupon.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import store.novabook.coupon.common.exception.BadRequestException;
 import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.NotFoundException;
@@ -15,6 +15,7 @@ import store.novabook.coupon.coupon.domain.MemberCoupon;
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
 import store.novabook.coupon.coupon.repository.CouponRepository;
 import store.novabook.coupon.coupon.repository.MemberCouponRepository;
 import store.novabook.coupon.coupon.service.MemberCouponService;
@@ -22,7 +23,6 @@ import store.novabook.coupon.coupon.service.MemberCouponService;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class MemberCouponServiceImpl implements MemberCouponService {
 
 	private final MemberCouponRepository memberCouponRepository;
@@ -38,9 +38,14 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 		}
 
 		MemberCoupon memberCoupon = MemberCoupon.of(memberId, coupon, MemberCouponStatus.UNUSED);
-		log.info("memberCoupon : {}", memberCoupon);
 		MemberCoupon saved = memberCouponRepository.save(memberCoupon);
 		return CreateMemberCouponResponse.fromEntity(saved);
+	}
+
+	@Override
+	public GetMemberCouponResponse getMemberCouponAll(Long memberId, Boolean validOnly) {
+		List<MemberCoupon> memberCouponList;
+		return null;
 	}
 
 }
