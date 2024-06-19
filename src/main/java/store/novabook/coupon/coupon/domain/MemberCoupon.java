@@ -17,11 +17,14 @@ import jakarta.persistence.MapsId;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
+@Getter
 public class MemberCoupon {
 
 	@Id
@@ -49,5 +52,22 @@ public class MemberCoupon {
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
+
+	@Builder
+	public MemberCoupon(String couponCode, Coupon coupon, Long memberId, MemberCouponStatus status) {
+		this.couponCode = couponCode;
+		this.coupon = coupon;
+		this.memberId = memberId;
+		this.status = status;
+	}
+
+	public static MemberCoupon of(Long memberId, Coupon coupon, MemberCouponStatus status) {
+		return MemberCoupon.builder()
+			.couponCode(coupon.getCode())
+			.coupon(coupon)
+			.memberId(memberId)
+			.status(status)
+			.build();
+	}
 
 }

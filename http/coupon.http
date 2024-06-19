@@ -32,7 +32,7 @@ POST http://localhost:8087/coupons/category
 Content-Type: application/json
 
 {
-  "categoryId": 2,
+  "categoryId": 3,
   "name": "카테고리 쿠폰",
   "discountAmount": 2000,
   "discountType": "PERCENT",
@@ -69,5 +69,7 @@ GET http://localhost:8087/coupons/book/1
 Content-Type: application/json
 
 ### 특정 카테고리 쿠폰 단건 조회
-GET http://localhost:8087/coupons/category/2g
+GET http://localhost:8087/coupons/category/2
 Content-Type: application/json
+
+
