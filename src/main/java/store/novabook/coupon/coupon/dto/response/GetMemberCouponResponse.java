@@ -1,6 +1,8 @@
 package store.novabook.coupon.coupon.dto.response;
 
-public record GetMemberCouponResponse(
+import java.util.List;
 
+public record GetMemberCouponResponse(
+	List<GetCouponResponse> couponList
 ) {
 }

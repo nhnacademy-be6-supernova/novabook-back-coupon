@@ -1,7 +1,6 @@
 package store.novabook.coupon.coupon.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +14,7 @@ import store.novabook.coupon.coupon.domain.MemberCoupon;
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
 import store.novabook.coupon.coupon.repository.CouponRepository;
 import store.novabook.coupon.coupon.repository.MemberCouponRepository;
@@ -43,8 +43,15 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	}
 
 	@Override
-	public GetMemberCouponResponse getMemberCouponAll(Long memberId, Boolean validOnly) {
-		List<MemberCoupon> memberCouponList;
+	public GetMemberCouponByTypeResponse getMemberCouponAllByValid(Long memberId, Boolean validOnly) {
+		if (validOnly) {
+			// expiredAt < Localdatetime.now 한 . 걸.. 가져옴.. "ㅠ
+		}
+		return null;
+	}
+
+	@Override
+	public GetMemberCouponResponse getMemberCouponAllByStatus(Long memberId, MemberCouponStatus status) {
 		return null;
 	}
 
