@@ -1,6 +1,7 @@
 package store.novabook.coupon.coupon.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,9 @@ import store.novabook.coupon.coupon.dto.request.CreateCouponCategoryRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.UpdateCouponExpirationRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponBookAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponBookResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponCategoryAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponCategoryResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 import store.novabook.coupon.coupon.repository.BookCouponRepository;
@@ -73,23 +76,38 @@ public class CouponServiceImpl implements CouponService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetCouponResponse> getCouponGeneralAll(Pageable pageable) {
-		Page<Coupon> coupons = couponRepository.findAllByCodeStartsWith(CouponType.GENERAL.getPrefix(), pageable);
-		return coupons.map(GetCouponResponse::fromEntity);
-
+		Page<Coupon> couponList = couponRepository.findAllByCodeStartsWith(CouponType.GENERAL.getPrefix(), pageable);
+		return couponList.map(GetCouponResponse::fromEntity);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetCouponBookResponse> getCouponBookAll(Pageable pageable) {
-		Page<BookCoupon> coupons = bookCouponRepository.findAll(pageable);
-		return coupons.map(GetCouponBookResponse::fromEntity);
+		Page<BookCoupon> bookCouponList = bookCouponRepository.findAll(pageable);
+		return bookCouponList.map(GetCouponBookResponse::fromEntity);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetCouponCategoryResponse> getCouponCategryAll(Pageable pageable) {
-		Page<CategoryCoupon> coupons = categoryCouponRepository.findAll(pageable);
-		return coupons.map(GetCouponCategoryResponse::fromEntity);
+		Page<CategoryCoupon> categoryCouponList = categoryCouponRepository.findAll(pageable);
+		return categoryCouponList.map(GetCouponCategoryResponse::fromEntity);
+	}
+
+	// 만료시간이 현재시간보다 후인 쿠폰들만 가져온다.
+	@Override
+	@Transactional(readOnly = true)
+	public GetCouponBookAllResponse getCouponBook(Long bookId) {
+		List<BookCoupon> bookCouponList = bookCouponRepository.findAllByBookIdAndCoupon_ExpirationAtAfter(bookId,
+			LocalDateTime.now());
+		return GetCouponBookAllResponse.fromEntity(bookCouponList);
+	}
+
+	@Override
+	public GetCouponCategoryAllResponse getCouponCategory(Long categoryId) {
+		List<CategoryCoupon> categoryCouponList = categoryCouponRepository.findAllByCategoryIdAndCoupon_ExpirationAtAfter(
+			categoryId, LocalDateTime.now());
+		return GetCouponCategoryAllResponse.fromEntity(categoryCouponList);
 	}
 
 }
