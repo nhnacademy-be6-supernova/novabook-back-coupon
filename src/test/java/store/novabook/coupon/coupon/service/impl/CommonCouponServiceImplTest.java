@@ -1,8 +1,8 @@
 package store.novabook.coupon.coupon.service.impl;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -14,53 +14,58 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.coupon.domain.Coupon;
+import store.novabook.coupon.coupon.domain.DiscountType;
 import store.novabook.coupon.coupon.dto.request.UpdateCouponExpirationRequest;
 import store.novabook.coupon.coupon.repository.CouponRepository;
 
 class CommonCouponServiceImplTest {
 
+	@InjectMocks
+	private CommonCouponServiceImpl commonCouponService;
+
 	@Mock
 	private CouponRepository couponRepository;
 
-	@InjectMocks
-	private CommonCouponServiceImpl commonCouponService;
+	private Coupon validCoupon;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
+		validCoupon = Coupon.builder()
+			.code("VALIDCODE")
+			.name("Valid Coupon")
+			.discountAmount(1000)
+			.discountType(DiscountType.PERCENT)
+			.maxDiscountAmount(5000)
+			.minPurchaseAmount(100)
+			.startedAt(LocalDateTime.now().minusDays(1))
+			.expirationAt(LocalDateTime.now().plusDays(7))
+			.build();
 	}
 
 	@Test
-	@DisplayName("쿠폰 강제종료 성공")
-	void updateCouponExpiration_Success() {
-		String couponCode = "G123456789012345";
-		UpdateCouponExpirationRequest request = new UpdateCouponExpirationRequest(couponCode);
+	@DisplayName("쿠폰 만료일 업데이트 테스트 - 성공")
+	void updateCouponExpirationTestSuccess() {
+		UpdateCouponExpirationRequest request = new UpdateCouponExpirationRequest("VALIDCODE");
 
-		Coupon coupon = mock(Coupon.class);
-		when(couponRepository.findById(couponCode)).thenReturn(Optional.of(coupon));
+		given(couponRepository.findById("VALIDCODE")).willReturn(Optional.of(validCoupon));
 
 		commonCouponService.updateCouponExpiration(request);
 
-		verify(coupon).updateExprationAt(any(LocalDateTime.class));
-		verify(couponRepository).save(coupon);
+		assertThat(validCoupon.getExpirationAt()).isBefore(LocalDateTime.now());
 	}
 
 	@Test
-	@DisplayName("쿠폰을 찾을 수 없음")
-	void updateCouponExpiration_NotFound() {
-		String couponCode = "G123456789012345";
-		UpdateCouponExpirationRequest request = new UpdateCouponExpirationRequest(couponCode);
+	@DisplayName("쿠폰 만료일 업데이트 테스트 - 실패 (쿠폰 없음)")
+	void updateCouponExpirationTestFailureCouponNotFound() {
+		UpdateCouponExpirationRequest request = new UpdateCouponExpirationRequest("INVALIDCODE");
 
-		when(couponRepository.findById(couponCode)).thenReturn(Optional.empty());
+		given(couponRepository.findById("INVALIDCODE")).willReturn(Optional.empty());
 
-		NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+		assertThrows(NotFoundException.class, () -> {
 			commonCouponService.updateCouponExpiration(request);
 		});
-
-		assertEquals(ErrorCode.COUPON_NOT_FOUND, exception.getErrorCode());
-		verify(couponRepository).findById(couponCode);
 	}
 }

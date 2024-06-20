@@ -109,7 +109,7 @@ class CategoryCouponServiceImplTest {
 		CategoryCoupon categoryCoupon = mock(CategoryCoupon.class);
 		when(categoryCoupon.getCoupon()).thenReturn(mock(Coupon.class));
 		List<CategoryCoupon> categoryCoupons = List.of(categoryCoupon);
-		when(categoryCouponRepository.findAllByCategoryIdAndCoupon_ExpirationAtAfter(anyLong(),
+		when(categoryCouponRepository.findAllByCategoryIdAndCouponExpirationAtAfter(anyLong(),
 			any(LocalDateTime.class)))
 			.thenReturn(categoryCoupons);
 
@@ -117,7 +117,7 @@ class CategoryCouponServiceImplTest {
 
 		assertNotNull(response);
 		assertEquals(1, response.couponResponseList().size());
-		verify(categoryCouponRepository).findAllByCategoryIdAndCoupon_ExpirationAtAfter(anyLong(),
+		verify(categoryCouponRepository).findAllByCategoryIdAndCouponExpirationAtAfter(anyLong(),
 			any(LocalDateTime.class));
 	}
 
@@ -125,7 +125,7 @@ class CategoryCouponServiceImplTest {
 	@DisplayName("카테고리 쿠폰을 찾을 수 없음")
 	void getCouponCategory_NotFound() {
 		Long categoryId = 1L;
-		when(categoryCouponRepository.findAllByCategoryIdAndCoupon_ExpirationAtAfter(anyLong(),
+		when(categoryCouponRepository.findAllByCategoryIdAndCouponExpirationAtAfter(anyLong(),
 			any(LocalDateTime.class)))
 			.thenReturn(List.of());
 
@@ -134,7 +134,7 @@ class CategoryCouponServiceImplTest {
 		});
 
 		assertEquals(ErrorCode.CATEGORY_COUPON_NOT_FOUND, exception.getErrorCode());
-		verify(categoryCouponRepository).findAllByCategoryIdAndCoupon_ExpirationAtAfter(anyLong(),
+		verify(categoryCouponRepository).findAllByCategoryIdAndCouponExpirationAtAfter(anyLong(),
 			any(LocalDateTime.class));
 	}
 }

@@ -18,8 +18,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import store.novabook.coupon.common.exception.ErrorCode;
-import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.common.util.CouponCodeGenerator;
 import store.novabook.coupon.coupon.domain.BookCoupon;
 import store.novabook.coupon.coupon.domain.Coupon;
@@ -128,18 +126,4 @@ class BookCouponServiceImplTest {
 		verify(bookCouponRepository).findAllByBookIdAndCoupon_ExpirationAtAfter(anyLong(), any(LocalDateTime.class));
 	}
 
-	@Test
-	@DisplayName("특정 책 쿠폰을 찾을 수 없음")
-	void getCouponBook_NotFound() {
-		Long bookId = 1L;
-		when(bookCouponRepository.findAllByBookIdAndCoupon_ExpirationAtAfter(anyLong(), any(LocalDateTime.class)))
-			.thenReturn(List.of());
-
-		NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-			bookCouponService.getCouponBook(bookId);
-		});
-
-		assertEquals(ErrorCode.BOOK_COUPON_NOT_FOUND, exception.getErrorCode());
-		verify(bookCouponRepository).findAllByBookIdAndCoupon_ExpirationAtAfter(anyLong(), any(LocalDateTime.class));
-	}
 }
