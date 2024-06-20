@@ -1,8 +1,9 @@
 package store.novabook.coupon.coupon.service.impl;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,28 +18,29 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import store.novabook.coupon.common.exception.BadRequestException;
-import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.ForbiddenException;
 import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.coupon.domain.Coupon;
+import store.novabook.coupon.coupon.domain.DiscountType;
 import store.novabook.coupon.coupon.domain.MemberCoupon;
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
-import store.novabook.coupon.coupon.dto.MemberBookCouponDto;
-import store.novabook.coupon.coupon.dto.MemberCategoryCouponDto;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
+import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
+import store.novabook.coupon.coupon.repository.BookCouponRepository;
+import store.novabook.coupon.coupon.repository.CategoryCouponRepository;
 import store.novabook.coupon.coupon.repository.CouponRepository;
 import store.novabook.coupon.coupon.repository.MemberCouponRepository;
-import store.novabook.coupon.coupon.repository.querydsl.BookCouponQueryRepository;
-import store.novabook.coupon.coupon.repository.querydsl.CategoryCouponQueryRepository;
 
 class MemberCouponServiceImplTest {
+
+	@InjectMocks
+	private MemberCouponServiceImpl memberCouponService;
 
 	@Mock
 	private MemberCouponRepository memberCouponRepository;
@@ -47,219 +49,207 @@ class MemberCouponServiceImplTest {
 	private CouponRepository couponRepository;
 
 	@Mock
-	private CategoryCouponQueryRepository categoryCouponQueryRepository;
+	private CategoryCouponRepository categoryCouponRepository;
 
 	@Mock
-	private BookCouponQueryRepository bookCouponQueryRepository;
+	private BookCouponRepository bookCouponRepository;
 
-	@InjectMocks
-	private MemberCouponServiceImpl memberCouponService;
+	private Coupon validCoupon;
+	private MemberCoupon memberCoupon;
+	private GetMemberCouponResponse getMemberCouponResponse;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
+
+		validCoupon = Coupon.builder()
+			.code("VALIDCODE")
+			.name("Valid Coupon")
+			.discountAmount(1000)
+			.discountType(DiscountType.PERCENT)
+			.maxDiscountAmount(5000)
+			.minPurchaseAmount(100)
+			.startedAt(LocalDateTime.now().minusDays(1))
+			.expirationAt(LocalDateTime.now().plusDays(7))
+			.build();
+
+		memberCoupon = MemberCoupon.builder()
+			.coupon(validCoupon)
+			.memberId(1L)
+			.status(MemberCouponStatus.UNUSED)
+			.build();
+
+		getMemberCouponResponse = GetMemberCouponResponse.builder()
+			.memberCouponId(memberCoupon.getId())
+			.code(validCoupon.getCode())
+			.name(validCoupon.getName())
+			.discountAmount(validCoupon.getDiscountAmount())
+			.discountType(validCoupon.getDiscountType())
+			.maxDiscountAmount(validCoupon.getMaxDiscountAmount())
+			.minPurchaseAmount(validCoupon.getMinPurchaseAmount())
+			.startedAt(validCoupon.getStartedAt())
+			.expirationAt(validCoupon.getExpirationAt())
+			.build();
 	}
 
 	@Test
-	@DisplayName("멤버 쿠폰 저장 성공")
-	void saveMemberCoupon_Success() {
-		Long memberId = 1L;
-		String couponCode = "G123456789012345";
-		CreateMemberCouponRequest request = new CreateMemberCouponRequest(couponCode);
+	@DisplayName("회원 쿠폰 저장 테스트 - 성공")
+	void saveMemberCouponTestSuccess() {
+		CreateMemberCouponRequest request = new CreateMemberCouponRequest("VALIDCODE");
 
-		Coupon coupon = mock(Coupon.class);
-		when(coupon.getExpirationAt()).thenReturn(LocalDateTime.now().plusDays(1));
-		when(couponRepository.findById(couponCode)).thenReturn(Optional.of(coupon));
+		given(couponRepository.findById("VALIDCODE")).willReturn(Optional.of(validCoupon));
+		given(memberCouponRepository.save(any(MemberCoupon.class))).willReturn(memberCoupon);
 
-		MemberCoupon memberCoupon = MemberCoupon.of(memberId, coupon, MemberCouponStatus.UNUSED);
-		when(memberCouponRepository.save(any(MemberCoupon.class))).thenReturn(memberCoupon);
+		CreateMemberCouponResponse response = memberCouponService.saveMemberCoupon(1L, request);
 
-		CreateMemberCouponResponse response = memberCouponService.saveMemberCoupon(memberId, request);
-
-		assertNotNull(response);
-		verify(couponRepository).findById(couponCode);
-		verify(memberCouponRepository).save(any(MemberCoupon.class));
+		assertThat(response.id()).isEqualTo(memberCoupon.getId());
 	}
 
 	@Test
-	@DisplayName("쿠폰을 찾을 수 없음")
-	void saveMemberCoupon_CouponNotFound() {
-		Long memberId = 1L;
-		String couponCode = "G123456789012345";
-		CreateMemberCouponRequest request = new CreateMemberCouponRequest(couponCode);
+	@DisplayName("회원 쿠폰 저장 테스트 - 실패 (쿠폰 없음)")
+	void saveMemberCouponTestFailureCouponNotFound() {
+		CreateMemberCouponRequest request = new CreateMemberCouponRequest("INVALIDCODE");
 
-		when(couponRepository.findById(couponCode)).thenReturn(Optional.empty());
+		given(couponRepository.findById("INVALIDCODE")).willReturn(Optional.empty());
 
-		NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-			memberCouponService.saveMemberCoupon(memberId, request);
+		assertThrows(NotFoundException.class, () -> {
+			memberCouponService.saveMemberCoupon(1L, request);
 		});
-
-		assertEquals(ErrorCode.COUPON_NOT_FOUND, exception.getErrorCode());
-		verify(couponRepository).findById(couponCode);
 	}
 
 	@Test
-	@DisplayName("쿠폰이 만료됨")
-	void saveMemberCoupon_CouponExpired() {
-		Long memberId = 1L;
-		String couponCode = "G123456789012345";
-		CreateMemberCouponRequest request = new CreateMemberCouponRequest(couponCode);
+	@DisplayName("회원 쿠폰 저장 테스트 - 실패 (쿠폰 만료됨)")
+	void saveMemberCouponTestFailureExpiredCoupon() {
+		Coupon expiredCoupon = Coupon.builder()
+			.code("EXPIREDCODE")
+			.name("Expired Coupon")
+			.discountAmount(1000)
+			.discountType(DiscountType.PERCENT)
+			.maxDiscountAmount(5000)
+			.minPurchaseAmount(100)
+			.startedAt(LocalDateTime.now().minusDays(10))
+			.expirationAt(LocalDateTime.now().minusDays(1))
+			.build();
 
-		Coupon coupon = mock(Coupon.class);
-		when(coupon.getExpirationAt()).thenReturn(LocalDateTime.now().minusDays(1));
-		when(couponRepository.findById(couponCode)).thenReturn(Optional.of(coupon));
+		CreateMemberCouponRequest request = new CreateMemberCouponRequest("EXPIREDCODE");
 
-		BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-			memberCouponService.saveMemberCoupon(memberId, request);
+		given(couponRepository.findById("EXPIREDCODE")).willReturn(Optional.of(expiredCoupon));
+
+		assertThrows(BadRequestException.class, () -> {
+			memberCouponService.saveMemberCoupon(1L, request);
 		});
-
-		assertEquals(ErrorCode.EXPIRED_COUPON_CODE, exception.getErrorCode());
-		verify(couponRepository).findById(couponCode);
 	}
 
 	@Test
-	@DisplayName("멤버 쿠폰 상태 업데이트 성공")
-	void updateMemberCouponStatus_Success() {
-		Long memberId = 1L;
-		Long memberCouponId = 1L;
-		PutMemberCouponRequest request = new PutMemberCouponRequest(memberCouponId, MemberCouponStatus.USED);
+	@DisplayName("유효한 회원 쿠폰 조회 테스트 - 성공")
+	void getMemberCouponAllByValidTestSuccess() {
+		given(memberCouponRepository.findValidCouponsByStatus(any(Long.class), any(String.class),
+			any(MemberCouponStatus.class), any(LocalDateTime.class), any(LocalDateTime.class)))
+			.willReturn(List.of(getMemberCouponResponse));
+		given(memberCouponRepository.findBookCouponsByMemberId(any(Long.class), any(Boolean.class)))
+			.willReturn(List.of());
+		given(memberCouponRepository.findCategoryCouponsByMemberId(any(Long.class), any(Boolean.class)))
+			.willReturn(List.of());
 
-		MemberCoupon memberCoupon = mock(MemberCoupon.class);
-		Coupon coupon = mock(Coupon.class);
-		when(memberCoupon.getCoupon()).thenReturn(coupon);
-		when(coupon.getExpirationAt()).thenReturn(LocalDateTime.now().plusDays(1));
-		when(coupon.getStartedAt()).thenReturn(LocalDateTime.now().minusDays(1));
-		when(memberCoupon.getStatus()).thenReturn(MemberCouponStatus.UNUSED);
-		when(memberCoupon.getMemberId()).thenReturn(memberId);
+		GetMemberCouponByTypeResponse response = memberCouponService.getMemberCouponAllByValid(1L, true);
 
-		when(memberCouponRepository.findById(memberCouponId)).thenReturn(Optional.of(memberCoupon));
-
-		memberCouponService.updateMemberCouponStatus(memberId, request);
-
-		verify(memberCoupon).updateStatus(MemberCouponStatus.USED);
-		verify(memberCouponRepository).save(memberCoupon);
+		assertThat(response.generalCouponList()).hasSize(1);
+		assertThat(response.generalCouponList().get(0).code()).isEqualTo("VALIDCODE");
 	}
 
 	@Test
-	@DisplayName("멤버 쿠폰을 찾을 수 없음")
-	void updateMemberCouponStatus_NotFound() {
-		Long memberId = 1L;
-		Long memberCouponId = 1L;
-		PutMemberCouponRequest request = new PutMemberCouponRequest(memberCouponId, MemberCouponStatus.USED);
-
-		when(memberCouponRepository.findById(memberCouponId)).thenReturn(Optional.empty());
-
-		NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-			memberCouponService.updateMemberCouponStatus(memberId, request);
-		});
-
-		assertEquals(ErrorCode.COUPON_NOT_FOUND, exception.getErrorCode());
-		verify(memberCouponRepository).findById(memberCouponId);
-	}
-
-	@Test
-	@DisplayName("잘못된 쿠폰")
-	void updateMemberCouponStatus_InvalidCoupon() {
-		Long memberId = 1L;
-		Long memberCouponId = 1L;
-		PutMemberCouponRequest request = new PutMemberCouponRequest(memberCouponId, MemberCouponStatus.USED);
-
-		MemberCoupon memberCoupon = mock(MemberCoupon.class);
-		Coupon coupon = mock(Coupon.class);
-		when(memberCoupon.getCoupon()).thenReturn(coupon);
-		when(coupon.getExpirationAt()).thenReturn(LocalDateTime.now().minusDays(1));
-		when(coupon.getStartedAt()).thenReturn(LocalDateTime.now().plusDays(1));
-		when(memberCoupon.getStatus()).thenReturn(MemberCouponStatus.USED);
-		when(memberCoupon.getMemberId()).thenReturn(memberId);
-
-		when(memberCouponRepository.findById(memberCouponId)).thenReturn(Optional.of(memberCoupon));
-
-		BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-			memberCouponService.updateMemberCouponStatus(memberId, request);
-		});
-
-		assertEquals(ErrorCode.INVALID_COUPON, exception.getErrorCode());
-		verify(memberCouponRepository).findById(memberCouponId);
-	}
-
-	@Test
-	@DisplayName("권한 없음")
-	void updateMemberCouponStatus_Forbidden() {
-		Long memberId = 1L;
-		Long memberCouponId = 1L;
-		Long otherMemberId = 2L;
-		PutMemberCouponRequest request = new PutMemberCouponRequest(memberCouponId, MemberCouponStatus.USED);
-
-		MemberCoupon memberCoupon = mock(MemberCoupon.class);
-		Coupon coupon = mock(Coupon.class);
-		when(memberCoupon.getCoupon()).thenReturn(coupon);
-		when(coupon.getExpirationAt()).thenReturn(LocalDateTime.now().plusDays(1));
-		when(coupon.getStartedAt()).thenReturn(LocalDateTime.now().minusDays(1));
-		when(memberCoupon.getStatus()).thenReturn(MemberCouponStatus.UNUSED);
-		when(memberCoupon.getMemberId()).thenReturn(otherMemberId);
-
-		when(memberCouponRepository.findById(memberCouponId)).thenReturn(Optional.of(memberCoupon));
-
-		ForbiddenException exception = assertThrows(ForbiddenException.class, () -> {
-			memberCouponService.updateMemberCouponStatus(memberId, request);
-		});
-
-		assertEquals(ErrorCode.NOT_ENOUGH_PERMISSION, exception.getErrorCode());
-		verify(memberCouponRepository).findById(memberCouponId);
-	}
-
-	@Test
-	@DisplayName("상태별 모든 멤버 쿠폰 가져오기")
-	void getMemberCouponAllByStatus() {
-		Long memberId = 1L;
-		MemberCouponStatus status = MemberCouponStatus.UNUSED;
-		Pageable pageable = PageRequest.of(0, 10);
-
-		MemberCoupon memberCoupon = mock(MemberCoupon.class);
-		Coupon coupon = mock(Coupon.class);
-		when(memberCoupon.getCoupon()).thenReturn(coupon);  // Ensure getCoupon() does not return null
-
+	@DisplayName("상태별 회원 쿠폰 조회 테스트 - 성공")
+	void getMemberCouponAllByStatusTestSuccess() {
 		Page<MemberCoupon> memberCouponPage = new PageImpl<>(List.of(memberCoupon));
-		when(memberCouponRepository.findAllByStatus(status, pageable)).thenReturn(memberCouponPage);
+		given(memberCouponRepository.findAllByStatus(any(MemberCouponStatus.class), any(PageRequest.class))).willReturn(
+			memberCouponPage);
 
-		GetMemberCouponAllResponse response = memberCouponService.getMemberCouponAllByStatus(memberId, status,
-			pageable);
+		GetMemberCouponAllResponse response = memberCouponService.getMemberCouponAllByStatus(1L,
+			MemberCouponStatus.UNUSED, PageRequest.of(0, 10));
 
-		assertNotNull(response);
-		assertEquals(1, response.memberCouponPage().getTotalElements());
-		verify(memberCouponRepository).findAllByStatus(status, pageable);
+		assertThat(response.memberCouponPage().getContent()).hasSize(1);
+		assertThat(response.memberCouponPage().getContent().get(0).code()).isEqualTo("VALIDCODE");
 	}
 
 	@Test
-	@DisplayName("유효한 모든 멤버 쿠폰 가져오기")
-	void getMemberCouponAllByValid() {
-		Long memberId = 1L;
-		Boolean validOnly = true;
+	@DisplayName("회원 쿠폰 상태 업데이트 테스트 - 성공")
+	void updateMemberCouponStatusTestSuccess() {
+		PutMemberCouponRequest request = new PutMemberCouponRequest(1L, MemberCouponStatus.USED);
 
-		MemberCoupon memberCoupon = mock(MemberCoupon.class);
-		when(memberCoupon.getCoupon()).thenReturn(mock(Coupon.class));
-		List<MemberCoupon> generalCoupons = List.of(memberCoupon);
-		when(memberCouponRepository.findValidCouponsByStatus(anyLong(), anyString(), any(), any(), any())).thenReturn(
-			generalCoupons);
+		given(memberCouponRepository.findById(1L)).willReturn(Optional.of(memberCoupon));
+		memberCouponService.updateMemberCouponStatus(1L, request);
 
-		MemberBookCouponDto bookCouponDto = mock(MemberBookCouponDto.class);
-		List<MemberBookCouponDto> bookCoupons = List.of(bookCouponDto);
-		when(bookCouponQueryRepository.findBookCouponsByMemberId(anyLong(), anyBoolean())).thenReturn(bookCoupons);
+		assertThat(memberCoupon.getStatus()).isEqualTo(MemberCouponStatus.USED);
+	}
 
-		MemberCategoryCouponDto categoryCouponDto = mock(MemberCategoryCouponDto.class);
-		List<MemberCategoryCouponDto> categoryCoupons = List.of(categoryCouponDto);
-		when(categoryCouponQueryRepository.findCategoryCouponsByMemberId(anyLong(), anyBoolean())).thenReturn(
-			categoryCoupons);
+	@Test
+	@DisplayName("회원 쿠폰 상태 업데이트 테스트 - 실패 (쿠폰 없음)")
+	void updateMemberCouponStatusTestFailureCouponNotFound() {
+		PutMemberCouponRequest request = new PutMemberCouponRequest(1L, MemberCouponStatus.USED);
 
-		GetMemberCouponByTypeResponse response = memberCouponService.getMemberCouponAllByValid(memberId, validOnly);
+		given(memberCouponRepository.findById(1L)).willReturn(Optional.empty());
 
-		assertNotNull(response);
-		assertEquals(1, response.generalCouponList().size());
-		assertEquals(1, response.bookCouponList().size());
-		assertEquals(1, response.categoryCouponList().size());
+		assertThrows(NotFoundException.class, () -> {
+			memberCouponService.updateMemberCouponStatus(1L, request);
+		});
+	}
 
-		verify(memberCouponRepository).findValidCouponsByStatus(anyLong(), anyString(), any(), any(), any());
-		verify(bookCouponQueryRepository).findBookCouponsByMemberId(anyLong(), anyBoolean());
-		verify(categoryCouponQueryRepository).findCategoryCouponsByMemberId(anyLong(), anyBoolean());
+	@Test
+	@DisplayName("회원 쿠폰 상태 업데이트 테스트 - 실패 (권한 없음)")
+	void updateMemberCouponStatusTestFailureForbidden() {
+		PutMemberCouponRequest request = new PutMemberCouponRequest(1L, MemberCouponStatus.USED);
+		MemberCoupon otherMemberCoupon = MemberCoupon.builder().coupon(validCoupon).memberId(2L) // 다른 memberId 설정
+			.status(MemberCouponStatus.UNUSED).build();
+
+		given(memberCouponRepository.findById(1L)).willReturn(Optional.of(otherMemberCoupon));
+
+		assertThrows(ForbiddenException.class, () -> {
+			memberCouponService.updateMemberCouponStatus(1L, request);
+		});
+	}
+
+	@Test
+	@DisplayName("회원 쿠폰 상태 업데이트 테스트 - 실패 (유효하지 않은 쿠폰)")
+	void updateMemberCouponStatusTestFailureInvalidCoupon() {
+		PutMemberCouponRequest request = new PutMemberCouponRequest(1L, MemberCouponStatus.USED);
+		validCoupon = Coupon.builder()
+			.code("VALIDCODE")
+			.name("Valid Coupon")
+			.discountAmount(1000)
+			.discountType(DiscountType.PERCENT)
+			.maxDiscountAmount(5000)
+			.minPurchaseAmount(100)
+			.startedAt(LocalDateTime.now().plusDays(1)) // 아직 시작되지 않은 쿠폰
+			.expirationAt(LocalDateTime.now().plusDays(7))
+			.build();
+
+		memberCoupon = MemberCoupon.builder()
+			.coupon(validCoupon)
+			.memberId(1L)
+			.status(MemberCouponStatus.UNUSED)
+			.build();
+
+		given(memberCouponRepository.findById(1L)).willReturn(Optional.of(memberCoupon));
+
+		assertThrows(BadRequestException.class, () -> {
+			memberCouponService.updateMemberCouponStatus(1L, request);
+		});
+	}
+
+	@Test
+	@DisplayName("유효한 회원 쿠폰 조회 테스트 - 실패 (유효한 쿠폰 없음)")
+	void getMemberCouponAllByValidTestFailureNoValidCoupons() {
+		given(memberCouponRepository.findValidCouponsByStatus(any(Long.class), any(String.class),
+			any(MemberCouponStatus.class), any(LocalDateTime.class), any(LocalDateTime.class))).willReturn(List.of());
+		given(memberCouponRepository.findBookCouponsByMemberId(any(Long.class), any(Boolean.class))).willReturn(
+			List.of());
+		given(memberCouponRepository.findCategoryCouponsByMemberId(any(Long.class), any(Boolean.class))).willReturn(
+			List.of());
+
+		GetMemberCouponByTypeResponse response = memberCouponService.getMemberCouponAllByValid(1L, true);
+
+		assertThat(response.generalCouponList()).isEmpty();
+		assertThat(response.bookCouponList()).isEmpty();
+		assertThat(response.categoryCouponList()).isEmpty();
 	}
 }

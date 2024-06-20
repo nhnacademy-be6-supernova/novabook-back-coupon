@@ -64,4 +64,6 @@ public class MemberCouponController {
 		memberCouponService.updateMemberCouponStatus(memberId, request);
 		return ResponseEntity.ok().build();
 	}
+
+	// delete
 }

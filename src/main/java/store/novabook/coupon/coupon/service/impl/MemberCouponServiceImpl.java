@@ -26,10 +26,10 @@ import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
+import store.novabook.coupon.coupon.repository.BookCouponRepository;
+import store.novabook.coupon.coupon.repository.CategoryCouponRepository;
 import store.novabook.coupon.coupon.repository.CouponRepository;
 import store.novabook.coupon.coupon.repository.MemberCouponRepository;
-import store.novabook.coupon.coupon.repository.querydsl.BookCouponQueryRepository;
-import store.novabook.coupon.coupon.repository.querydsl.CategoryCouponQueryRepository;
 import store.novabook.coupon.coupon.service.MemberCouponService;
 
 @Service
@@ -38,8 +38,8 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 
 	private final MemberCouponRepository memberCouponRepository;
 	private final CouponRepository couponRepository;
-	private final CategoryCouponQueryRepository categoryCouponQueryRepository;
-	private final BookCouponQueryRepository bookCouponQueryRepository;
+	private final CategoryCouponRepository categoryCouponRepository;
+	private final BookCouponRepository bookCouponRepository;
 
 	@Override
 	@Transactional
@@ -59,19 +59,16 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetMemberCouponByTypeResponse getMemberCouponAllByValid(Long memberId, Boolean validOnly) {
-		List<MemberCoupon> generalCouponList = memberCouponRepository.findValidCouponsByStatus(memberId,
+		List<GetMemberCouponResponse> generalCouponList = memberCouponRepository.findValidCouponsByStatus(memberId,
 			CouponType.GENERAL.getPrefix(), MemberCouponStatus.UNUSED, LocalDateTime.now(), LocalDateTime.now());
-		List<MemberBookCouponDto> bookCouponList = bookCouponQueryRepository.findBookCouponsByMemberId(memberId,
+		List<MemberBookCouponDto> bookCouponList = memberCouponRepository.findBookCouponsByMemberId(
+			memberId,
 			validOnly);
-		List<MemberCategoryCouponDto> categoryCouponList = categoryCouponQueryRepository.findCategoryCouponsByMemberId(
+		List<MemberCategoryCouponDto> categoryCouponList = memberCouponRepository.findCategoryCouponsByMemberId(
 			memberId, validOnly);
 
-		List<GetMemberCouponResponse> generalCouponResponseList = generalCouponList.stream()
-			.map(GetMemberCouponResponse::fromEntity)
-			.toList();
-
 		return GetMemberCouponByTypeResponse.builder()
-			.generalCouponList(generalCouponResponseList)
+			.generalCouponList(generalCouponList)
 			.bookCouponList(bookCouponList)
 			.categoryCouponList(categoryCouponList)
 			.build();
@@ -94,7 +91,6 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 		validateMemberCoupon(memberId, memberCoupon);
 
 		memberCoupon.updateStatus(request.status());
-		memberCouponRepository.save(memberCoupon);
 	}
 
 	private void validateMemberCoupon(Long memberId, MemberCoupon memberCoupon) {

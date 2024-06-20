@@ -25,7 +25,5 @@ public class CommonCouponServiceImpl implements CommonCouponService {
 		Coupon coupon = couponRepository.findById(request.code())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 		coupon.updateExprationAt(LocalDateTime.now());
-		couponRepository.save(coupon);
 	}
-
 }

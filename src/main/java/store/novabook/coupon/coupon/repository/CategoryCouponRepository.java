@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import store.novabook.coupon.coupon.domain.CategoryCoupon;
 
-public interface CategoryCouponRepository extends JpaRepository<CategoryCoupon, String> {
-	List<CategoryCoupon> findAllByCategoryIdAndCoupon_ExpirationAtAfter(Long categoryId, LocalDateTime time);
+public interface CategoryCouponRepository
+	extends JpaRepository<CategoryCoupon, String> {
+	List<CategoryCoupon> findAllByCategoryIdAndCouponExpirationAtAfter(Long categoryId, LocalDateTime time);
 }

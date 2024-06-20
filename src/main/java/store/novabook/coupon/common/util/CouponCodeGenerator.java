@@ -3,6 +3,7 @@ package store.novabook.coupon.common.util;
 import java.security.SecureRandom;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.coupon.domain.CouponType;
@@ -39,6 +40,7 @@ public class CouponCodeGenerator {
 	 * @param couponType 쿠폰 유형
 	 * @return 고유한 쿠폰 코드
 	 */
+	@Transactional(readOnly = true)
 	public String generateUniqueCode(CouponType couponType) {
 		String code;
 		do {

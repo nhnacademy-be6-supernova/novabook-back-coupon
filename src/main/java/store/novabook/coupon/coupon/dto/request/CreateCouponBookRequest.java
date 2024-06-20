@@ -15,3 +15,5 @@ public record CreateCouponBookRequest(@NotNull(message = "책 ID는 필수 입�
 									  @NotNull(message = "시작 날짜는 필수 입력 항목입니다.") LocalDateTime startedAt,
 									  @NotNull(message = "만료 날짜는 필수 입력 항목입니다.") LocalDateTime expirationAt) {
 }
+
+

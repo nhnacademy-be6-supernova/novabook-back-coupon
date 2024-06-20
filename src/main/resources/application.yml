@@ -1,6 +1,5 @@
 spring:
   application:
     name: coupon
-
 server:
   port: 8087

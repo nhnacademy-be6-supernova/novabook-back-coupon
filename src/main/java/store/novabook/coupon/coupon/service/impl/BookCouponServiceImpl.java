@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.coupon.common.exception.ErrorCode;
-import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.common.util.CouponCodeGenerator;
 import store.novabook.coupon.coupon.domain.BookCoupon;
 import store.novabook.coupon.coupon.domain.Coupon;
@@ -54,8 +52,7 @@ public class BookCouponServiceImpl implements BookCouponService {
 	public GetCouponBookAllResponse getCouponBook(Long bookId) {
 		List<BookCoupon> bookCouponList = Optional.ofNullable(
 				bookCouponRepository.findAllByBookIdAndCoupon_ExpirationAtAfter(bookId, LocalDateTime.now()))
-			.filter(list -> !list.isEmpty())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_COUPON_NOT_FOUND));
+			.orElseThrow();
 		return GetCouponBookAllResponse.fromEntity(bookCouponList);
 	}
 }
