@@ -68,4 +68,8 @@ public class MemberCoupon {
 			.build();
 	}
 
+	public void updateStatus(MemberCouponStatus status) {
+		this.status = status;
+	}
+
 }

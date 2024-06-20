@@ -4,8 +4,8 @@ import lombok.Builder;
 import store.novabook.coupon.coupon.domain.MemberCoupon;
 
 @Builder
-public record CreateMemberCouponResponse(String code) {
+public record CreateMemberCouponResponse(Long id) {
 	public static CreateMemberCouponResponse fromEntity(MemberCoupon coupon) {
-		return CreateMemberCouponResponse.builder().code(coupon.getCoupon().getCode()).build();
+		return CreateMemberCouponResponse.builder().id(coupon.getId()).build();
 	}
 }

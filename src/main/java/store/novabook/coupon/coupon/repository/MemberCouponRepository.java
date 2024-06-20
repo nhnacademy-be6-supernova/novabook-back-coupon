@@ -6,17 +6,21 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import store.novabook.coupon.coupon.domain.MemberCoupon;
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
 
-public interface MemberCouponRepository extends JpaRepository<MemberCoupon, String> {
+public interface MemberCouponRepository extends JpaRepository<MemberCoupon, Long> {
 
-	List<MemberCoupon> findAllByMemberIdAndCoupon_CodeStartsWithAndStatusMatchesAndCoupon_ExpirationAtBeforeAndCoupon_StartedAtAfter(
-		@NotNull Long memberId, @Size(max = 16) @NotNull String couponCode, @NotNull MemberCouponStatus status,
-		@NotNull LocalDateTime expirationAt, @NotNull LocalDateTime startedAt);
+	@Query("SELECT mc FROM MemberCoupon mc " + "JOIN mc.coupon c " + "WHERE mc.memberId = :memberId "
+		+ "AND c.code LIKE CONCAT(:prefix, '%') " + "AND mc.status = :status " + "AND c.expirationAt < :expirationAt "
+		+ "AND c.startedAt > :startedAt")
+	List<MemberCoupon> findValidCouponsByStatus(@Param("memberId") Long memberId, @Param("prefix") String prefix,
+		@Param("status") MemberCouponStatus status, @Param("expirationAt") LocalDateTime expirationAt,
+		@Param("startedAt") LocalDateTime startedAt);
 
 	Page<MemberCoupon> findAllByStatus(MemberCouponStatus status, Pageable pageable);
+
 }

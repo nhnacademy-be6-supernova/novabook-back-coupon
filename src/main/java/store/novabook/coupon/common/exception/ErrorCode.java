@@ -23,6 +23,12 @@ public enum ErrorCode {
 	// 400
 	INVALID_REQUEST_ARGUMENT("잘못된 요청입니다."),
 	EXPIRED_COUPON_CODE("만료된 쿠폰 코드입니다."),
+	INVALID_COUPON("유효하지 않은 쿠폰입니다."),
+
+	// 401 로그인 안됨
+
+	// 403
+	NOT_ENOUGH_PERMISSION("해당 권한이 없습니다."),
 
 	// 404
 	COUPON_NOT_FOUND("존재하지 않는 쿠폰입니다."),

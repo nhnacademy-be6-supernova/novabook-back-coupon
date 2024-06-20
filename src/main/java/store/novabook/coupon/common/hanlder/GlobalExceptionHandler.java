@@ -11,6 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
+import store.novabook.coupon.common.exception.ForbiddenException;
 import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.common.exception.dto.ErrorResponse;
 import store.novabook.coupon.common.exception.dto.ValidErrorResponse;
@@ -27,6 +28,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<ErrorResponse> handle(NotFoundException exception, HttpServletRequest request) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(exception));
+	}
+
+	@ExceptionHandler(ForbiddenException.class)
+	public ResponseEntity<ErrorResponse> handle(ForbiddenException exception, HttpServletRequest request) {
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.from(exception));
 	}
 
 	// @ExceptionHandler(Exception.class)

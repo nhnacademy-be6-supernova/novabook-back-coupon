@@ -2,7 +2,7 @@ package store.novabook.coupon.coupon.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,18 +12,18 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.common.exception.BadRequestException;
 import store.novabook.coupon.common.exception.ErrorCode;
+import store.novabook.coupon.common.exception.ForbiddenException;
 import store.novabook.coupon.common.exception.NotFoundException;
-import store.novabook.coupon.coupon.domain.BookCoupon;
-import store.novabook.coupon.coupon.domain.CategoryCoupon;
 import store.novabook.coupon.coupon.domain.Coupon;
 import store.novabook.coupon.coupon.domain.CouponType;
 import store.novabook.coupon.coupon.domain.MemberCoupon;
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
+import store.novabook.coupon.coupon.dto.MemberBookCouponDto;
+import store.novabook.coupon.coupon.dto.MemberCategoryCouponDto;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
+import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
-import store.novabook.coupon.coupon.dto.response.GetCouponBookResponse;
-import store.novabook.coupon.coupon.dto.response.GetCouponCategoryResponse;
-import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetMemberCouponAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
 import store.novabook.coupon.coupon.repository.CouponRepository;
@@ -34,7 +34,6 @@ import store.novabook.coupon.coupon.service.MemberCouponService;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class MemberCouponServiceImpl implements MemberCouponService {
 
 	private final MemberCouponRepository memberCouponRepository;
@@ -43,6 +42,7 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	private final BookCouponQueryRepository bookCouponQueryRepository;
 
 	@Override
+	@Transactional
 	public CreateMemberCouponResponse saveMemberCoupon(Long memberId, CreateMemberCouponRequest request) {
 		Coupon coupon = couponRepository.findById(request.couponCode())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
@@ -59,38 +59,54 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetMemberCouponByTypeResponse getMemberCouponAllByValid(Long memberId, Boolean validOnly) {
-		List<MemberCoupon> generalCouponList = memberCouponRepository.findAllByMemberIdAndCoupon_CodeStartsWithAndStatusMatchesAndCoupon_ExpirationAtBeforeAndCoupon_StartedAtAfter(
-			memberId, CouponType.GENERAL.getPrefix(), MemberCouponStatus.UNUSED, LocalDateTime.now(),
-			LocalDateTime.now());
-		List<BookCoupon> bookCouponList = bookCouponQueryRepository.findBookCouponsByMemberId(memberId, validOnly);
-		List<CategoryCoupon> categoryCouponList = categoryCouponQueryRepository.findCategoryCouponsByMemberId(memberId,
+		List<MemberCoupon> generalCouponList = memberCouponRepository.findValidCouponsByStatus(memberId,
+			CouponType.GENERAL.getPrefix(), MemberCouponStatus.UNUSED, LocalDateTime.now(), LocalDateTime.now());
+		List<MemberBookCouponDto> bookCouponList = bookCouponQueryRepository.findBookCouponsByMemberId(memberId,
 			validOnly);
+		List<MemberCategoryCouponDto> categoryCouponList = categoryCouponQueryRepository.findCategoryCouponsByMemberId(
+			memberId, validOnly);
 
-		List<GetCouponResponse> generalCouponResponseList = generalCouponList.stream()
-			.map(mc -> GetCouponResponse.fromEntity(mc.getCoupon()))
-			.collect(Collectors.toList());
-
-		List<GetCouponBookResponse> bookCouponResponseList = bookCouponList.stream()
-			.map(GetCouponBookResponse::fromEntity)
-			.collect(Collectors.toList());
-
-		List<GetCouponCategoryResponse> categoryCouponResponseList = categoryCouponList.stream()
-			.map(GetCouponCategoryResponse::fromEntity)
-			.collect(Collectors.toList());
+		List<GetMemberCouponResponse> generalCouponResponseList = generalCouponList.stream()
+			.map(GetMemberCouponResponse::fromEntity)
+			.toList();
 
 		return GetMemberCouponByTypeResponse.builder()
 			.generalCouponList(generalCouponResponseList)
-			.bookCouponList(bookCouponResponseList)
-			.categoryCouponList(categoryCouponResponseList)
+			.bookCouponList(bookCouponList)
+			.categoryCouponList(categoryCouponList)
 			.build();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public GetMemberCouponResponse getMemberCouponAllByStatus(Long memberId, MemberCouponStatus status,
+	public GetMemberCouponAllResponse getMemberCouponAllByStatus(Long memberId, MemberCouponStatus status,
 		Pageable pageable) {
 		Page<MemberCoupon> memberCouponPage = memberCouponRepository.findAllByStatus(status, pageable);
-		return GetMemberCouponResponse.fromEntity(memberId, memberCouponPage);
+		return GetMemberCouponAllResponse.fromEntity(memberId, memberCouponPage);
+	}
+
+	@Override
+	@Transactional
+	public void updateMemberCouponStatus(Long memberId, PutMemberCouponRequest request) {
+		MemberCoupon memberCoupon = memberCouponRepository.findById(request.memberCouponId())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
+
+		validateMemberCoupon(memberId, memberCoupon);
+
+		memberCoupon.updateStatus(request.status());
+		memberCouponRepository.save(memberCoupon);
+	}
+
+	private void validateMemberCoupon(Long memberId, MemberCoupon memberCoupon) {
+		if (!Objects.equals(memberCoupon.getMemberId(), memberId)) {
+			throw new ForbiddenException(ErrorCode.NOT_ENOUGH_PERMISSION);
+		}
+
+		if (memberCoupon.getStatus() != MemberCouponStatus.UNUSED || memberCoupon.getCoupon()
+			.getExpirationAt()
+			.isBefore(LocalDateTime.now()) || memberCoupon.getCoupon().getStartedAt().isAfter(LocalDateTime.now())) {
+			throw new BadRequestException(ErrorCode.INVALID_COUPON);
+		}
 	}
 
 }

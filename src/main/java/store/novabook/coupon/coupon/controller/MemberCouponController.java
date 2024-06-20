@@ -19,8 +19,8 @@ import store.novabook.coupon.coupon.domain.MemberCouponStatus;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetMemberCouponAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
-import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
 import store.novabook.coupon.coupon.service.MemberCouponService;
 
 @RestController
@@ -49,17 +49,19 @@ public class MemberCouponController {
 
 	// 마이페이지 - 쿠폰함/쿠폰내역에서 사용. "미사용"/"사용" 에 따라 가져옴
 	@GetMapping("/{memberId}/coupons")
-	public ResponseEntity<GetMemberCouponResponse> getMemberCouponByStatus(@PathVariable Long memberId,
+	public ResponseEntity<GetMemberCouponAllResponse> getMemberCouponByStatus(@PathVariable Long memberId,
 		@RequestParam MemberCouponStatus status, @PageableDefault(size = 5) Pageable pageable) {
-		GetMemberCouponResponse memberCouponResponse = memberCouponService.getMemberCouponAllByStatus(memberId, status,
-			pageable);
+		GetMemberCouponAllResponse memberCouponResponse = memberCouponService.getMemberCouponAllByStatus(memberId,
+			status, pageable);
 
 		return ResponseEntity.ok(memberCouponResponse);
 	}
 
 	// 쿠폰 사용 요청
-	@PutMapping("/status")
-	public ResponseEntity<Void> updateMemberCoupon(PutMemberCouponRequest request) {
-
+	@PutMapping("/{memberId}/coupons/{memberCouponId}")
+	public ResponseEntity<Void> updateMemberCoupon(@PathVariable Long memberId,
+		@Valid @RequestBody PutMemberCouponRequest request) {
+		memberCouponService.updateMemberCouponStatus(memberId, request);
+		return ResponseEntity.ok().build();
 	}
 }
