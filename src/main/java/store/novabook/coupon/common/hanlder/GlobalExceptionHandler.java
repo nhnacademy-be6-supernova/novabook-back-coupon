@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.ForbiddenException;
 import store.novabook.coupon.common.exception.NotFoundException;
+import store.novabook.coupon.common.exception.NovaException;
 import store.novabook.coupon.common.exception.dto.ErrorResponse;
 import store.novabook.coupon.common.exception.dto.ValidErrorResponse;
 
@@ -40,6 +41,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<ErrorResponse> handle(Exception exception, HttpServletRequest request) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
+	}
+
+	@ExceptionHandler(NovaException.class)
+	protected ResponseEntity<Object> handleNovaException(NovaException ex, WebRequest request) {
+		ErrorResponse errorResponse = ErrorResponse.from(ex);
+		return handleExceptionInternal(ex, errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 
 }
