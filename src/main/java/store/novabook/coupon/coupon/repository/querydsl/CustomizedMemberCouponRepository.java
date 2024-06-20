@@ -13,6 +13,8 @@ public interface CustomizedMemberCouponRepository {
 
 	List<MemberBookCouponDto> findBookCouponsByMemberId(Long memberId, boolean validOnly);
 
+	List<GetMemberCouponResponse> findGeneralCouponsByMemberId(Long memberId, boolean validOnly);
+
 	List<GetMemberCouponResponse> findValidCouponsByStatus(Long memberId, String prefix, MemberCouponStatus status,
-		LocalDateTime expirationAt, LocalDateTime startedAt);
+														   LocalDateTime expirationAt, LocalDateTime startedAt);
 }

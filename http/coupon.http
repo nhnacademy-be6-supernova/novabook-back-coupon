@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "name": "일반 쿠폰",
   "discountAmount": 1000,
-  "discountType": "PERCENT",
+  "discountType": "AMOUNT",
   "maxDiscountAmount": 5000,
   "minPurchaseAmount": 10000,
   "startedAt": "2024-01-01T00:00:00",
@@ -73,10 +73,31 @@ GET http://localhost:8087/coupons/category/2
 Content-Type: application/json
 
 
-### 멤버 쿠폰 등록
+### 회원 쿠폰 저장
+# 회원 ID 1에 대한 쿠폰을 저장합니다.
 POST http://localhost:8087/coupons/members/1
 Content-Type: application/json
 
 {
-  "couponCode": "GUO0F0PLGDXHZU8K"
+  "couponCode": "GFEPEYFYO1MXFMWT"
+}
+
+### 유효한 회원 쿠폰 조회
+# 회원 ID 1에 대해 유효한 쿠폰만 조회합니다.
+GET http://localhost:8087/coupons/members/1?validOnly=false
+Content-Type: application/json
+
+### 상태에 따른 회원 쿠폰 조회
+# 회원 ID 1에 대해 특정 상태(예: UNUSED)의 쿠폰을 페이지네이션하여 조회합니다.
+GET http://localhost:8087/coupons/members/1/coupons?status=UNUSED
+Content-Type: application/json
+
+### 회원 쿠폰 상태 업데이트
+# 회원 ID 1의 특정 쿠폰 ID 1에 대한 상태를 업데이트합니다.
+PUT http://localhost:8087/coupons/members/1/coupons/1
+Content-Type: application/json
+
+{
+  "memberCouponId": 1,
+  "status": "USED"
 }

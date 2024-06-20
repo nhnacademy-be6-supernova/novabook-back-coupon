@@ -50,6 +50,7 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 		return query.fetch();
 	}
 
+	@Override
 	public List<MemberBookCouponDto> findBookCouponsByMemberId(Long memberId, boolean validOnly) {
 		QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
 		QCoupon coupon = QCoupon.coupon;
@@ -65,6 +66,38 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 		if (validOnly) {
 			query.where(coupon.startedAt.before(LocalDateTime.now()), coupon.expirationAt.after(LocalDateTime.now()),
 				memberCoupon.status.eq(MemberCouponStatus.UNUSED));
+		}
+
+		return query.fetch();
+	}
+
+
+	@Override
+	public List<GetMemberCouponResponse> findGeneralCouponsByMemberId(Long memberId, boolean validOnly) {
+		QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
+		QCoupon coupon = QCoupon.coupon;
+
+		JPQLQuery<GetMemberCouponResponse> query = select(Projections.constructor(GetMemberCouponResponse.class,
+						memberCoupon.id,
+						coupon.code,
+						coupon.name,
+						coupon.discountAmount,
+						coupon.discountType,
+						coupon.maxDiscountAmount,
+						coupon.minPurchaseAmount,
+						coupon.startedAt,
+						coupon.expirationAt))
+				.from(memberCoupon)
+				.join(memberCoupon.coupon, coupon)
+				.where(memberCoupon.memberId.eq(memberId)
+						.and(coupon.code.startsWith("G")));
+
+		if (validOnly) {
+			query.where(
+					coupon.startedAt.before(LocalDateTime.now()),
+					coupon.expirationAt.after(LocalDateTime.now()),
+					memberCoupon.status.eq(MemberCouponStatus.UNUSED)
+			);
 		}
 
 		return query.fetch();
