@@ -5,11 +5,11 @@ Content-Type: application/json
 {
   "name": "일반 쿠폰",
   "discountAmount": 1000,
-  "discountType": "AMOUNT",
+  "discountType": "PERCENT",
   "maxDiscountAmount": 5000,
   "minPurchaseAmount": 10000,
   "startedAt": "2024-01-01T00:00:00",
-  "expirationAt": "2025-12-31T23:59:59"
+  "expirationAt": "2026-12-31T23:59:59"
 }
 
 ### 책 쿠폰 생성
