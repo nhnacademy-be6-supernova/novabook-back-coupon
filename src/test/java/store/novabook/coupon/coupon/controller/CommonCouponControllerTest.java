@@ -38,18 +38,18 @@ import store.novabook.coupon.coupon.dto.response.GetCouponBookResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponCategoryResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 import store.novabook.coupon.coupon.repository.CouponRepository;
-import store.novabook.coupon.coupon.service.CouponService;
+import store.novabook.coupon.coupon.service.CommonCouponService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Sql("insert-coupons.sql")
-public class CouponControllerTest {
+public class CommonCouponControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@MockBean
-	private CouponService couponService;
+	private CommonCouponService commonCouponService;
 
 	@MockBean
 	private CouponRepository couponRepository;
@@ -65,7 +65,7 @@ public class CouponControllerTest {
 
 		CreateCouponResponse response = CreateCouponResponse.builder().code("G123456789012345").build();
 
-		given(couponService.saveGeneralCoupon(any(CreateCouponRequest.class))).willReturn(response);
+		given(commonCouponService.saveGeneralCoupon(any(CreateCouponRequest.class))).willReturn(response);
 
 		mockMvc.perform(
 				post("/coupons/general").contentType(MediaType.APPLICATION_JSON)
@@ -90,7 +90,7 @@ public class CouponControllerTest {
 			.andExpect(jsonPath("$.result.name").value("이름은 필수 입력 항목입니다."))
 			.andDo(print());
 
-		verify(couponService, never()).saveGeneralCoupon(any(CreateCouponRequest.class));
+		verify(commonCouponService, never()).saveGeneralCoupon(any(CreateCouponRequest.class));
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class CouponControllerTest {
 
 		CreateCouponResponse response = CreateCouponResponse.builder().code("B123456789012345").build();
 
-		given(couponService.saveBookCoupon(any(CreateCouponBookRequest.class))).willReturn(response);
+		given(commonCouponService.saveBookCoupon(any(CreateCouponBookRequest.class))).willReturn(response);
 
 		mockMvc.perform(post("/coupons/book").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
@@ -124,7 +124,7 @@ public class CouponControllerTest {
 			.andExpect(jsonPath("$.result.bookId").value("책 ID는 필수 입력 항목입니다."))
 			.andDo(print());
 
-		verify(couponService, never()).saveBookCoupon(any(CreateCouponBookRequest.class));
+		verify(commonCouponService, never()).saveBookCoupon(any(CreateCouponBookRequest.class));
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class CouponControllerTest {
 
 		CreateCouponResponse response = CreateCouponResponse.builder().code("C123456789012345").build();
 
-		given(couponService.saveCategoryCoupon(any(CreateCouponCategoryRequest.class))).willReturn(response);
+		given(commonCouponService.saveCategoryCoupon(any(CreateCouponCategoryRequest.class))).willReturn(response);
 
 		mockMvc.perform(post("/coupons/category").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
@@ -158,7 +158,7 @@ public class CouponControllerTest {
 			.andExpect(jsonPath("$.result.categoryId").value("카테고리 ID는 필수 입력 항목입니다."))
 			.andDo(print());
 
-		verify(couponService, never()).saveCategoryCoupon(any(CreateCouponCategoryRequest.class));
+		verify(commonCouponService, never()).saveCategoryCoupon(any(CreateCouponCategoryRequest.class));
 	}
 
 	@Test
@@ -181,7 +181,7 @@ public class CouponControllerTest {
 		mockMvc.perform(put("/coupons/expiration").contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(request))).andExpect(status().isOk()).andDo(print());
 
-		verify(couponService).updateCouponExpiration(any(UpdateCouponExpirationRequest.class));
+		verify(commonCouponService).updateCouponExpiration(any(UpdateCouponExpirationRequest.class));
 	}
 
 	@Test
@@ -197,7 +197,7 @@ public class CouponControllerTest {
 			.andExpect(jsonPath("$.result.code").value("쿠폰 코드가 필요합니다."))
 			.andDo(print());
 
-		verify(couponService, never()).updateCouponExpiration(any(UpdateCouponExpirationRequest.class));
+		verify(commonCouponService, never()).updateCouponExpiration(any(UpdateCouponExpirationRequest.class));
 	}
 
 	@Test
@@ -210,7 +210,7 @@ public class CouponControllerTest {
 		);
 		Page<GetCouponResponse> page = new PageImpl<>(couponList, pageable, couponList.size());
 
-		given(couponService.getCouponGeneralAll(any(Pageable.class))).willReturn(page);
+		given(commonCouponService.getCouponGeneralAll(any(Pageable.class))).willReturn(page);
 
 		mockMvc.perform(get("/coupons/general").param("page", "0").param("size", "5"))
 			.andExpect(status().isOk())
@@ -229,7 +229,7 @@ public class CouponControllerTest {
 		);
 		Page<GetCouponBookResponse> page = new PageImpl<>(couponList, pageable, couponList.size());
 
-		given(couponService.getCouponBookAll(any(Pageable.class))).willReturn(page);
+		given(commonCouponService.getCouponBookAll(any(Pageable.class))).willReturn(page);
 
 		mockMvc.perform(get("/coupons/book").param("page", "0").param("size", "5"))
 			.andExpect(status().isOk())
@@ -249,7 +249,7 @@ public class CouponControllerTest {
 		);
 		Page<GetCouponCategoryResponse> page = new PageImpl<>(couponList, pageable, couponList.size());
 
-		given(couponService.getCouponCategryAll(any(Pageable.class))).willReturn(page);
+		given(commonCouponService.getCouponCategryAll(any(Pageable.class))).willReturn(page);
 
 		mockMvc.perform(get("/coupons/category").param("page", "0").param("size", "5"))
 			.andExpect(status().isOk())

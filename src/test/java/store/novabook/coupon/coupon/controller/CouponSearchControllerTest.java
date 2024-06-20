@@ -23,7 +23,7 @@ import store.novabook.coupon.coupon.domain.DiscountType;
 import store.novabook.coupon.coupon.dto.response.GetCouponBookAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponCategoryAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
-import store.novabook.coupon.coupon.service.CouponService;
+import store.novabook.coupon.coupon.service.CommonCouponService;
 
 @SpringBootTest(classes = CouponApplication.class)
 @AutoConfigureMockMvc
@@ -33,7 +33,7 @@ public class CouponSearchControllerTest {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private CouponService couponService;
+	private CommonCouponService commonCouponService;
 
 	private GetCouponBookAllResponse getCouponBookAllResponse;
 	private GetCouponCategoryAllResponse getCouponCategoryAllResponse;
@@ -74,7 +74,7 @@ public class CouponSearchControllerTest {
 	@Test
 	@DisplayName("책 쿠폰 조회")
 	void getCouponBook_ReturnsCoupons() throws Exception {
-		given(couponService.getCouponBook(anyLong())).willReturn(getCouponBookAllResponse);
+		given(commonCouponService.getCouponBook(anyLong())).willReturn(getCouponBookAllResponse);
 
 		mockMvc.perform(get("/coupons/book/{bookId}", 1L)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -92,7 +92,7 @@ public class CouponSearchControllerTest {
 	@Test
 	@DisplayName("카테고리 쿠폰 조회")
 	void getCouponCategory_ReturnsCoupons() throws Exception {
-		given(couponService.getCouponCategory(anyLong())).willReturn(getCouponCategoryAllResponse);
+		given(commonCouponService.getCouponCategory(anyLong())).willReturn(getCouponCategoryAllResponse);
 
 		mockMvc.perform(get("/coupons/category/{categoryId}", 1L)
 				.contentType(MediaType.APPLICATION_JSON))

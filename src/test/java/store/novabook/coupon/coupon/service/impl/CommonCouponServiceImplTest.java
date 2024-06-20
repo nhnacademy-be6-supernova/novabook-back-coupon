@@ -28,10 +28,10 @@ import store.novabook.coupon.coupon.repository.CouponRepository;
 
 @SpringBootTest
 @Sql(scripts = {"/store/novabook/coupon/coupon/controller/test-coupon.sql"})
-public class CouponServiceImplTest {
+public class CommonCouponServiceImplTest {
 
 	@Autowired
-	private CouponServiceImpl couponService;
+	private CommonCouponServiceImpl couponService;
 
 	@Autowired
 	private CouponRepository couponRepository;
