@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 http/coupon.http
+http/coupon_new.http
 
 ### STS ###
 .apt_generated

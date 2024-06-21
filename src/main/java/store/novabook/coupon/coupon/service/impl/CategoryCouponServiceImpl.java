@@ -53,7 +53,8 @@ public class CategoryCouponServiceImpl implements CategoryCouponService {
 	@Transactional(readOnly = true)
 	public GetCouponCategoryAllResponse getCouponCategory(Long categoryId) {
 		List<CategoryCoupon> categoryCouponList = Optional.ofNullable(
-				categoryCouponRepository.findAllByCategoryIdAndCouponExpirationAtAfter(categoryId, LocalDateTime.now()))
+				categoryCouponRepository.findAllByCategoryIdAndCouponExpirationAtAfterAndCouponStartedAtBefore(categoryId,
+					LocalDateTime.now(), LocalDateTime.now()))
 			.filter(list -> !list.isEmpty())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_COUPON_NOT_FOUND));
 		return GetCouponCategoryAllResponse.fromEntity(categoryCouponList);

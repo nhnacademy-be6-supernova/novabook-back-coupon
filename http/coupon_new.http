@@ -1,3 +1,5 @@
+
+# BOOK CONTROLLER
 ### Create a new Book Coupon
 POST http://localhost:8087/coupons/book
 Content-Type: application/json
@@ -19,3 +21,27 @@ GET http://localhost:8087/coupons/book?page=0&size=5
 
 ### Get all valid Coupons for a specific Book
 GET http://localhost:8087/coupons/book/1
+
+
+# CATEGORY CONTROLLER
+### Create a new Category Coupon
+POST http://localhost:8087/coupons/category
+Content-Type: application/json
+
+{
+  "categoryId": 1,
+  "name": "Spring Sale Coupon",
+  "discountAmount": 1500,
+  "discountType": "AMOUNT",
+  "maxDiscountAmount": 3000,
+  "minPurchaseAmount": 5000,
+  "startedAt": "2024-06-01T00:00:00",
+  "expirationAt": "2024-06-30T23:59:59",
+  "usePeriod": 48
+}
+
+### Get all Category Coupons with pagination
+GET http://localhost:8087/coupons/category?page=0&size=5
+
+### Get all valid Coupons for a specific Category
+GET http://localhost:8087/coupons/category/1
