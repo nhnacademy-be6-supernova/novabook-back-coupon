@@ -99,7 +99,8 @@ class MemberCouponServiceImplTest {
 	@Test
 	@DisplayName("회원 쿠폰 저장 테스트 - 성공")
 	void saveMemberCouponTestSuccess() {
-		CreateMemberCouponRequest request = new CreateMemberCouponRequest("VALIDCODE");
+		CreateMemberCouponRequest request = new CreateMemberCouponRequest("VALIDCODE",
+			LocalDateTime.of(2026, 12, 24, 4, 0));
 
 		given(couponRepository.findById("VALIDCODE")).willReturn(Optional.of(validCoupon));
 		given(memberCouponRepository.save(any(MemberCoupon.class))).willReturn(memberCoupon);
@@ -112,7 +113,8 @@ class MemberCouponServiceImplTest {
 	@Test
 	@DisplayName("회원 쿠폰 저장 테스트 - 실패 (쿠폰 없음)")
 	void saveMemberCouponTestFailureCouponNotFound() {
-		CreateMemberCouponRequest request = new CreateMemberCouponRequest("INVALIDCODE");
+		CreateMemberCouponRequest request = new CreateMemberCouponRequest("INVALIDCODE",
+			LocalDateTime.of(2026, 12, 24, 4, 0));
 
 		given(couponRepository.findById("INVALIDCODE")).willReturn(Optional.empty());
 
@@ -135,7 +137,8 @@ class MemberCouponServiceImplTest {
 			.expirationAt(LocalDateTime.now().minusDays(1))
 			.build();
 
-		CreateMemberCouponRequest request = new CreateMemberCouponRequest("EXPIREDCODE");
+		CreateMemberCouponRequest request = new CreateMemberCouponRequest("EXPIREDCODE",
+			LocalDateTime.of(2026, 12, 24, 4, 0));
 
 		given(couponRepository.findById("EXPIREDCODE")).willReturn(Optional.of(expiredCoupon));
 
@@ -159,18 +162,16 @@ class MemberCouponServiceImplTest {
 			.expirationAt(LocalDateTime.now().plusDays(1))
 			.build();
 
-		GetMemberCouponResponse getMemberCouponResponse = new GetMemberCouponResponse(
-			1L, "VALIDCODE", "Coupon Name", 1000L, DiscountType.PERCENT, 5000L, 10000L,
-			LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1)
-		);
+		GetMemberCouponResponse getMemberCouponResponse = new GetMemberCouponResponse(1L, "VALIDCODE", "Coupon Name",
+			1000L, DiscountType.PERCENT, 5000L, 10000L, LocalDateTime.now().minusDays(1),
+			LocalDateTime.now().plusDays(1), 210);
 
-		given(memberCouponRepository.findGeneralCouponsByMemberId(any(Long.class), any(Boolean.class)))
-			.willReturn(List.of(getMemberCouponResponse));
-		given(memberCouponRepository.findBookCouponsByMemberId(any(Long.class), any(Boolean.class)))
-			.willReturn(List.of(new MemberBookCouponDto(1L, BookCoupon.builder().coupon(coupon).bookId(1L).build())));
-		given(memberCouponRepository.findCategoryCouponsByMemberId(any(Long.class), any(Boolean.class)))
-			.willReturn(List.of(
-				new MemberCategoryCouponDto(1L, CategoryCoupon.builder().coupon(coupon).categoryId(1L).build())));
+		given(memberCouponRepository.findGeneralCouponsByMemberId(any(Long.class), any(Boolean.class))).willReturn(
+			List.of(getMemberCouponResponse));
+		given(memberCouponRepository.findBookCouponsByMemberId(any(Long.class), any(Boolean.class))).willReturn(
+			List.of(new MemberBookCouponDto(1L, BookCoupon.builder().coupon(coupon).bookId(1L).build())));
+		given(memberCouponRepository.findCategoryCouponsByMemberId(any(Long.class), any(Boolean.class))).willReturn(
+			List.of(new MemberCategoryCouponDto(1L, CategoryCoupon.builder().coupon(coupon).categoryId(1L).build())));
 
 		// when
 		GetMemberCouponByTypeResponse response = memberCouponService.getMemberCouponAllByValid(1L, true);
