@@ -8,7 +8,7 @@ import store.novabook.coupon.coupon.service.CommonCouponService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/coupons")
+@RequestMapping("/api/v1/coupon/coupons")
 public class CommonCouponController {
 
 	private final CommonCouponService commonCouponService;
