@@ -17,13 +17,13 @@ import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.coupon.domain.Coupon;
 import store.novabook.coupon.coupon.domain.MemberCoupon;
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
-import store.novabook.coupon.coupon.dto.MemberBookCouponDto;
-import store.novabook.coupon.coupon.dto.MemberCategoryCouponDto;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponAllResponse;
+import store.novabook.coupon.coupon.dto.response.GetMemberCouponBookResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
+import store.novabook.coupon.coupon.dto.response.GetMemberCouponCategoryResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
 import store.novabook.coupon.coupon.repository.BookCouponRepository;
 import store.novabook.coupon.coupon.repository.CategoryCouponRepository;
@@ -46,7 +46,9 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 		Coupon coupon = couponRepository.findById(request.couponCode())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 
-		if (coupon.getExpirationAt().isBefore(LocalDateTime.now())) {
+		// 다운로드 불가능 기간
+		if (coupon.getExpirationAt().isBefore(LocalDateTime.now()) || coupon.getStartedAt()
+			.isAfter(LocalDateTime.now())) {
 			throw new BadRequestException(ErrorCode.EXPIRED_COUPON_CODE);
 		}
 
@@ -61,9 +63,9 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	public GetMemberCouponByTypeResponse getMemberCouponAllByValid(Long memberId, Boolean validOnly) {
 		List<GetMemberCouponResponse> generalCouponList = memberCouponRepository.findGeneralCouponsByMemberId(memberId,
 			validOnly);
-		List<MemberBookCouponDto> bookCouponList = memberCouponRepository.findBookCouponsByMemberId(memberId,
+		List<GetMemberCouponBookResponse> bookCouponList = memberCouponRepository.findBookCouponsByMemberId(memberId,
 			validOnly);
-		List<MemberCategoryCouponDto> categoryCouponList = memberCouponRepository.findCategoryCouponsByMemberId(
+		List<GetMemberCouponCategoryResponse> categoryCouponList = memberCouponRepository.findCategoryCouponsByMemberId(
 			memberId, validOnly);
 
 		return GetMemberCouponByTypeResponse.builder()
@@ -97,9 +99,8 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 			throw new ForbiddenException(ErrorCode.NOT_ENOUGH_PERMISSION);
 		}
 
-		if (memberCoupon.getStatus() != MemberCouponStatus.UNUSED || memberCoupon.getCoupon()
-			.getExpirationAt()
-			.isBefore(LocalDateTime.now()) || memberCoupon.getCoupon().getStartedAt().isAfter(LocalDateTime.now())) {
+		if (memberCoupon.getStatus() != MemberCouponStatus.UNUSED || memberCoupon.getExpirationAt()
+			.isBefore(LocalDateTime.now())) {
 			throw new BadRequestException(ErrorCode.INVALID_COUPON);
 		}
 	}

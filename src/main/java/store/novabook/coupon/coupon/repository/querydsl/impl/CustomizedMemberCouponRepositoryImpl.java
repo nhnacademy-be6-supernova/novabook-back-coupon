@@ -17,8 +17,8 @@ import store.novabook.coupon.coupon.domain.QBookCoupon;
 import store.novabook.coupon.coupon.domain.QCategoryCoupon;
 import store.novabook.coupon.coupon.domain.QCoupon;
 import store.novabook.coupon.coupon.domain.QMemberCoupon;
-import store.novabook.coupon.coupon.dto.MemberBookCouponDto;
-import store.novabook.coupon.coupon.dto.MemberCategoryCouponDto;
+import store.novabook.coupon.coupon.dto.response.GetMemberCouponBookResponse;
+import store.novabook.coupon.coupon.dto.response.GetMemberCouponCategoryResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
 import store.novabook.coupon.coupon.repository.querydsl.CustomizedMemberCouponRepository;
 
@@ -31,7 +31,7 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 	}
 
 	@Override
-	public List<MemberCategoryCouponDto> findCategoryCouponsByMemberId(Long memberId, boolean validOnly) {
+	public List<GetMemberCouponCategoryResponse> findCategoryCouponsByMemberId(Long memberId, boolean validOnly) {
 		QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
 		QCoupon coupon = QCoupon.coupon;
 		QCategoryCoupon categoryCoupon = QCategoryCoupon.categoryCoupon;
@@ -40,23 +40,24 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 		builder.and(memberCoupon.memberId.eq(memberId));
 
 		if (validOnly) {
-			builder.and(coupon.startedAt.before(LocalDateTime.now()))
-				.and(coupon.expirationAt.after(LocalDateTime.now()))
+			builder.and(memberCoupon.expirationAt.after(LocalDateTime.now()))
 				.and(memberCoupon.status.eq(MemberCouponStatus.UNUSED));
 		}
 
-		return from(categoryCoupon).select(
-				Projections.constructor(MemberCategoryCouponDto.class, memberCoupon.id, categoryCoupon))
+		return from(memberCoupon).select(
+				Projections.constructor(GetMemberCouponCategoryResponse.class, memberCoupon.id, categoryCoupon.categoryId,
+					coupon.code, coupon.name, coupon.discountAmount, coupon.discountType, coupon.maxDiscountAmount,
+					coupon.minPurchaseAmount, memberCoupon.createdAt, memberCoupon.expirationAt))
+			.innerJoin(categoryCoupon)
+			.on(memberCoupon.coupon.code.eq(categoryCoupon.couponCode))
 			.innerJoin(coupon)
-			.on(categoryCoupon.coupon.code.eq(coupon.code))
-			.join(memberCoupon)
-			.on(memberCoupon.coupon.code.eq(coupon.code))
+			.on(categoryCoupon.couponCode.eq(coupon.code))
 			.where(builder)
 			.fetch();
 	}
 
 	@Override
-	public List<MemberBookCouponDto> findBookCouponsByMemberId(Long memberId, boolean validOnly) {
+	public List<GetMemberCouponBookResponse> findBookCouponsByMemberId(Long memberId, boolean validOnly) {
 		QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
 		QCoupon coupon = QCoupon.coupon;
 		QBookCoupon bookCoupon = QBookCoupon.bookCoupon;
@@ -65,16 +66,18 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 		builder.and(memberCoupon.memberId.eq(memberId));
 
 		if (validOnly) {
-			builder.and(coupon.startedAt.before(LocalDateTime.now()))
-				.and(coupon.expirationAt.after(LocalDateTime.now()))
+			builder.and(memberCoupon.expirationAt.after(LocalDateTime.now()))
 				.and(memberCoupon.status.eq(MemberCouponStatus.UNUSED));
 		}
 
-		return from(bookCoupon).select(Projections.constructor(MemberBookCouponDto.class, memberCoupon.id, bookCoupon))
+		return from(memberCoupon).select(
+				Projections.constructor(GetMemberCouponBookResponse.class, memberCoupon.id, bookCoupon.bookId, coupon.code,
+					coupon.name, coupon.discountAmount, coupon.discountType, coupon.maxDiscountAmount,
+					coupon.minPurchaseAmount, memberCoupon.createdAt, memberCoupon.expirationAt))
+			.innerJoin(bookCoupon)
+			.on(memberCoupon.coupon.code.eq(bookCoupon.couponCode))
 			.innerJoin(coupon)
-			.on(bookCoupon.coupon.code.eq(coupon.code))
-			.innerJoin(memberCoupon)
-			.on(bookCoupon.coupon.code.eq(memberCoupon.coupon.code))
+			.on(bookCoupon.couponCode.eq(coupon.code))
 			.where(builder)
 			.fetch();
 	}
@@ -88,8 +91,7 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 		builder.and(memberCoupon.memberId.eq(memberId)).and(coupon.code.startsWith("G"));
 
 		if (validOnly) {
-			builder.and(coupon.startedAt.before(LocalDateTime.now()))
-				.and(coupon.expirationAt.after(LocalDateTime.now()))
+			builder.and(memberCoupon.expirationAt.after(LocalDateTime.now()))
 				.and(memberCoupon.status.eq(MemberCouponStatus.UNUSED));
 		}
 

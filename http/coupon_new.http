@@ -65,3 +65,38 @@ Content-Type: application/json
 
 ### Get all General Coupons with pagination
 GET http://localhost:8087/coupons/general?page=0&size=5
+
+
+## MEMBERCOUPON 컨트롤러
+### 회원에게 쿠폰 등록하기
+POST http://localhost:8087/members/1/coupons
+Content-Type: application/json
+
+{
+  "couponCode": "BKD4242UWXSFWG79",
+  "expirationAt": "2024-12-31T23:59:59"
+}
+
+###
+
+### 주문 페이지 - 적용 가능 한지?
+GET http://localhost:8087/members/1?validOnly=true
+Content-Type: application/json
+
+###
+
+### 마이페이지 - 쿠폰함/쿠폰내역에서 사용. "미사용"/"사용" 에 따라 가져옴
+GET http://localhost:8087/members/1/coupons?status=USED&page=0&size=5
+Content-Type: application/json
+
+###
+
+### 쿠폰 사용 요청
+PUT http://localhost:8087/members/1/coupons/1
+Content-Type: application/json
+
+{
+  "memberCouponId": 1,
+  "status": "USED"
+}
+
