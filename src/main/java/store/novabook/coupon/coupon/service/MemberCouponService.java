@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
+import store.novabook.coupon.coupon.dto.request.CreateMemberCouponAllRequest;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
@@ -19,4 +20,6 @@ public interface MemberCouponService {
 		Pageable pageable);
 
 	void updateMemberCouponStatus(Long memberId, String memberCouponId, PutMemberCouponRequest request);
+
+	void saveMemberCouponAll(CreateMemberCouponAllRequest request);
 }

@@ -1,6 +1,7 @@
 package store.novabook.coupon.coupon.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,6 +18,7 @@ import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.coupon.domain.Coupon;
 import store.novabook.coupon.coupon.domain.MemberCoupon;
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
+import store.novabook.coupon.coupon.dto.request.CreateMemberCouponAllRequest;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
@@ -91,6 +93,25 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 		validateMemberCoupon(memberId, memberCoupon);
 
 		memberCoupon.updateStatus(request.status());
+	}
+
+	@Override
+	public void saveMemberCouponAll(CreateMemberCouponAllRequest request) {
+		Coupon coupon = couponRepository.findById(request.couponCode())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
+
+		List<MemberCoupon> memberCouponList = new ArrayList<>();
+		for (Long id : request.memberIdList()) {
+			MemberCoupon memberCoupon = MemberCoupon.builder()
+				.memberId(id)
+				.coupon(coupon)
+				.expirationAt(request.expirationAt())
+				.status(MemberCouponStatus.UNUSED)
+				.build();
+			memberCouponList.add(memberCoupon);
+		}
+
+		memberCouponRepository.saveAll(memberCouponList);
 	}
 
 	private void validateMemberCoupon(Long memberId, MemberCoupon memberCoupon) {

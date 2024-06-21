@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
+import store.novabook.coupon.coupon.dto.request.CreateMemberCouponAllRequest;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
@@ -37,6 +38,12 @@ public class MemberCouponController {
 		@Valid @RequestBody CreateMemberCouponRequest request) {
 		CreateMemberCouponResponse memberCouponResponse = memberCouponService.saveMemberCoupon(memberId, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(memberCouponResponse);
+	}
+
+	@PostMapping("/members/coupons")
+	public ResponseEntity<Void> saveMemberCoupon(@Valid @RequestBody CreateMemberCouponAllRequest request) {
+		memberCouponService.saveMemberCouponAll(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(null);
 	}
 
 	// 주문 페이지 - 적용가능 한지?  만료기간이 현재보다 빠른지에 따라 (bookId, CategoryId)가 포함해서 주면 프론트 서버에서 관리됨
