@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 import store.novabook.coupon.coupon.domain.Coupon;
 import store.novabook.coupon.coupon.domain.DiscountType;
+import store.novabook.coupon.coupon.domain.MemberCoupon;
 
 @Builder
 public record GetCouponResponse(String code, String name, long discountAmount, DiscountType discountType,
@@ -20,6 +21,19 @@ public record GetCouponResponse(String code, String name, long discountAmount, D
 			.minPurchaseAmount(coupon.getMinPurchaseAmount())
 			.startedAt(coupon.getStartedAt())
 			.expirationAt(coupon.getExpirationAt())
+			.build();
+	}
+
+	public static GetCouponResponse fromEntity(MemberCoupon memberCoupon) {
+		return GetCouponResponse.builder()
+			.code(memberCoupon.getCoupon().getCode())
+			.name(memberCoupon.getCoupon().getName())
+			.discountAmount(memberCoupon.getCoupon().getDiscountAmount())
+			.discountType(memberCoupon.getCoupon().getDiscountType())
+			.maxDiscountAmount(memberCoupon.getCoupon().getMaxDiscountAmount())
+			.minPurchaseAmount(memberCoupon.getCoupon().getMinPurchaseAmount())
+			.startedAt(memberCoupon.getCoupon().getStartedAt())
+			.expirationAt(memberCoupon.getCoupon().getExpirationAt())
 			.build();
 	}
 }

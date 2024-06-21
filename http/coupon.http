@@ -1,5 +1,5 @@
 ### 일반 쿠폰 생성
-POST http://localhost:8080/coupons
+POST http://localhost:8087/coupons/general
 Content-Type: application/json
 
 {
@@ -9,11 +9,11 @@ Content-Type: application/json
   "maxDiscountAmount": 5000,
   "minPurchaseAmount": 10000,
   "startedAt": "2024-01-01T00:00:00",
-  "expirationAt": "2024-12-31T23:59:59"
+  "expirationAt": "2026-12-31T23:59:59"
 }
 
 ### 책 쿠폰 생성
-POST http://localhost:8080/coupons/book
+POST http://localhost:8087/coupons/book
 Content-Type: application/json
 
 {
@@ -28,11 +28,11 @@ Content-Type: application/json
 }
 
 ### 카테고리 쿠폰 생성
-POST http://localhost:8080/coupons/category
+POST http://localhost:8087/coupons/category
 Content-Type: application/json
 
 {
-  "categoryId": 2,
+  "categoryId": 3,
   "name": "카테고리 쿠폰",
   "discountAmount": 2000,
   "discountType": "PERCENT",
@@ -43,9 +43,61 @@ Content-Type: application/json
 }
 
 ### 쿠폰 만료 시간 업데이트
-PUT http://localhost:8080/coupons/expiration
+PUT http://localhost:8087/coupons/expiration
 Content-Type: application/json
 
 {
-  "code": "GDLF8FE4Y94OVZTI"
+  "code": "GVBHYWUN1N2CVPUI"
+}
+
+### 모든 일반 쿠폰 조회
+GET http://localhost:8087/coupons/general?page=0&size=5
+Content-Type: application/json
+
+
+### 책 쿠폰 조회
+GET http://localhost:8087/coupons/book?page=0&size=5
+Content-Type: application/json
+
+
+### 모든 카테고리 쿠폰 조회
+GET http://localhost:8087/coupons/category?page=1&size=5
+Content-Type: application/json
+
+### 특정 책 쿠폰 조회
+GET http://localhost:8087/coupons/book/1
+Content-Type: application/json
+
+### 특정 카테고리 쿠폰 단건 조회
+GET http://localhost:8087/coupons/category/2
+Content-Type: application/json
+
+
+### 회원 쿠폰 저장
+# 회원 ID 1에 대한 쿠폰을 저장합니다.
+POST http://localhost:8087/coupons/members/3
+Content-Type: application/json
+
+{
+  "couponCode": "GU0IBUV4RRWVL5J8"
+}
+
+### 유효한 회원 쿠폰 조회
+# 회원 ID 1에 대해 유효한 쿠폰만 조회합니다.
+GET http://localhost:8087/coupons/members/1?validOnly=true
+Content-Type: application/json
+
+### 상태에 따른 회원 쿠폰 조회
+# 회원 ID 1에 대해 특정 상태(예: UNUSED)의 쿠폰을 페이지네이션하여 조회합니다.
+GET http://localhost:8087/coupons/members/1/coupons?status=USED
+Content-Type: application/json
+
+### 회원 쿠폰 상태 업데이트
+# 회원 ID 1의 특정 쿠폰 ID 1에 대한 상태를 업데이트합니다.
+PUT http://localhost:8087/coupons/members/1/coupons/1
+Content-Type: application/json
+
+{
+  "memberCouponId": 1,
+  "status": "USED"
 }
