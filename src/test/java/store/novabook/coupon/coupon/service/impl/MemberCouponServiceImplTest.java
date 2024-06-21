@@ -22,10 +22,14 @@ import org.springframework.data.domain.PageRequest;
 import store.novabook.coupon.common.exception.BadRequestException;
 import store.novabook.coupon.common.exception.ForbiddenException;
 import store.novabook.coupon.common.exception.NotFoundException;
+import store.novabook.coupon.coupon.domain.BookCoupon;
+import store.novabook.coupon.coupon.domain.CategoryCoupon;
 import store.novabook.coupon.coupon.domain.Coupon;
 import store.novabook.coupon.coupon.domain.DiscountType;
 import store.novabook.coupon.coupon.domain.MemberCoupon;
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
+import store.novabook.coupon.coupon.dto.MemberBookCouponDto;
+import store.novabook.coupon.coupon.dto.MemberCategoryCouponDto;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
@@ -143,18 +147,39 @@ class MemberCouponServiceImplTest {
 	@Test
 	@DisplayName("유효한 회원 쿠폰 조회 테스트 - 성공")
 	void getMemberCouponAllByValidTestSuccess() {
-		given(memberCouponRepository.findValidCouponsByStatus(any(Long.class), any(String.class),
-			any(MemberCouponStatus.class), any(LocalDateTime.class), any(LocalDateTime.class)))
+		// given
+		Coupon coupon = Coupon.builder()
+			.code("VALIDCODE")
+			.name("Coupon Name")
+			.discountAmount(1000L)
+			.discountType(DiscountType.PERCENT)
+			.maxDiscountAmount(5000L)
+			.minPurchaseAmount(10000L)
+			.startedAt(LocalDateTime.now().minusDays(1))
+			.expirationAt(LocalDateTime.now().plusDays(1))
+			.build();
+
+		GetMemberCouponResponse getMemberCouponResponse = new GetMemberCouponResponse(
+			1L, "VALIDCODE", "Coupon Name", 1000L, DiscountType.PERCENT, 5000L, 10000L,
+			LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1)
+		);
+
+		given(memberCouponRepository.findGeneralCouponsByMemberId(any(Long.class), any(Boolean.class)))
 			.willReturn(List.of(getMemberCouponResponse));
 		given(memberCouponRepository.findBookCouponsByMemberId(any(Long.class), any(Boolean.class)))
-			.willReturn(List.of());
+			.willReturn(List.of(new MemberBookCouponDto(1L, BookCoupon.builder().coupon(coupon).bookId(1L).build())));
 		given(memberCouponRepository.findCategoryCouponsByMemberId(any(Long.class), any(Boolean.class)))
-			.willReturn(List.of());
+			.willReturn(List.of(
+				new MemberCategoryCouponDto(1L, CategoryCoupon.builder().coupon(coupon).categoryId(1L).build())));
 
+		// when
 		GetMemberCouponByTypeResponse response = memberCouponService.getMemberCouponAllByValid(1L, true);
 
+		// then
 		assertThat(response.generalCouponList()).hasSize(1);
 		assertThat(response.generalCouponList().get(0).code()).isEqualTo("VALIDCODE");
+		assertThat(response.bookCouponList()).hasSize(1);
+		assertThat(response.categoryCouponList()).hasSize(1);
 	}
 
 	@Test
