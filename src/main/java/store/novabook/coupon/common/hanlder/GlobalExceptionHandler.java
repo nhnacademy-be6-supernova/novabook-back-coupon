@@ -1,4 +1,4 @@
-package store.novabook.coupon.common.handler;
+package store.novabook.coupon.common.hanlder;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
-import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.ForbiddenException;
 import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.common.exception.NovaException;
@@ -39,7 +38,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 */
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
-																  HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidErrorResponse.from(exception));
 	}
 
@@ -87,9 +86,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @param request   HTTP 요청
 	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
 	 */
-//	@ExceptionHandler(Exception.class)
-//	public ResponseEntity<ErrorResponse> handle(Exception exception, HttpServletRequest request) {
-//		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//				.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
-//	}
+	//	@ExceptionHandler(Exception.class)
+	//	public ResponseEntity<ErrorResponse> handle(Exception exception, HttpServletRequest request) {
+	//		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	//				.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
+	//	}
 }
