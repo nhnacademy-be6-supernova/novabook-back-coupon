@@ -1,0 +1,21 @@
+### Create a new Book Coupon
+POST http://localhost:8087/coupons/book
+Content-Type: application/json
+
+{
+  "bookId": 1,
+  "name": "Summer Sale Coupon",
+  "discountAmount": 1000,
+  "discountType": "AMOUNT",
+  "maxDiscountAmount": 5000,
+  "minPurchaseAmount": 10000,
+  "startedAt": "2024-06-01T00:00:00",
+  "expirationAt": "2024-06-30T23:59:59",
+  "usePeriod": 48
+}
+
+### Get all Book Coupons with pagination
+GET http://localhost:8087/coupons/book?page=0&size=5
+
+### Get all valid Coupons for a specific Book
+GET http://localhost:8087/coupons/book/1

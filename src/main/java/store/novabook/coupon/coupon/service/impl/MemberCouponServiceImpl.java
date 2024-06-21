@@ -50,7 +50,8 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 			throw new BadRequestException(ErrorCode.EXPIRED_COUPON_CODE);
 		}
 
-		MemberCoupon memberCoupon = MemberCoupon.of(memberId, coupon, MemberCouponStatus.UNUSED);
+		MemberCoupon memberCoupon = MemberCoupon.of(memberId, coupon, MemberCouponStatus.UNUSED,
+			request.expirationAt());
 		MemberCoupon saved = memberCouponRepository.save(memberCoupon);
 		return CreateMemberCouponResponse.fromEntity(saved);
 	}
