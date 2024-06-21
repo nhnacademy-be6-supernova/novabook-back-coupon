@@ -1,5 +1,6 @@
 package store.novabook.coupon.coupon.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,8 @@ import store.novabook.coupon.coupon.domain.MemberCouponStatus;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
-import store.novabook.coupon.coupon.dto.response.GetMemberCouponAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
+import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
 import store.novabook.coupon.coupon.service.MemberCouponService;
 
 @RestController
@@ -47,19 +48,18 @@ public class MemberCouponController {
 
 	// 마이페이지 - 쿠폰함/쿠폰내역에서 사용. "미사용"/"사용" 에 따라 가져옴
 	@GetMapping("/members/{memberId}/coupons")
-	public ResponseEntity<GetMemberCouponAllResponse> getMemberCouponByStatus(@PathVariable Long memberId,
+	public ResponseEntity<Page<GetMemberCouponResponse>> getMemberCouponByStatus(@PathVariable Long memberId,
 		@RequestParam MemberCouponStatus status, @PageableDefault(size = 5) Pageable pageable) {
-		GetMemberCouponAllResponse memberCouponResponse = memberCouponService.getMemberCouponAllByStatus(memberId,
+		Page<GetMemberCouponResponse> memberCouponResponse = memberCouponService.getMemberCouponAllByStatus(memberId,
 			status, pageable);
-
 		return ResponseEntity.ok(memberCouponResponse);
 	}
 
 	// 쿠폰 사용 요청
 	@PutMapping("/members/{memberId}/coupons/{memberCouponId}")
-	public ResponseEntity<Void> updateMemberCoupon(@PathVariable Long memberId,
+	public ResponseEntity<Void> updateMemberCoupon(@PathVariable Long memberId, @PathVariable String memberCouponId,
 		@Valid @RequestBody PutMemberCouponRequest request) {
-		memberCouponService.updateMemberCouponStatus(memberId, request);
+		memberCouponService.updateMemberCouponStatus(memberId, memberCouponId, request);
 		return ResponseEntity.ok().build();
 	}
 

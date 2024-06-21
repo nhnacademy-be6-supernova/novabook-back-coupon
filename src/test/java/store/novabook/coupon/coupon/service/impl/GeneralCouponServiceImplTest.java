@@ -46,7 +46,7 @@ class GeneralCouponServiceImplTest {
 	@Test
 	@DisplayName("일반 쿠폰 저장 성공")
 	void saveGeneralCoupon_Success() {
-		CreateCouponRequest request = new CreateCouponRequest("쿠폰 이름", 1000, DiscountType.PERCENT, 5000, 10000,
+		CreateCouponRequest request = new CreateCouponRequest("쿠폰 이름", 1000L, DiscountType.PERCENT, 5000L, 10000L,
 			LocalDateTime.now(), LocalDateTime.now().plusDays(10), 24 * 7);
 		String generatedCode = "G123456789012345";
 

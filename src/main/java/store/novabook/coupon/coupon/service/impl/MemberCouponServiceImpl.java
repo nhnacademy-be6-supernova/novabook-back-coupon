@@ -20,7 +20,6 @@ import store.novabook.coupon.coupon.domain.MemberCouponStatus;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
-import store.novabook.coupon.coupon.dto.response.GetMemberCouponAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponBookResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponCategoryResponse;
@@ -77,16 +76,16 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public GetMemberCouponAllResponse getMemberCouponAllByStatus(Long memberId, MemberCouponStatus status,
+	public Page<GetMemberCouponResponse> getMemberCouponAllByStatus(Long memberId, MemberCouponStatus status,
 		Pageable pageable) {
 		Page<MemberCoupon> memberCouponPage = memberCouponRepository.findAllByStatus(status, pageable);
-		return GetMemberCouponAllResponse.fromEntity(memberId, memberCouponPage);
+		return memberCouponPage.map(GetMemberCouponResponse::fromEntity);
 	}
 
 	@Override
 	@Transactional
-	public void updateMemberCouponStatus(Long memberId, PutMemberCouponRequest request) {
-		MemberCoupon memberCoupon = memberCouponRepository.findById(request.memberCouponId())
+	public void updateMemberCouponStatus(Long memberId, String memberCouponId, PutMemberCouponRequest request) {
+		MemberCoupon memberCoupon = memberCouponRepository.findById(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 
 		validateMemberCoupon(memberId, memberCoupon);
