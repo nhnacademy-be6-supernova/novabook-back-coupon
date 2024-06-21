@@ -39,6 +39,7 @@ public class BookCouponController {
 		return ResponseEntity.ok(coupons);
 	}
 
+	// 해당 책에 대한 쿠폰들 중 유효한 쿠폰만 가져온다.
 	@GetMapping("/{bookId}")
 	public ResponseEntity<GetCouponBookAllResponse> getCouponBook(@PathVariable Long bookId) {
 		GetCouponBookAllResponse couponBookAllResponse = bookCouponService.getCouponBook(bookId);

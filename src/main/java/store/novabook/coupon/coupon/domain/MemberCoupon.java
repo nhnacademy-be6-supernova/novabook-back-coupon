@@ -46,6 +46,9 @@ public class MemberCoupon {
 	private MemberCouponStatus status;
 
 	@NotNull
+	private LocalDateTime expirationAt;
+
+	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
 
@@ -53,17 +56,19 @@ public class MemberCoupon {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public MemberCoupon(Coupon coupon, Long memberId, MemberCouponStatus status) {
+	public MemberCoupon(Coupon coupon, Long memberId, MemberCouponStatus status, LocalDateTime expirationAt) {
 		this.coupon = coupon;
 		this.memberId = memberId;
 		this.status = status;
+		this.expirationAt = expirationAt;
 	}
 
-	public static MemberCoupon of(Long memberId, Coupon coupon, MemberCouponStatus status) {
+	public static MemberCoupon of(Long memberId, Coupon coupon, MemberCouponStatus status, LocalDateTime expirationAt) {
 		return MemberCoupon.builder()
 			.coupon(coupon)
 			.memberId(memberId)
 			.status(status)
+			.expirationAt(expirationAt)
 			.build();
 	}
 

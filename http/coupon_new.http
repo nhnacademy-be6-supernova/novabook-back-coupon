@@ -1,0 +1,101 @@
+
+# BOOK 컨트롤러
+### Create a new Book Coupon
+POST http://localhost:8087/coupons/book
+Content-Type: application/json
+
+{
+  "bookId": 1,
+  "name": "Summer Sale Coupon",
+  "discountAmount": 1000,
+  "discountType": "AMOUNT",
+  "maxDiscountAmount": 5000,
+  "minPurchaseAmount": 10000,
+  "startedAt": "2024-06-01T00:00:00",
+  "expirationAt": "2024-06-30T23:59:59",
+  "usePeriod": 48
+}
+
+### Get all Book Coupons with pagination
+GET http://localhost:8087/coupons/book?page=0&size=5
+
+### Get all valid Coupons for a specific Book
+GET http://localhost:8087/coupons/book/1
+
+
+# CATEGORY 컨트롤러
+### Create a new Category Coupon
+POST http://localhost:8087/coupons/category
+Content-Type: application/json
+
+{
+  "categoryId": 1,
+  "name": "Spring Sale Coupon",
+  "discountAmount": 1500,
+  "discountType": "AMOUNT",
+  "maxDiscountAmount": 3000,
+  "minPurchaseAmount": 5000,
+  "startedAt": "2024-06-01T00:00:00",
+  "expirationAt": "2024-06-30T23:59:59",
+  "usePeriod": 48
+}
+
+### Get all Category Coupons with pagination
+GET http://localhost:8087/coupons/category?page=0&size=5
+
+### Get all valid Coupons for a specific Category
+GET http://localhost:8087/coupons/category/1
+
+
+# GENERAL 컨트롤러
+### Create a new General Coupon
+POST http://localhost:8087/coupons/general
+Content-Type: application/json
+
+{
+  "name": "General Discount Coupon",
+  "discountAmount": 2000,
+  "discountType": "AMOUNT",
+  "maxDiscountAmount": 5000,
+  "minPurchaseAmount": 10000,
+  "startedAt": "2024-06-01T00:00:00",
+  "expirationAt": "2024-06-30T23:59:59",
+  "usePeriod": 72
+}
+
+### Get all General Coupons with pagination
+GET http://localhost:8087/coupons/general?page=0&size=5
+
+
+## MEMBERCOUPON 컨트롤러
+### 회원에게 쿠폰 등록하기
+POST http://localhost:8087/members/1/coupons
+Content-Type: application/json
+
+{
+  "couponCode": "BJJD6GBEQAOJNJNX",
+  "expirationAt": "2024-12-31T23:59:59"
+}
+
+###
+
+### 주문 페이지 - 적용 가능 한지?
+GET http://localhost:8087/members/1?validOnly=true
+Content-Type: application/json
+
+###
+
+### 마이페이지 - 쿠폰함/쿠폰내역에서 사용. "미사용"/"사용" 에 따라 가져옴
+GET http://localhost:8087/members/1/coupons?status=UNUSED&page=0&size=5
+Content-Type: application/json
+
+###
+
+### 쿠폰 사용 요청
+PUT http://localhost:8087/members/1/coupons/1
+Content-Type: application/json
+
+{
+  "status": "USED"
+}
+

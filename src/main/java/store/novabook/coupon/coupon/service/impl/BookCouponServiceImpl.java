@@ -46,12 +46,12 @@ public class BookCouponServiceImpl implements BookCouponService {
 		return bookCouponList.map(GetCouponBookResponse::fromEntity);
 	}
 
-	// 만료시간이 현재시간보다 후인 쿠폰들만 가져온다.
 	@Override
 	@Transactional(readOnly = true)
 	public GetCouponBookAllResponse getCouponBook(Long bookId) {
 		List<BookCoupon> bookCouponList = Optional.ofNullable(
-				bookCouponRepository.findAllByBookIdAndCoupon_ExpirationAtAfter(bookId, LocalDateTime.now()))
+				bookCouponRepository.findAllByBookIdAndCouponExpirationAtAfterAndCouponStartedAtBefore(bookId,
+					LocalDateTime.now(), LocalDateTime.now()))
 			.orElseThrow();
 		return GetCouponBookAllResponse.fromEntity(bookCouponList);
 	}

@@ -9,7 +9,7 @@ import store.novabook.coupon.coupon.domain.DiscountType;
 @Builder
 public record GetCouponCategoryResponse(Long categoryId, String code, String name, long discountAmount,
 										DiscountType discountType, long maxDiscountAmount, long minPurchaseAmount,
-										LocalDateTime startedAt, LocalDateTime expirationAt) {
+										LocalDateTime startedAt, LocalDateTime expirationAt, int usePeriod) {
 	public static GetCouponCategoryResponse fromEntity(CategoryCoupon categoryCoupon) {
 		return GetCouponCategoryResponse.builder()
 			.categoryId(categoryCoupon.getCategoryId())
@@ -21,6 +21,7 @@ public record GetCouponCategoryResponse(Long categoryId, String code, String nam
 			.minPurchaseAmount(categoryCoupon.getCoupon().getMinPurchaseAmount())
 			.startedAt(categoryCoupon.getCoupon().getStartedAt())
 			.expirationAt(categoryCoupon.getCoupon().getExpirationAt())
+			.usePeriod(categoryCoupon.getCoupon().getUsePeriod())
 			.build();
 	}
 }

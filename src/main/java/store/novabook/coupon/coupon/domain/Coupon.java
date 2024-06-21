@@ -57,6 +57,9 @@ public class Coupon {
 	@NotNull
 	private LocalDateTime expirationAt;
 
+	@NotNull
+	private int usePeriod;
+
 	@CreatedDate
 	@NotNull
 	private LocalDateTime createdAt;
@@ -73,7 +76,8 @@ public class Coupon {
 		long maxDiscountAmount,
 		long minPurchaseAmount,
 		LocalDateTime startedAt,
-		LocalDateTime expirationAt
+		LocalDateTime expirationAt,
+		int usePeriod
 	) {
 		this.code = code;
 		this.name = name;
@@ -83,6 +87,7 @@ public class Coupon {
 		this.minPurchaseAmount = minPurchaseAmount;
 		this.startedAt = startedAt;
 		this.expirationAt = expirationAt;
+		this.usePeriod = usePeriod;
 	}
 
 	public static Coupon of(String code, CreateCouponRequest request) {
@@ -95,6 +100,7 @@ public class Coupon {
 			.minPurchaseAmount(request.minPurchaseAmount())
 			.startedAt(request.startedAt())
 			.expirationAt(request.expirationAt())
+			.usePeriod(request.usePeriod())
 			.build();
 	}
 
@@ -108,6 +114,7 @@ public class Coupon {
 			.minPurchaseAmount(request.minPurchaseAmount())
 			.startedAt(request.startedAt())
 			.expirationAt(request.expirationAt())
+			.usePeriod(request.usePeriod())
 			.build();
 	}
 
@@ -121,6 +128,7 @@ public class Coupon {
 			.minPurchaseAmount(request.minPurchaseAmount())
 			.startedAt(request.startedAt())
 			.expirationAt(request.expirationAt())
+			.usePeriod(request.usePeriod())
 			.build();
 	}
 

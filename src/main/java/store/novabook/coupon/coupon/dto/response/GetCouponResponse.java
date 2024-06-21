@@ -10,7 +10,7 @@ import store.novabook.coupon.coupon.domain.MemberCoupon;
 @Builder
 public record GetCouponResponse(String code, String name, long discountAmount, DiscountType discountType,
 								long maxDiscountAmount, long minPurchaseAmount, LocalDateTime startedAt,
-								LocalDateTime expirationAt) {
+								LocalDateTime expirationAt, int usePeriod) {
 	public static GetCouponResponse fromEntity(Coupon coupon) {
 		return GetCouponResponse.builder()
 			.code(coupon.getCode())
@@ -21,6 +21,7 @@ public record GetCouponResponse(String code, String name, long discountAmount, D
 			.minPurchaseAmount(coupon.getMinPurchaseAmount())
 			.startedAt(coupon.getStartedAt())
 			.expirationAt(coupon.getExpirationAt())
+			.usePeriod(coupon.getUsePeriod())
 			.build();
 	}
 
@@ -34,6 +35,7 @@ public record GetCouponResponse(String code, String name, long discountAmount, D
 			.minPurchaseAmount(memberCoupon.getCoupon().getMinPurchaseAmount())
 			.startedAt(memberCoupon.getCoupon().getStartedAt())
 			.expirationAt(memberCoupon.getCoupon().getExpirationAt())
+			.usePeriod(memberCoupon.getCoupon().getUsePeriod())
 			.build();
 	}
 }
