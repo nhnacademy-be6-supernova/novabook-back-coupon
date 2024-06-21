@@ -54,6 +54,7 @@
             <groupId>com.querydsl</groupId>
             <artifactId>querydsl-jpa</artifactId>
             <version>${querydsl.version}</version>
+            <classifier>jakarta</classifier>
         </dependency>
         <dependency>
             <groupId>com.querydsl</groupId>
@@ -62,6 +63,7 @@
             <classifier>jakarta</classifier>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>

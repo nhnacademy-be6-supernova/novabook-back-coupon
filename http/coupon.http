@@ -47,7 +47,7 @@ PUT http://localhost:8087/coupons/expiration
 Content-Type: application/json
 
 {
-  "code": "C94SWZD95NBCLU77"
+  "code": "GVBHYWUN1N2CVPUI"
 }
 
 ### 모든 일반 쿠폰 조회
@@ -75,21 +75,21 @@ Content-Type: application/json
 
 ### 회원 쿠폰 저장
 # 회원 ID 1에 대한 쿠폰을 저장합니다.
-POST http://localhost:8087/coupons/members/1
+POST http://localhost:8087/coupons/members/3
 Content-Type: application/json
 
 {
-  "couponCode": "GFEPEYFYO1MXFMWT"
+  "couponCode": "GU0IBUV4RRWVL5J8"
 }
 
 ### 유효한 회원 쿠폰 조회
 # 회원 ID 1에 대해 유효한 쿠폰만 조회합니다.
-GET http://localhost:8087/coupons/members/1?validOnly=false
+GET http://localhost:8087/coupons/members/1?validOnly=true
 Content-Type: application/json
 
 ### 상태에 따른 회원 쿠폰 조회
 # 회원 ID 1에 대해 특정 상태(예: UNUSED)의 쿠폰을 페이지네이션하여 조회합니다.
-GET http://localhost:8087/coupons/members/1/coupons?status=UNUSED
+GET http://localhost:8087/coupons/members/1/coupons?status=USED
 Content-Type: application/json
 
 ### 회원 쿠폰 상태 업데이트

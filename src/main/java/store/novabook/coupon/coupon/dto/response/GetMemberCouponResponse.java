@@ -12,17 +12,16 @@ public record GetMemberCouponResponse(Long memberCouponId, String code, String n
 									  LocalDateTime startedAt, LocalDateTime expirationAt) {
 	public static GetMemberCouponResponse fromEntity(MemberCoupon memberCoupon) {
 		return GetMemberCouponResponse.builder()
-				.memberCouponId(memberCoupon.getId())
-				.code(memberCoupon.getCoupon().getCode())
-				.name(memberCoupon.getCoupon().getName())
-				.discountAmount(memberCoupon.getCoupon().getDiscountAmount())
-				.discountType(memberCoupon.getCoupon().getDiscountType())
-				.maxDiscountAmount(memberCoupon.getCoupon().getMaxDiscountAmount())
-				.minPurchaseAmount(memberCoupon.getCoupon().getMinPurchaseAmount())
-				.startedAt(memberCoupon.getCoupon().getStartedAt())
-				.expirationAt(memberCoupon.getCoupon().getExpirationAt())
-				.build();
+			.memberCouponId(memberCoupon.getId())
+			.code(memberCoupon.getCoupon().getCode())
+			.name(memberCoupon.getCoupon().getName())
+			.discountAmount(memberCoupon.getCoupon().getDiscountAmount())
+			.discountType(memberCoupon.getCoupon().getDiscountType())
+			.maxDiscountAmount(memberCoupon.getCoupon().getMaxDiscountAmount())
+			.minPurchaseAmount(memberCoupon.getCoupon().getMinPurchaseAmount())
+			.startedAt(memberCoupon.getCoupon().getStartedAt())
+			.expirationAt(memberCoupon.getCoupon().getExpirationAt())
+			.build();
 	}
-
 
 }

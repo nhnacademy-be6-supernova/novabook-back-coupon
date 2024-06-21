@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPQLQuery;
 
 import store.novabook.coupon.coupon.domain.MemberCoupon;
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
@@ -34,20 +34,22 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 		QCoupon coupon = QCoupon.coupon;
 		QCategoryCoupon categoryCoupon = QCategoryCoupon.categoryCoupon;
 
-		JPQLQuery<MemberCategoryCouponDto> query = select(
-			Projections.constructor(MemberCategoryCouponDto.class, memberCoupon.id, categoryCoupon)).from(
-				categoryCoupon)
-			.join(categoryCoupon.coupon, coupon)
-			.join(memberCoupon)
-			.on(memberCoupon.coupon.code.eq(coupon.code))
-			.where(memberCoupon.memberId.eq(memberId).and(coupon.code.startsWith("C")));
+		BooleanBuilder builder = new BooleanBuilder();
+		builder.and(memberCoupon.memberId.eq(memberId))
+			.and(coupon.code.startsWith("C"));
 
 		if (validOnly) {
-			query.where(coupon.startedAt.before(LocalDateTime.now()), coupon.expirationAt.after(LocalDateTime.now()),
-				memberCoupon.status.eq(MemberCouponStatus.UNUSED));
+			builder.and(coupon.startedAt.before(LocalDateTime.now()))
+				.and(coupon.expirationAt.after(LocalDateTime.now()))
+				.and(memberCoupon.status.eq(MemberCouponStatus.UNUSED));
 		}
 
-		return query.fetch();
+		return from(categoryCoupon)
+			.select(Projections.constructor(MemberCategoryCouponDto.class, memberCoupon.id, categoryCoupon))
+			.innerJoin(coupon).on(categoryCoupon.coupon.code.eq(coupon.code))
+			.join(memberCoupon).on(memberCoupon.coupon.code.eq(coupon.code))
+			.where(builder)
+			.fetch();
 	}
 
 	@Override
@@ -56,51 +58,53 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 		QCoupon coupon = QCoupon.coupon;
 		QBookCoupon bookCoupon = QBookCoupon.bookCoupon;
 
-		JPQLQuery<MemberBookCouponDto> query = select(
-			Projections.constructor(MemberBookCouponDto.class, memberCoupon.id, bookCoupon)).from(bookCoupon)
-			.join(bookCoupon.coupon, coupon)
-			.join(memberCoupon)
-			.on(memberCoupon.coupon.code.eq(coupon.code))
-			.where(memberCoupon.memberId.eq(memberId).and(coupon.code.startsWith("B")));
+		BooleanBuilder builder = new BooleanBuilder();
+		builder.and(memberCoupon.memberId.eq(memberId))
+			.and(coupon.code.startsWith("B"));
 
 		if (validOnly) {
-			query.where(coupon.startedAt.before(LocalDateTime.now()), coupon.expirationAt.after(LocalDateTime.now()),
-				memberCoupon.status.eq(MemberCouponStatus.UNUSED));
+			builder.and(coupon.startedAt.before(LocalDateTime.now()))
+				.and(coupon.expirationAt.after(LocalDateTime.now()))
+				.and(memberCoupon.status.eq(MemberCouponStatus.UNUSED));
 		}
 
-		return query.fetch();
+		return from(bookCoupon)
+			.select(Projections.constructor(MemberBookCouponDto.class, memberCoupon.id, bookCoupon))
+			.innerJoin(coupon).on(bookCoupon.coupon.code.eq(coupon.code))
+			.innerJoin(memberCoupon).on(bookCoupon.coupon.code.eq(memberCoupon.coupon.code))
+			.where(builder)
+			.fetch();
 	}
-
 
 	@Override
 	public List<GetMemberCouponResponse> findGeneralCouponsByMemberId(Long memberId, boolean validOnly) {
 		QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
 		QCoupon coupon = QCoupon.coupon;
 
-		JPQLQuery<GetMemberCouponResponse> query = select(Projections.constructor(GetMemberCouponResponse.class,
-						memberCoupon.id,
-						coupon.code,
-						coupon.name,
-						coupon.discountAmount,
-						coupon.discountType,
-						coupon.maxDiscountAmount,
-						coupon.minPurchaseAmount,
-						coupon.startedAt,
-						coupon.expirationAt))
-				.from(memberCoupon)
-				.join(memberCoupon.coupon, coupon)
-				.where(memberCoupon.memberId.eq(memberId)
-						.and(coupon.code.startsWith("G")));
+		BooleanBuilder builder = new BooleanBuilder();
+		builder.and(memberCoupon.memberId.eq(memberId))
+			.and(coupon.code.startsWith("G"));
 
 		if (validOnly) {
-			query.where(
-					coupon.startedAt.before(LocalDateTime.now()),
-					coupon.expirationAt.after(LocalDateTime.now()),
-					memberCoupon.status.eq(MemberCouponStatus.UNUSED)
-			);
+			builder.and(coupon.startedAt.before(LocalDateTime.now()))
+				.and(coupon.expirationAt.after(LocalDateTime.now()))
+				.and(memberCoupon.status.eq(MemberCouponStatus.UNUSED));
 		}
 
-		return query.fetch();
+		return from(memberCoupon)
+			.select(Projections.constructor(GetMemberCouponResponse.class,
+				memberCoupon.id,
+				coupon.code,
+				coupon.name,
+				coupon.discountAmount,
+				coupon.discountType,
+				coupon.maxDiscountAmount,
+				coupon.minPurchaseAmount,
+				coupon.startedAt,
+				coupon.expirationAt))
+			.innerJoin(coupon).on(memberCoupon.coupon.code.eq(coupon.code))
+			.where(builder)
+			.fetch();
 	}
 
 	@Override

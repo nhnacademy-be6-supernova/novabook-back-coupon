@@ -15,7 +15,6 @@ import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.ForbiddenException;
 import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.coupon.domain.Coupon;
-import store.novabook.coupon.coupon.domain.CouponType;
 import store.novabook.coupon.coupon.domain.MemberCoupon;
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
 import store.novabook.coupon.coupon.dto.MemberBookCouponDto;
@@ -36,60 +35,72 @@ import store.novabook.coupon.coupon.service.MemberCouponService;
 @RequiredArgsConstructor
 public class MemberCouponServiceImpl implements MemberCouponService {
 
-    private final MemberCouponRepository memberCouponRepository;
-    private final CouponRepository couponRepository;
-    private final CategoryCouponRepository categoryCouponRepository;
-    private final BookCouponRepository bookCouponRepository;
+	private final MemberCouponRepository memberCouponRepository;
+	private final CouponRepository couponRepository;
+	private final CategoryCouponRepository categoryCouponRepository;
+	private final BookCouponRepository bookCouponRepository;
 
-    @Override
-    @Transactional
-    public CreateMemberCouponResponse saveMemberCoupon(Long memberId, CreateMemberCouponRequest request) {
-        Coupon coupon = couponRepository.findById(request.couponCode()).orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
+	@Override
+	@Transactional
+	public CreateMemberCouponResponse saveMemberCoupon(Long memberId, CreateMemberCouponRequest request) {
+		Coupon coupon = couponRepository.findById(request.couponCode())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 
-        if (coupon.getExpirationAt().isBefore(LocalDateTime.now())) {
-            throw new BadRequestException(ErrorCode.EXPIRED_COUPON_CODE);
-        }
+		if (coupon.getExpirationAt().isBefore(LocalDateTime.now())) {
+			throw new BadRequestException(ErrorCode.EXPIRED_COUPON_CODE);
+		}
 
-        MemberCoupon memberCoupon = MemberCoupon.of(memberId, coupon, MemberCouponStatus.UNUSED);
-        MemberCoupon saved = memberCouponRepository.save(memberCoupon);
-        return CreateMemberCouponResponse.fromEntity(saved);
-    }
+		MemberCoupon memberCoupon = MemberCoupon.of(memberId, coupon, MemberCouponStatus.UNUSED);
+		MemberCoupon saved = memberCouponRepository.save(memberCoupon);
+		return CreateMemberCouponResponse.fromEntity(saved);
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public GetMemberCouponByTypeResponse getMemberCouponAllByValid(Long memberId, Boolean validOnly) {
-        List<GetMemberCouponResponse> generalCouponList = memberCouponRepository.findGeneralCouponsByMemberId(memberId, validOnly);
-        List<MemberBookCouponDto> bookCouponList = memberCouponRepository.findBookCouponsByMemberId(memberId, validOnly);
-        List<MemberCategoryCouponDto> categoryCouponList = memberCouponRepository.findCategoryCouponsByMemberId(memberId, validOnly);
+	@Override
+	@Transactional(readOnly = true)
+	public GetMemberCouponByTypeResponse getMemberCouponAllByValid(Long memberId, Boolean validOnly) {
+		List<GetMemberCouponResponse> generalCouponList = memberCouponRepository.findGeneralCouponsByMemberId(memberId,
+			validOnly);
+		List<MemberBookCouponDto> bookCouponList = memberCouponRepository.findBookCouponsByMemberId(memberId,
+			validOnly);
+		List<MemberCategoryCouponDto> categoryCouponList = memberCouponRepository.findCategoryCouponsByMemberId(
+			memberId, validOnly);
 
-        return GetMemberCouponByTypeResponse.builder().generalCouponList(generalCouponList).bookCouponList(bookCouponList).categoryCouponList(categoryCouponList).build();
-    }
+		return GetMemberCouponByTypeResponse.builder()
+			.generalCouponList(generalCouponList)
+			.bookCouponList(bookCouponList)
+			.categoryCouponList(categoryCouponList)
+			.build();
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public GetMemberCouponAllResponse getMemberCouponAllByStatus(Long memberId, MemberCouponStatus status, Pageable pageable) {
-        Page<MemberCoupon> memberCouponPage = memberCouponRepository.findAllByStatus(status, pageable);
-        return GetMemberCouponAllResponse.fromEntity(memberId, memberCouponPage);
-    }
+	@Override
+	@Transactional(readOnly = true)
+	public GetMemberCouponAllResponse getMemberCouponAllByStatus(Long memberId, MemberCouponStatus status,
+		Pageable pageable) {
+		Page<MemberCoupon> memberCouponPage = memberCouponRepository.findAllByStatus(status, pageable);
+		return GetMemberCouponAllResponse.fromEntity(memberId, memberCouponPage);
+	}
 
-    @Override
-    @Transactional
-    public void updateMemberCouponStatus(Long memberId, PutMemberCouponRequest request) {
-        MemberCoupon memberCoupon = memberCouponRepository.findById(request.memberCouponId()).orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
+	@Override
+	@Transactional
+	public void updateMemberCouponStatus(Long memberId, PutMemberCouponRequest request) {
+		MemberCoupon memberCoupon = memberCouponRepository.findById(request.memberCouponId())
+			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 
-        validateMemberCoupon(memberId, memberCoupon);
+		validateMemberCoupon(memberId, memberCoupon);
 
-        memberCoupon.updateStatus(request.status());
-    }
+		memberCoupon.updateStatus(request.status());
+	}
 
-    private void validateMemberCoupon(Long memberId, MemberCoupon memberCoupon) {
-        if (!Objects.equals(memberCoupon.getMemberId(), memberId)) {
-            throw new ForbiddenException(ErrorCode.NOT_ENOUGH_PERMISSION);
-        }
+	private void validateMemberCoupon(Long memberId, MemberCoupon memberCoupon) {
+		if (!Objects.equals(memberCoupon.getMemberId(), memberId)) {
+			throw new ForbiddenException(ErrorCode.NOT_ENOUGH_PERMISSION);
+		}
 
-        if (memberCoupon.getStatus() != MemberCouponStatus.UNUSED || memberCoupon.getCoupon().getExpirationAt().isBefore(LocalDateTime.now()) || memberCoupon.getCoupon().getStartedAt().isAfter(LocalDateTime.now())) {
-            throw new BadRequestException(ErrorCode.INVALID_COUPON);
-        }
-    }
+		if (memberCoupon.getStatus() != MemberCouponStatus.UNUSED || memberCoupon.getCoupon()
+			.getExpirationAt()
+			.isBefore(LocalDateTime.now()) || memberCoupon.getCoupon().getStartedAt().isAfter(LocalDateTime.now())) {
+			throw new BadRequestException(ErrorCode.INVALID_COUPON);
+		}
+	}
 
 }
