@@ -20,6 +20,7 @@ import store.novabook.coupon.coupon.domain.MemberCouponStatus;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponAllRequest;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
+import store.novabook.coupon.coupon.dto.response.CreateMemberCouponAllResponse;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
@@ -36,32 +37,41 @@ public class MemberCouponController {
 	@PostMapping("/members/{memberId}/coupons")
 	public ResponseEntity<CreateMemberCouponResponse> saveMemberCoupon(@PathVariable Long memberId,
 		@Valid @RequestBody CreateMemberCouponRequest request) {
-		CreateMemberCouponResponse memberCouponResponse = memberCouponService.saveMemberCoupon(memberId, request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(memberCouponResponse);
+		CreateMemberCouponResponse response = memberCouponService.saveMemberCoupon(memberId, request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
+	// 회원에게 웰컴 쿠폰 등록하기
+	// @PostMapping("/members/{memberId}/welcome")
+	// public ResponseEntity<CreateMemberCouponResponse> saveMemberWelcomeCoupon(@PathVariable Long memberId) {
+	// 	CreateMemberCouponResponse response = memberCouponService.saveMemberWelcomeCoupon(memberId);
+	// 	return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	// }
+
+	// 회원들에게 쿠폰 등록하기
 	@PostMapping("/members/coupons")
-	public ResponseEntity<Void> saveMemberCoupon(@Valid @RequestBody CreateMemberCouponAllRequest request) {
-		memberCouponService.saveMemberCouponAll(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(null);
+	public ResponseEntity<CreateMemberCouponAllResponse> saveMemberCoupon(
+		@Valid @RequestBody CreateMemberCouponAllRequest request) {
+		CreateMemberCouponAllResponse response = memberCouponService.saveMemberCouponAll(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	// 주문 페이지 - 적용가능 한지?  만료기간이 현재보다 빠른지에 따라 (bookId, CategoryId)가 포함해서 주면 프론트 서버에서 관리됨
 	@GetMapping("/members/{memberId}")
 	public ResponseEntity<GetMemberCouponByTypeResponse> getMemberCoupon(@PathVariable Long memberId,
 		@RequestParam(defaultValue = "true") Boolean validOnly) {
-		GetMemberCouponByTypeResponse memberCouponResponse = memberCouponService.getMemberCouponAllByValid(memberId,
+		GetMemberCouponByTypeResponse response = memberCouponService.getMemberCouponAllByValid(memberId,
 			validOnly);
-		return ResponseEntity.status(HttpStatus.CREATED).body(memberCouponResponse);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	// 마이페이지 - 쿠폰함/쿠폰내역에서 사용. "미사용"/"사용" 에 따라 가져옴
 	@GetMapping("/members/{memberId}/coupons")
 	public ResponseEntity<Page<GetMemberCouponResponse>> getMemberCouponByStatus(@PathVariable Long memberId,
 		@RequestParam MemberCouponStatus status, @PageableDefault(size = 5) Pageable pageable) {
-		Page<GetMemberCouponResponse> memberCouponResponse = memberCouponService.getMemberCouponAllByStatus(memberId,
+		Page<GetMemberCouponResponse> response = memberCouponService.getMemberCouponAllByStatus(memberId,
 			status, pageable);
-		return ResponseEntity.ok(memberCouponResponse);
+		return ResponseEntity.ok(response);
 	}
 
 	// 쿠폰 사용 요청

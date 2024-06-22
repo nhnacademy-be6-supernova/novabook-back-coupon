@@ -88,7 +88,7 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 		QCoupon coupon = QCoupon.coupon;
 
 		BooleanBuilder builder = new BooleanBuilder();
-		builder.and(memberCoupon.memberId.eq(memberId)).and(coupon.code.startsWith("G"));
+		builder.and(memberCoupon.memberId.eq(memberId)).and(coupon.code.notLike("C%")).and(coupon.code.notLike("B%"));
 
 		if (validOnly) {
 			builder.and(memberCoupon.expirationAt.after(LocalDateTime.now()))

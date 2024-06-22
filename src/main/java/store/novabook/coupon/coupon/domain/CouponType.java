@@ -2,6 +2,8 @@ package store.novabook.coupon.coupon.domain;
 
 public enum CouponType {
 	GENERAL("G"),
+	BIRTHDAY("H"),
+	WELCOME("W"),
 	BOOK("B"),
 	CATEGORY("C");
 
