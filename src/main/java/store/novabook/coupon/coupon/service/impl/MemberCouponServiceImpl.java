@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,12 +16,15 @@ import store.novabook.coupon.common.exception.BadRequestException;
 import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.ForbiddenException;
 import store.novabook.coupon.common.exception.NotFoundException;
+import store.novabook.coupon.common.message.MemberRegistrationMessage;
 import store.novabook.coupon.coupon.domain.Coupon;
+import store.novabook.coupon.coupon.domain.CouponType;
 import store.novabook.coupon.coupon.domain.MemberCoupon;
 import store.novabook.coupon.coupon.domain.MemberCouponStatus;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponAllRequest;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
+import store.novabook.coupon.coupon.dto.response.CreateMemberCouponAllResponse;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponBookResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
@@ -60,6 +64,16 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	}
 
 	@Override
+	@RabbitListener(queues = "memberQueue")
+	public void saveMemberWelcomeCoupon(MemberRegistrationMessage message) {
+		Coupon welcome = couponRepository.findTopByCodeStartsWithOrderByCreatedAtDesc(CouponType.WELCOME.getPrefix())
+			.orElseThrow(() -> new BadRequestException(ErrorCode.WELCOME_COUPON_NOT_FOUND));
+
+		memberCouponRepository.save(MemberCoupon.of(message.memberId(), welcome, MemberCouponStatus.UNUSED,
+			LocalDateTime.now().plusHours(welcome.getUsePeriod())));
+	}
+
+	@Override
 	@Transactional(readOnly = true)
 	public GetMemberCouponByTypeResponse getMemberCouponAllByValid(Long memberId, Boolean validOnly) {
 		List<GetMemberCouponResponse> generalCouponList = memberCouponRepository.findGeneralCouponsByMemberId(memberId,
@@ -96,7 +110,8 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	}
 
 	@Override
-	public void saveMemberCouponAll(CreateMemberCouponAllRequest request) {
+	@Transactional
+	public CreateMemberCouponAllResponse saveMemberCouponAll(CreateMemberCouponAllRequest request) {
 		Coupon coupon = couponRepository.findById(request.couponCode())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 
@@ -111,7 +126,8 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 			memberCouponList.add(memberCoupon);
 		}
 
-		memberCouponRepository.saveAll(memberCouponList);
+		List<MemberCoupon> saved = memberCouponRepository.saveAll(memberCouponList);
+		return CreateMemberCouponAllResponse.fromEntity(saved);
 	}
 
 	private void validateMemberCoupon(Long memberId, MemberCoupon memberCoupon) {

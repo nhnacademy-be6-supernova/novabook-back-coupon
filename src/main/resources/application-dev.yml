@@ -3,6 +3,11 @@ spring:
     activate:
       #      기본 개발 프로필
       on-profile: dev
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: supernova
+    password: 1234
 
   application:
     name: 'coupon'
