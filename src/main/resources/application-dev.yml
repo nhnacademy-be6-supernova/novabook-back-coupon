@@ -34,3 +34,11 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+
+rabbitmq:
+  queue:
+    coupon: couponQueue
+  exchange:
+    member: memberExchange
+  routing:
+    member: member.registration

@@ -64,7 +64,7 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	}
 
 	@Override
-	@RabbitListener(queues = "memberQueue")
+	@RabbitListener(queues = "${rabbitmq.queue.coupon}")
 	public void saveMemberWelcomeCoupon(MemberRegistrationMessage message) {
 		Coupon welcome = couponRepository.findTopByCodeStartsWithOrderByCreatedAtDesc(CouponType.WELCOME.getPrefix())
 			.orElseThrow(() -> new BadRequestException(ErrorCode.WELCOME_COUPON_NOT_FOUND));
