@@ -39,3 +39,8 @@ rabbitmq:
     member: memberExchange
   routing:
     member: member.registration
+
+
+store:
+  service:
+    url: http://localhost:8090

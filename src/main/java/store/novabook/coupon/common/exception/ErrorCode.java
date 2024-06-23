@@ -26,6 +26,7 @@ public enum ErrorCode {
 	INVALID_COUPON("유효하지 않은 쿠폰입니다."),
 	INVALID_COUPON_TYPE("유효하지 않은 쿠폰 타입입니다."),
 	WELCOME_COUPON_NOT_FOUND("웰컴 쿠폰이 존재하지 않습니다. "),
+	BIRTHDAY_COUPON_NOT_FOUND("생일 쿠폰이 존재하지 않습니다. "),
 
 	// 401 로그인 안됨
 

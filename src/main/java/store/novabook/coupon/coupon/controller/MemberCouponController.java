@@ -41,13 +41,6 @@ public class MemberCouponController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	// 회원에게 웰컴 쿠폰 등록하기
-	// @PostMapping("/members/{memberId}/welcome")
-	// public ResponseEntity<CreateMemberCouponResponse> saveMemberWelcomeCoupon(@PathVariable Long memberId) {
-	// 	CreateMemberCouponResponse response = memberCouponService.saveMemberWelcomeCoupon(memberId);
-	// 	return ResponseEntity.status(HttpStatus.CREATED).body(response);
-	// }
-
 	// 회원들에게 쿠폰 등록하기
 	@PostMapping("/members/coupons")
 	public ResponseEntity<CreateMemberCouponAllResponse> saveMemberCoupon(
