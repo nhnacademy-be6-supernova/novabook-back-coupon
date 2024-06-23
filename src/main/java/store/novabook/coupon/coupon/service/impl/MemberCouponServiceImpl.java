@@ -147,7 +147,7 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 			LocalDateTime.now().plusHours(welcomeCoupon.getUsePeriod())));
 	}
 
-	@Scheduled(cron = "0 * * * * ?")
+	@Scheduled(cron = "0 0 0 1 * ?")
 	@Transactional
 	public void issueBirthdayCoupons() {
 		Coupon birthdayCoupon = couponRepository.findTopByCodeStartsWithOrderByCreatedAtDesc(
