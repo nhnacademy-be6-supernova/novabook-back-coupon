@@ -36,9 +36,6 @@ public class RabbitConfig {
 	@Value("${rabbitmq.queue.coupon}")
 	private String couponQueueName;
 
-	@Value("${rabbitmq.queue.retry}")
-	private String retryQueueName;
-
 	@Value("${rabbitmq.queue.dead}")
 	private String deadQueueName;
 
@@ -52,22 +49,13 @@ public class RabbitConfig {
 	public Queue couponQueue() {
 		Map<String, Object> args = new HashMap<>();
 		args.put("x-dead-letter-exchange", memberExchangeName);
-		args.put("x-dead-letter-routing-key", retryQueueName);
-		return new Queue(couponQueueName, false, false, true, args);
-	}
-
-	@Bean
-	public Queue retryQueue() {
-		Map<String, Object> args = new HashMap<>();
-		args.put("x-dead-letter-exchange", memberExchangeName);
 		args.put("x-dead-letter-routing-key", deadQueueName);
-		args.put("x-message-ttl", 60000); // 60초 후에 메시지를 이동
-		return new Queue(retryQueueName, false, false, true, args);
+		return new Queue(couponQueueName, false, false, false, args);
 	}
 
 	@Bean
 	public Queue deadQueue() {
-		return new Queue(deadQueueName, false, false, true);
+		return new Queue(deadQueueName, false, false, false);
 	}
 
 	@Bean
@@ -78,11 +66,6 @@ public class RabbitConfig {
 	@Bean
 	public Binding couponBinding() {
 		return BindingBuilder.bind(couponQueue()).to(memberExchange()).with(memberRoutingKey);
-	}
-
-	@Bean
-	public Binding retryBinding() {
-		return BindingBuilder.bind(retryQueue()).to(memberExchange()).with(retryQueueName);
 	}
 
 	@Bean

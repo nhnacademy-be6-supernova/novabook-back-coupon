@@ -1,20 +1,15 @@
 package store.novabook.coupon.coupon.service.impl;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.rabbitmq.client.Channel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,39 +67,12 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 
 	@RabbitListener(queues = "${rabbitmq.queue.coupon}")
 	@Transactional
-	public void saveMemberWelcomeCoupon(MemberRegistrationMessage message, Channel channel,
-		@Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
-		log.info("Received message: {}", message);
+	public void saveMemberWelcomeCoupon(MemberRegistrationMessage message) {
+		Coupon welcome = couponRepository.findTopByCodeStartsWithOrderByCreatedAtDesc(CouponType.WELCOME.getPrefix())
+			.orElseThrow(() -> new BadRequestException(ErrorCode.WELCOME_COUPON_NOT_FOUND));
 
-		try {
-			Coupon welcome = couponRepository.findTopByCodeStartsWithOrderByCreatedAtDesc(
-					CouponType.WELCOME.getPrefix())
-				.orElseThrow(() -> new BadRequestException(ErrorCode.WELCOME_COUPON_NOT_FOUND));
-
-			memberCouponRepository.save(MemberCoupon.of(message.memberId(), welcome, MemberCouponStatus.UNUSED,
-				LocalDateTime.now().plusHours(welcome.getUsePeriod())));
-
-			log.info("Processed welcome coupon for memberId: {}", message.memberId());
-
-			// 메시지를 정상 처리했음을 Ack
-			channel.basicAck(deliveryTag, false);
-		} catch (BadRequestException e) {
-			log.error("BadRequestException processing welcome coupon: {}", e.getMessage(), e);
-			try {
-				channel.basicAck(deliveryTag, false);
-			} catch (IOException ioException) {
-				log.error("Failed to ack message", ioException);
-			}
-		} catch (Exception e) {
-			log.error("Unexpected error: {}", e.getMessage(), e);
-			try {
-				// Retry Queue로 메시지 전송
-				channel.basicPublish("", "retryQueue", null, message.toString().getBytes());
-				channel.basicAck(deliveryTag, false);
-			} catch (IOException ioException) {
-				log.error("Failed to ack message", ioException);
-			}
-		}
+		memberCouponRepository.save(MemberCoupon.of(message.memberId(), welcome, MemberCouponStatus.UNUSED,
+			LocalDateTime.now().plusHours(welcome.getUsePeriod())));
 	}
 
 	@Override
