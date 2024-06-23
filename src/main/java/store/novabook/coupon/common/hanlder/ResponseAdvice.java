@@ -13,10 +13,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import lombok.extern.slf4j.Slf4j;
-import store.novabook.coupon.common.exception.ErrorCode;
+import store.novabook.coupon.common.dto.ApiResponse;
 import store.novabook.coupon.common.exception.dto.ErrorResponse;
 import store.novabook.coupon.common.exception.dto.ValidErrorResponse;
-import store.novabook.coupon.common.dto.ApiResponse;
 
 /**
  * {@code ResponseAdvice} 클래스는 클라이언트에게 응답을 작성하기 전에 응답 본문을 처리하는
@@ -60,20 +59,20 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 	 */
 	@Override
 	public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
-								  Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
-								  ServerHttpResponse response) {
+		Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
+		ServerHttpResponse response) {
 
 		log.info("Response Body: {}", body);
 
 		if (body instanceof ErrorResponse errorResponse) {
-			return ApiResponse.error(errorResponse.errorCode(), errorResponse);
+			return ApiResponse.error(errorResponse);
 		}
 		if (body instanceof ValidErrorResponse validErrorResponse) {
-			return ApiResponse.error(ErrorCode.INVALID_REQUEST_ARGUMENT, validErrorResponse);
+			return ApiResponse.error(validErrorResponse);
 		}
 
 		if (body instanceof Page<?> page) {
-            Map<String, Object> pageBody = new HashMap<>();
+			Map<String, Object> pageBody = new HashMap<>();
 			pageBody.put("pageNum", page.getNumber());
 			pageBody.put("pageSize", page.getSize());
 			pageBody.put("totalCount", page.getTotalElements());
