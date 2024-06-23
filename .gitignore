@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 http/coupon.http
 http/coupon_new.http
+log/
 
 ### STS ###
 .apt_generated
