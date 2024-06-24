@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.novabook.coupon.coupon.dto.request.CreateBookCouponRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCategoryCouponRequest;
-import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
+import store.novabook.coupon.coupon.dto.request.CreateCouponTemplateRequest;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -86,9 +86,10 @@ public class CouponTemplate {
 		this.usePeriod = usePeriod;
 	}
 
-	public static CouponTemplate of(CreateCouponRequest request) {
+	public static CouponTemplate of(CreateCouponTemplateRequest request) {
 		return CouponTemplate.builder()
 			.name(request.name())
+			.type(request.type())
 			.discountAmount(request.discountAmount())
 			.discountType(request.discountType())
 			.maxDiscountAmount(request.maxDiscountAmount())
