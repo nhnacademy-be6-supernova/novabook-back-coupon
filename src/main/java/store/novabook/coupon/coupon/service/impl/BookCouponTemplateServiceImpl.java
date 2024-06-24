@@ -39,7 +39,7 @@ public class BookCouponTemplateServiceImpl implements BookCouponTemplateService 
 	}
 
 	@Override
-	public GetBookCouponTemplateResponse findAllByBookId(Long bookId, boolean isValid) {
+	public GetBookCouponTemplateAllResponse findAllByBookId(Long bookId, boolean isValid) {
 		if (isValid) {
 			List<BookCouponTemplate> templateList = bookCouponTemplateRepository.findAllByBookIdAndCouponTemplateExpirationAtAfterAndCouponTemplateStartedAtBefore(
 				bookId, LocalDateTime.now(), LocalDateTime.now());

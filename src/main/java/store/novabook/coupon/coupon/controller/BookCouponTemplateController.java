@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.coupon.dto.request.CreateBookCouponTemplateRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponTemplateResponse;
+import store.novabook.coupon.coupon.dto.response.GetBookCouponTemplateAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetBookCouponTemplateResponse;
 import store.novabook.coupon.coupon.service.BookCouponTemplateService;
 
@@ -40,9 +41,9 @@ public class BookCouponTemplateController {
 	}
 
 	@GetMapping("/book/{bookId}")
-	public ResponseEntity<GetBookCouponTemplateResponse> getCouponTemplateByBookId(@PathVariable Long bookId,
+	public ResponseEntity<GetBookCouponTemplateAllResponse> getCouponTemplateByBookId(@PathVariable Long bookId,
 		@RequestParam(defaultValue = "true") boolean isValid) {
-		GetBookCouponTemplateResponse response = bookCouponTemplateService.findAllByBookId(bookId, isValid);
+		GetBookCouponTemplateAllResponse response = bookCouponTemplateService.findAllByBookId(bookId, isValid);
 		return ResponseEntity.ok(response);
 	}
 }
