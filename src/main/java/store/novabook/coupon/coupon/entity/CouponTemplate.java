@@ -1,4 +1,4 @@
-package store.novabook.coupon.coupon.domain;
+package store.novabook.coupon.coupon.entity;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +10,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -18,24 +20,27 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.coupon.coupon.dto.request.CreateCouponBookRequest;
-import store.novabook.coupon.coupon.dto.request.CreateCouponCategoryRequest;
+import store.novabook.coupon.coupon.dto.request.CreateBookCouponRequest;
+import store.novabook.coupon.coupon.dto.request.CreateCategoryCouponRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-public class Coupon {
+public class CouponTemplate {
 
 	@Id
-	@Size(max = 16)
-	@NotNull
-	private String code;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
 	@NotNull
 	@Size(max = 255)
 	private String name;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	private CouponType type;
 
 	@NotNull
 	private long discountAmount;
@@ -61,26 +66,17 @@ public class Coupon {
 	private int usePeriod;
 
 	@CreatedDate
-	@NotNull
 	private LocalDateTime createdAt;
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public Coupon(
-		String code,
-		String name,
-		long discountAmount,
-		DiscountType discountType,
-		long maxDiscountAmount,
-		long minPurchaseAmount,
-		LocalDateTime startedAt,
-		LocalDateTime expirationAt,
-		int usePeriod
-	) {
-		this.code = code;
+	public CouponTemplate(String name, CouponType type, long discountAmount, DiscountType discountType,
+		long maxDiscountAmount, long minPurchaseAmount, LocalDateTime startedAt, LocalDateTime expirationAt,
+		int usePeriod) {
 		this.name = name;
+		this.type = type;
 		this.discountAmount = discountAmount;
 		this.discountType = discountType;
 		this.maxDiscountAmount = maxDiscountAmount;
@@ -90,9 +86,8 @@ public class Coupon {
 		this.usePeriod = usePeriod;
 	}
 
-	public static Coupon of(String code, CreateCouponRequest request) {
-		return Coupon.builder()
-			.code(code)
+	public static CouponTemplate of(CreateCouponRequest request) {
+		return CouponTemplate.builder()
 			.name(request.name())
 			.discountAmount(request.discountAmount())
 			.discountType(request.discountType())
@@ -104,9 +99,8 @@ public class Coupon {
 			.build();
 	}
 
-	public static Coupon of(String code, CreateCouponBookRequest request) {
-		return Coupon.builder()
-			.code(code)
+	public static CouponTemplate of(CreateBookCouponRequest request) {
+		return CouponTemplate.builder()
 			.name(request.name())
 			.discountAmount(request.discountAmount())
 			.discountType(request.discountType())
@@ -118,9 +112,8 @@ public class Coupon {
 			.build();
 	}
 
-	public static Coupon of(String code, CreateCouponCategoryRequest request) {
-		return Coupon.builder()
-			.code(code)
+	public static CouponTemplate of(CreateCategoryCouponRequest request) {
+		return CouponTemplate.builder()
 			.name(request.name())
 			.discountAmount(request.discountAmount())
 			.discountType(request.discountType())
@@ -130,10 +123,6 @@ public class Coupon {
 			.expirationAt(request.expirationAt())
 			.usePeriod(request.usePeriod())
 			.build();
-	}
-
-	public void updateExprationAt(LocalDateTime expirationAt) {
-		this.expirationAt = expirationAt;
 	}
 
 }

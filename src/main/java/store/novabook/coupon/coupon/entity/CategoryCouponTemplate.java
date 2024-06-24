@@ -1,4 +1,4 @@
-package store.novabook.coupon.coupon.domain;
+package store.novabook.coupon.coupon.entity;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -9,7 +9,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,32 +18,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-public class BookCoupon {
+public class CategoryCouponTemplate {
 	@Id
-	@NotNull
-	@Size(max = 16)
-	private String couponCode;
+	private Long id;
 
 	@MapsId
 	@ManyToOne
-	@JoinColumn(name = "coupon_code")
+	@JoinColumn(name = "coupon_template_id")
 	@NotNull
-	private Coupon coupon;
+	private CouponTemplate couponTemplate;
 
 	@NotNull
-	private Long bookId;
+	private Long categoryId;
 
 	@Builder
-	public BookCoupon(Coupon coupon, Long bookId) {
-		this.couponCode = coupon.getCode();
-		this.coupon = coupon;
-		this.bookId = bookId;
+	public CategoryCouponTemplate(CouponTemplate couponTemplate, Long categoryId) {
+		this.id = couponTemplate.getId();
+		this.couponTemplate = couponTemplate;
+		this.categoryId = categoryId;
 	}
 
-	public static BookCoupon of(Coupon coupon, Long bookId) {
-		return BookCoupon.builder()
-			.coupon(coupon)
-			.bookId(bookId)
-			.build();
+	public static CategoryCouponTemplate of(CouponTemplate couponTemplate, Long categoryId) {
+		return CategoryCouponTemplate.builder().couponTemplate(couponTemplate).categoryId(categoryId).build();
 	}
 }
