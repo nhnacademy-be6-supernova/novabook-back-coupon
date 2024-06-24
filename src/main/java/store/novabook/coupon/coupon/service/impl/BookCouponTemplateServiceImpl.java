@@ -26,6 +26,7 @@ public class BookCouponTemplateServiceImpl implements BookCouponTemplateService 
 	private final BookCouponTemplateRepository bookCouponTemplateRepository;
 	private final StoreAdapter storeAdapter;
 
+	@Transactional(readOnly = true)
 	@Override
 	public Page<GetBookCouponTemplateResponse> findAll(Pageable pageable) {
 		return bookCouponTemplateRepository.findAll(pageable).map(GetBookCouponTemplateResponse::fromEntity);
@@ -38,6 +39,7 @@ public class BookCouponTemplateServiceImpl implements BookCouponTemplateService 
 		return CreateCouponTemplateResponse.fromEntity(saved);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public GetBookCouponTemplateAllResponse findAllByBookId(Long bookId, boolean isValid) {
 		if (isValid) {

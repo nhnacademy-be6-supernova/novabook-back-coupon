@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.novabook.coupon.coupon.dto.request.CreateCategoryCouponTemplateRequest;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -38,7 +39,10 @@ public class CategoryCouponTemplate {
 		this.categoryId = categoryId;
 	}
 
-	public static CategoryCouponTemplate of(CouponTemplate couponTemplate, Long categoryId) {
-		return CategoryCouponTemplate.builder().couponTemplate(couponTemplate).categoryId(categoryId).build();
+	public static CategoryCouponTemplate of(CreateCategoryCouponTemplateRequest request) {
+		return CategoryCouponTemplate.builder()
+			.couponTemplate(CouponTemplate.of(request))
+			.categoryId(request.categoryId())
+			.build();
 	}
 }
