@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import store.novabook.coupon.common.adapter.StoreApi;
+import store.novabook.coupon.common.adapter.StoreAdapter;
 import store.novabook.coupon.common.adapter.dto.GetMemberIdAllResponse;
 import store.novabook.coupon.common.adapter.dto.GetMemberIdWithBirthdayRequest;
 import store.novabook.coupon.common.exception.BadRequestException;
@@ -48,7 +48,7 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	private final MemberCouponRepository memberCouponRepository;
 	private final CouponRepository couponRepository;
 
-	private final StoreApi storeApi;
+	private final StoreAdapter storeAdapter;
 
 	@Override
 	@Transactional
@@ -157,7 +157,7 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 		GetMemberIdWithBirthdayRequest request = GetMemberIdWithBirthdayRequest.builder()
 			.month(LocalDate.now().getMonthValue())
 			.build();
-		GetMemberIdAllResponse memberIdList = storeApi.getMemberAllWithBirthdays(request);
+		GetMemberIdAllResponse memberIdList = storeAdapter.getMemberAllWithBirthdays(request);
 
 		LocalDateTime nextStart = LocalDate.now().atStartOfDay().plusHours(birthdayCoupon.getUsePeriod());
 

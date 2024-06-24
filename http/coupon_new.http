@@ -3,13 +3,13 @@ POST http://localhost:8070/api/v1/coupon/coupons/general
 Content-Type: application/json
 
 {
-  "couponType": "BIRTHDAY",
-  "name": "Birthday Discount",
+  "couponType": "GENERAL",
+  "name": "GENERAL Discount",
   "discountAmount": 1000,
   "discountType": "AMOUNT",
   "maxDiscountAmount": 5000,
   "minPurchaseAmount": 2000,
-  "startedAt": "2024-06-23T00:00:00",
+  "startedAt": "2024-06-24T15:10:00",
   "expirationAt": "9999-12-31T23:59:59",
   "usePeriod": 30
 }

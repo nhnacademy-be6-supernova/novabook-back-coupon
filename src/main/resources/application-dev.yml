@@ -35,6 +35,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
+    open-in-view: false
+
 
 
 
@@ -56,3 +58,6 @@ rabbitmq:
 store:
   service:
     url: http://localhost:8090
+batch:
+  service:
+    url: http://localhost:8060

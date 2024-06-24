@@ -7,7 +7,7 @@ import store.novabook.coupon.common.adapter.dto.GetMemberIdAllResponse;
 import store.novabook.coupon.common.adapter.dto.GetMemberIdWithBirthdayRequest;
 
 @FeignClient(name = "store-service", url = "${store.service.url}")
-public interface StoreApi {
+public interface StoreAdapter {
 
 	@GetMapping("/members/birthdays")
 	GetMemberIdAllResponse getMemberAllWithBirthdays(GetMemberIdWithBirthdayRequest request);

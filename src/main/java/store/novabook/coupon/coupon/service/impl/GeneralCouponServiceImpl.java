@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import store.novabook.coupon.common.exception.BadRequestException;
 import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.util.CouponCodeGenerator;
@@ -15,15 +16,18 @@ import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 import store.novabook.coupon.coupon.repository.CouponRepository;
+import store.novabook.coupon.coupon.service.CouponSchedulerService;
 import store.novabook.coupon.coupon.service.GeneralCouponService;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class GeneralCouponServiceImpl implements GeneralCouponService {
 
 	private final CouponCodeGenerator codeGenerator;
 	private final CouponRepository couponRepository;
+	private final CouponSchedulerService couponSchedulerService;
 
 	private static void validGeneralCouponType(CreateCouponRequest createCouponRequest) {
 		if (createCouponRequest.couponType() == CouponType.CATEGORY
@@ -38,6 +42,9 @@ public class GeneralCouponServiceImpl implements GeneralCouponService {
 		Coupon coupon = Coupon.of(codeGenerator.generateUniqueCode(createCouponRequest.couponType()),
 			createCouponRequest);
 		Coupon saved = couponRepository.save(coupon);
+		if (saved.getCode().startsWith(CouponType.GENERAL.getPrefix())) {
+			couponSchedulerService.scheduleCouponJob(coupon);
+		}
 		return CreateCouponResponse.fromEntity(saved);
 	}
 
