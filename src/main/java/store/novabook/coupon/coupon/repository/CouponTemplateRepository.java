@@ -2,6 +2,7 @@ package store.novabook.coupon.coupon.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,4 +16,6 @@ public interface CouponTemplateRepository extends JpaRepository<CouponTemplate, 
 	Page<CouponTemplate> findAllByType(@NotNull CouponType type, Pageable pageable);
 
 	List<CouponTemplate> findAllByStartedAtAfter(@NotNull LocalDateTime startedAt);
+
+	Optional<CouponTemplate> findTopByTypeOrderByCreatedAtDesc(@NotNull CouponType type);
 }

@@ -3,12 +3,17 @@ package store.novabook.coupon.coupon.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.common.exception.BadRequestException;
 import store.novabook.coupon.common.exception.ErrorCode;
+import store.novabook.coupon.common.message.MemberRegistrationMessage;
+import store.novabook.coupon.coupon.dto.message.CouponCreatedMessage;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
@@ -16,6 +21,7 @@ import store.novabook.coupon.coupon.dto.response.GetCouponAllResponse;
 import store.novabook.coupon.coupon.entity.Coupon;
 import store.novabook.coupon.coupon.entity.CouponStatus;
 import store.novabook.coupon.coupon.entity.CouponTemplate;
+import store.novabook.coupon.coupon.entity.CouponType;
 import store.novabook.coupon.coupon.repository.CouponRepository;
 import store.novabook.coupon.coupon.repository.CouponTemplateRepository;
 import store.novabook.coupon.coupon.service.CouponService;
@@ -26,6 +32,13 @@ import store.novabook.coupon.coupon.service.CouponService;
 public class CouponServiceImpl implements CouponService {
 	private final CouponRepository couponRepository;
 	private final CouponTemplateRepository couponTemplateRepository;
+	private final RabbitTemplate rabbitTemplate;
+
+	@Value("${rabbitmq.exchange.coupon}")
+	private String couponExchangeName;
+
+	@Value("${rabbitmq.routing.couponCreated}")
+	private String couponCreatedRoutingKey;
 
 	private static void validateExpiration(CouponTemplate couponTemplate) {
 		if (couponTemplate.getExpirationAt().isBefore(LocalDateTime.now()) || couponTemplate.getStartedAt()
@@ -65,13 +78,15 @@ public class CouponServiceImpl implements CouponService {
 		return GetCouponAllResponse.fromEntity(couponList);
 	}
 
-	// @RabbitListener(queues = "${rabbitmq.queue.coupon}")
-	// @Transactional
-	// public void handleMemberRegistrationMessage(MemberRegistrationMessage message) {
-	// 	CouponTemplate welcomeCouponTemplate = couponRepository.find
-	// 		.orElseThrow(() -> new BadRequestException(ErrorCode.WELCOME_COUPON_NOT_FOUND));
-	//
-	// 	memberCouponRepository.save(Coupon.of(message.memberId(), welcomeCouponTemplate, CouponStatus.UNUSED,
-	// 		LocalDateTime.now().plusHours(welcomeCouponTemplate.getUsePeriod())));
-	// }
+	@RabbitListener(queues = "${rabbitmq.queue.coupon}")
+	@Transactional
+	public void handleMemberRegistrationMessage(MemberRegistrationMessage message) {
+		CouponTemplate welcomeCouponTemplate = couponTemplateRepository.findTopByTypeOrderByCreatedAtDesc(
+			CouponType.WELCOME).orElseThrow(() -> new BadRequestException(ErrorCode.WELCOME_COUPON_NOT_FOUND));
+		Coupon saved = couponRepository.save(Coupon.of(welcomeCouponTemplate, CouponStatus.UNUSED,
+			LocalDateTime.now().plusHours(welcomeCouponTemplate.getUsePeriod())));
+		CouponCreatedMessage couponCreatedMessage = new CouponCreatedMessage(saved.getId(), message.memberId());
+		rabbitTemplate.convertAndSend(couponExchangeName, couponCreatedRoutingKey, couponCreatedMessage);
+
+	}
 }

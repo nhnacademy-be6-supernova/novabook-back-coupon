@@ -39,18 +39,37 @@ public class RabbitConfig {
 	@Value("${rabbitmq.queue.dead}")
 	private String deadQueueName;
 
+	@Value("${rabbitmq.queue.member-coupon}")
+	private String memberCouponQueueName;
+
 	@Value("${rabbitmq.exchange.member}")
 	private String memberExchangeName;
 
+	@Value("${rabbitmq.exchange.coupon}")
+	private String couponExchangeName;
+
 	@Value("${rabbitmq.routing.member}")
 	private String memberRoutingKey;
+
+	@Value("${rabbitmq.routing.couponCreated}")
+	private String couponCreatedRoutingKey;
 
 	@Bean
 	public Queue couponQueue() {
 		Map<String, Object> args = new HashMap<>();
 		args.put("x-dead-letter-exchange", memberExchangeName);
 		args.put("x-dead-letter-routing-key", deadQueueName);
+		args.put("x-original-queue", couponQueueName);
 		return new Queue(couponQueueName, false, false, false, args);
+	}
+
+	@Bean
+	public Queue memberCouponQueue() {
+		Map<String, Object> args = new HashMap<>();
+		args.put("x-dead-letter-exchange", couponExchangeName);
+		args.put("x-dead-letter-routing-key", deadQueueName);
+		args.put("x-original-queue", memberCouponQueueName);
+		return new Queue(memberCouponQueueName, false, false, false, args);
 	}
 
 	@Bean
@@ -64,13 +83,23 @@ public class RabbitConfig {
 	}
 
 	@Bean
+	public TopicExchange couponExchange() {
+		return new TopicExchange(couponExchangeName);
+	}
+
+	@Bean
 	public Binding couponBinding() {
 		return BindingBuilder.bind(couponQueue()).to(memberExchange()).with(memberRoutingKey);
 	}
 
 	@Bean
+	public Binding couponCreatedBinding() {
+		return BindingBuilder.bind(memberCouponQueue()).to(couponExchange()).with(couponCreatedRoutingKey);
+	}
+
+	@Bean
 	public Binding deadBinding() {
-		return BindingBuilder.bind(deadQueue()).to(memberExchange()).with(deadQueueName);
+		return BindingBuilder.bind(deadQueue()).to(couponExchange()).with(deadQueueName);
 	}
 
 	@Bean

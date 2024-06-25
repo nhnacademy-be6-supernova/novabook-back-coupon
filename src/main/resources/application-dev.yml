@@ -37,9 +37,6 @@ spring:
     show-sql: true
     open-in-view: false
 
-
-
-
 logging:
   level:
     org.hibernate.SQL: debug
@@ -49,11 +46,13 @@ rabbitmq:
   queue:
     coupon: couponQueue
     dead: deadQueue
+    member-coupon: memberCouponQueue
   exchange:
     member: memberExchange
+    coupon: couponExchange
   routing:
     member: member.registration
-
+    couponCreated: coupon.created
 
 store:
   service:
