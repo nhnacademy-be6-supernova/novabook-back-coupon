@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.coupon.common.dto.ApiResponse;
+import store.novabook.coupon.common.dto.PageResponse;
 import store.novabook.coupon.common.exception.dto.ErrorResponse;
 import store.novabook.coupon.common.exception.dto.ValidErrorResponse;
 
