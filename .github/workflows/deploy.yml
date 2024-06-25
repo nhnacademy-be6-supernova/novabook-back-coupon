@@ -36,10 +36,10 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > private_key
           chmod 600 private_key
           # Copy files to server
-          scp -i private_key -o StrictHostKeyChecking=no -r * $SERVER_USER@$SERVER_IP:/path/to/deploy
+          scp -i private_key -o StrictHostKeyChecking=no -r * $SERVER_USER@$SERVER_IP:/home/nova-dev/coupon
           # SSH into server and restart application
           ssh -i private_key -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
-            cd /path/to/deploy
+            cd /home/nova-dev/coupon
             # Application-specific deployment commands
             ./restart.sh
           EOF
