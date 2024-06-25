@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import store.novabook.coupon.common.adapter.StoreAdapter;
 import store.novabook.coupon.coupon.dto.request.CreateBookCouponTemplateRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponTemplateResponse;
 import store.novabook.coupon.coupon.dto.response.GetBookCouponTemplateAllResponse;
@@ -24,7 +23,6 @@ import store.novabook.coupon.coupon.service.BookCouponTemplateService;
 public class BookCouponTemplateServiceImpl implements BookCouponTemplateService {
 
 	private final BookCouponTemplateRepository bookCouponTemplateRepository;
-	private final StoreAdapter storeAdapter;
 
 	@Transactional(readOnly = true)
 	@Override
