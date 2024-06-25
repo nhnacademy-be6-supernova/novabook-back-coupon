@@ -43,9 +43,6 @@ public class Coupon {
 	private CouponStatus status;
 
 	@NotNull
-	private LocalDateTime usedAt;
-
-	@NotNull
 	private LocalDateTime expirationAt;
 
 	@CreatedDate
@@ -67,10 +64,6 @@ public class Coupon {
 
 	public void updateStatus(CouponStatus status) {
 		this.status = status;
-	}
-
-	public void updateUsedAt(LocalDateTime usedAt) {
-		this.usedAt = usedAt;
 	}
 
 }

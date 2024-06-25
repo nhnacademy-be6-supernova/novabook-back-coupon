@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
-import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponAllResponse;
 import store.novabook.coupon.coupon.service.CouponService;
 
 @RestController
@@ -26,8 +26,8 @@ public class CouponController {
 	private final CouponService couponService;
 
 	@GetMapping
-	public ResponseEntity<GetCouponResponse> getCouponAll(@Valid @RequestBody GetCouponAllRequest request) {
-		GetCouponResponse response = couponService.findAllById(request);
+	public ResponseEntity<GetCouponAllResponse> getCouponAll(@Valid @RequestBody GetCouponAllRequest request) {
+		GetCouponAllResponse response = couponService.findAllById(request);
 		return ResponseEntity.ok(response);
 	}
 

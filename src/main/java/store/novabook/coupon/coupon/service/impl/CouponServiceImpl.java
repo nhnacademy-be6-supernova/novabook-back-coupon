@@ -1,6 +1,7 @@
 package store.novabook.coupon.coupon.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +12,7 @@ import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
-import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponAllResponse;
 import store.novabook.coupon.coupon.entity.Coupon;
 import store.novabook.coupon.coupon.entity.CouponStatus;
 import store.novabook.coupon.coupon.entity.CouponTemplate;
@@ -41,7 +42,6 @@ public class CouponServiceImpl implements CouponService {
 			throw new BadRequestException(ErrorCode.ALREADY_USED_COUPON);
 		}
 		coupon.updateStatus(CouponStatus.USED);
-		coupon.updateUsedAt(LocalDateTime.now());
 		couponRepository.save(coupon);
 	}
 
@@ -60,7 +60,18 @@ public class CouponServiceImpl implements CouponService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public GetCouponResponse findAllById(GetCouponAllRequest request) {
-		return null;
+	public GetCouponAllResponse findAllById(GetCouponAllRequest request) {
+		List<Coupon> couponList = couponRepository.findAllById(request.couponIdList());
+		return GetCouponAllResponse.fromEntity(couponList);
 	}
+
+	// @RabbitListener(queues = "${rabbitmq.queue.coupon}")
+	// @Transactional
+	// public void handleMemberRegistrationMessage(MemberRegistrationMessage message) {
+	// 	CouponTemplate welcomeCouponTemplate = couponRepository.find
+	// 		.orElseThrow(() -> new BadRequestException(ErrorCode.WELCOME_COUPON_NOT_FOUND));
+	//
+	// 	memberCouponRepository.save(Coupon.of(message.memberId(), welcomeCouponTemplate, CouponStatus.UNUSED,
+	// 		LocalDateTime.now().plusHours(welcomeCouponTemplate.getUsePeriod())));
+	// }
 }
