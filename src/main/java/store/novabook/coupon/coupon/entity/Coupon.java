@@ -1,4 +1,4 @@
-package store.novabook.coupon.coupon.domain;
+package store.novabook.coupon.coupon.entity;
 
 import java.time.LocalDateTime;
 
@@ -27,28 +27,27 @@ import lombok.ToString;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @ToString
-public class MemberCoupon {
+public class Coupon {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "coupon_code")
+	@JoinColumn(name = "coupon_template_id")
 	@NotNull
-	private Coupon coupon;
-
-	@NotNull
-	private Long memberId;
+	private CouponTemplate couponTemplate;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
-	private MemberCouponStatus status;
+	private CouponStatus status;
+
+	@NotNull
+	private LocalDateTime usedAt;
 
 	@NotNull
 	private LocalDateTime expirationAt;
 
-	@NotNull
 	@CreatedDate
 	private LocalDateTime createdAt;
 
@@ -56,24 +55,22 @@ public class MemberCoupon {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public MemberCoupon(Coupon coupon, Long memberId, MemberCouponStatus status, LocalDateTime expirationAt) {
-		this.coupon = coupon;
-		this.memberId = memberId;
+	public Coupon(CouponTemplate couponTemplate, CouponStatus status, LocalDateTime expirationAt) {
+		this.couponTemplate = couponTemplate;
 		this.status = status;
 		this.expirationAt = expirationAt;
 	}
 
-	public static MemberCoupon of(Long memberId, Coupon coupon, MemberCouponStatus status, LocalDateTime expirationAt) {
-		return MemberCoupon.builder()
-			.coupon(coupon)
-			.memberId(memberId)
-			.status(status)
-			.expirationAt(expirationAt)
-			.build();
+	public static Coupon of(CouponTemplate couponTemplate, CouponStatus status, LocalDateTime expirationAt) {
+		return Coupon.builder().couponTemplate(couponTemplate).status(status).expirationAt(expirationAt).build();
 	}
 
-	public void updateStatus(MemberCouponStatus status) {
+	public void updateStatus(CouponStatus status) {
 		this.status = status;
+	}
+
+	public void updateUsedAt(LocalDateTime usedAt) {
+		this.usedAt = usedAt;
 	}
 
 }

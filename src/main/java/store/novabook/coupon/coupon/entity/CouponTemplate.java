@@ -20,8 +20,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.novabook.coupon.coupon.dto.request.CreateBookCouponRequest;
-import store.novabook.coupon.coupon.dto.request.CreateCategoryCouponRequest;
+import store.novabook.coupon.coupon.dto.request.CreateBookCouponTemplateRequest;
+import store.novabook.coupon.coupon.dto.request.CreateCategoryCouponTemplateRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCouponTemplateRequest;
 
 @Entity
@@ -100,9 +100,10 @@ public class CouponTemplate {
 			.build();
 	}
 
-	public static CouponTemplate of(CreateBookCouponRequest request) {
+	public static CouponTemplate of(CreateBookCouponTemplateRequest request) {
 		return CouponTemplate.builder()
 			.name(request.name())
+			.type(CouponType.BOOK)
 			.discountAmount(request.discountAmount())
 			.discountType(request.discountType())
 			.maxDiscountAmount(request.maxDiscountAmount())
@@ -113,9 +114,10 @@ public class CouponTemplate {
 			.build();
 	}
 
-	public static CouponTemplate of(CreateCategoryCouponRequest request) {
+	public static CouponTemplate of(CreateCategoryCouponTemplateRequest request) {
 		return CouponTemplate.builder()
 			.name(request.name())
+			.type(CouponType.CATEGORY)
 			.discountAmount(request.discountAmount())
 			.discountType(request.discountType())
 			.maxDiscountAmount(request.maxDiscountAmount())

@@ -8,11 +8,11 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import store.novabook.coupon.common.validator.ValidDiscount;
-import store.novabook.coupon.coupon.domain.DiscountType;
-import store.novabook.coupon.coupon.domain.Discountable;
+import store.novabook.coupon.coupon.entity.DiscountType;
+import store.novabook.coupon.coupon.entity.Discountable;
 
 @ValidDiscount
-public record CreateCouponCategoryRequest(
+public record CreateCategoryCouponTemplateRequest(
 	@NotNull(message = "카테고리 ID는 필수 입력 항목입니다.") Long categoryId,
 	@NotNull(message = "이름은 필수 입력 항목입니다.") @Size(max = 255, message = "이름은 255자 이하로 입력해야 합니다.") String name,
 	@NotNull(message = "할인 금액은 필수 입력 항목입니다.") @Range(min = 0, max = 100000) long discountAmount,

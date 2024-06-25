@@ -1,7 +1,7 @@
 package store.novabook.coupon.coupon.service;
 
-import store.novabook.coupon.coupon.domain.Coupon;
+import store.novabook.coupon.coupon.entity.CouponTemplate;
 
 public interface CouponSchedulerService {
-	void scheduleCouponJob(Coupon coupon);
+	void scheduleCouponJob(CouponTemplate couponTemplate);
 }

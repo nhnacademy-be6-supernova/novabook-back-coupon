@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import store.novabook.coupon.coupon.domain.MemberCouponStatus;
+import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponAllRequest;
-import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
+import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponAllResponse;
-import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
-import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
+import store.novabook.coupon.coupon.entity.CouponStatus;
 import store.novabook.coupon.coupon.service.MemberCouponService;
 
 @RestController
@@ -35,9 +35,9 @@ public class MemberCouponController {
 
 	// 회원에게 쿠폰 등록하기
 	@PostMapping("/members/{memberId}/coupons")
-	public ResponseEntity<CreateMemberCouponResponse> saveMemberCoupon(@PathVariable Long memberId,
-		@Valid @RequestBody CreateMemberCouponRequest request) {
-		CreateMemberCouponResponse response = memberCouponService.saveMemberCoupon(memberId, request);
+	public ResponseEntity<CreateCouponResponse> saveMemberCoupon(@PathVariable Long memberId,
+		@Valid @RequestBody CreateCouponRequest request) {
+		CreateCouponResponse response = memberCouponService.saveMemberCoupon(memberId, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
@@ -60,9 +60,9 @@ public class MemberCouponController {
 
 	// 마이페이지 - 쿠폰함/쿠폰내역에서 사용. "미사용"/"사용" 에 따라 가져옴
 	@GetMapping("/members/{memberId}/coupons")
-	public ResponseEntity<Page<GetMemberCouponResponse>> getMemberCouponByStatus(@PathVariable Long memberId,
-		@RequestParam MemberCouponStatus status, @PageableDefault(size = 5) Pageable pageable) {
-		Page<GetMemberCouponResponse> response = memberCouponService.getMemberCouponAllByStatus(memberId,
+	public ResponseEntity<Page<GetCouponResponse>> getMemberCouponByStatus(@PathVariable Long memberId,
+		@RequestParam CouponStatus status, @PageableDefault(size = 5) Pageable pageable) {
+		Page<GetCouponResponse> response = memberCouponService.getMemberCouponAllByStatus(memberId,
 			status, pageable);
 		return ResponseEntity.ok(response);
 	}

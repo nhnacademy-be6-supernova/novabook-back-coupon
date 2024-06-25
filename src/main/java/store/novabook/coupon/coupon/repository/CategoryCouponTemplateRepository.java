@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import jakarta.validation.constraints.NotNull;
 import store.novabook.coupon.coupon.entity.CategoryCouponTemplate;
 
-public interface CategoryCouponTemplateRepository extends JpaRepository<CategoryCouponTemplate, String> {
+public interface CategoryCouponTemplateRepository extends JpaRepository<CategoryCouponTemplate, Long> {
 	List<CategoryCouponTemplate> findAllByCategoryIdAndCouponTemplateExpirationAtAfterAndCouponTemplateStartedAtBefore(
 		@NotNull Long categoryId, @NotNull LocalDateTime expirationAt, @NotNull LocalDateTime startedAt);
 

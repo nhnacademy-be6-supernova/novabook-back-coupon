@@ -11,15 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 
-import store.novabook.coupon.coupon.domain.MemberCoupon;
-import store.novabook.coupon.coupon.domain.MemberCouponStatus;
-import store.novabook.coupon.coupon.domain.QBookCoupon;
-import store.novabook.coupon.coupon.domain.QCategoryCoupon;
-import store.novabook.coupon.coupon.domain.QCoupon;
-import store.novabook.coupon.coupon.domain.QMemberCoupon;
+import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponBookResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponCategoryResponse;
-import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
+import store.novabook.coupon.coupon.entity.Coupon;
+import store.novabook.coupon.coupon.entity.CouponStatus;
+import store.novabook.coupon.coupon.entity.QBookCoupon;
+import store.novabook.coupon.coupon.entity.QCategoryCoupon;
+import store.novabook.coupon.coupon.entity.QCoupon;
+import store.novabook.coupon.coupon.entity.QMemberCoupon;
 import store.novabook.coupon.coupon.repository.querydsl.CustomizedMemberCouponRepository;
 
 @Transactional(readOnly = true)
@@ -27,7 +27,7 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 	implements CustomizedMemberCouponRepository {
 
 	public CustomizedMemberCouponRepositoryImpl() {
-		super(MemberCoupon.class);
+		super(Coupon.class);
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 
 		if (validOnly) {
 			builder.and(memberCoupon.expirationAt.after(LocalDateTime.now()))
-				.and(memberCoupon.status.eq(MemberCouponStatus.UNUSED));
+				.and(memberCoupon.status.eq(CouponStatus.UNUSED));
 		}
 
 		return from(memberCoupon).select(
@@ -67,7 +67,7 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 
 		if (validOnly) {
 			builder.and(memberCoupon.expirationAt.after(LocalDateTime.now()))
-				.and(memberCoupon.status.eq(MemberCouponStatus.UNUSED));
+				.and(memberCoupon.status.eq(CouponStatus.UNUSED));
 		}
 
 		return from(memberCoupon).select(
@@ -83,7 +83,7 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 	}
 
 	@Override
-	public List<GetMemberCouponResponse> findGeneralCouponsByMemberId(Long memberId, boolean validOnly) {
+	public List<GetCouponResponse> findGeneralCouponsByMemberId(Long memberId, boolean validOnly) {
 		QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
 		QCoupon coupon = QCoupon.coupon;
 
@@ -92,11 +92,11 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 
 		if (validOnly) {
 			builder.and(memberCoupon.expirationAt.after(LocalDateTime.now()))
-				.and(memberCoupon.status.eq(MemberCouponStatus.UNUSED));
+				.and(memberCoupon.status.eq(CouponStatus.UNUSED));
 		}
 
 		return from(memberCoupon).select(
-				Projections.constructor(GetMemberCouponResponse.class, memberCoupon.id, coupon.code, coupon.name,
+				Projections.constructor(GetCouponResponse.class, memberCoupon.id, coupon.code, coupon.name,
 					coupon.discountAmount, coupon.discountType, coupon.maxDiscountAmount, coupon.minPurchaseAmount,
 					coupon.startedAt, coupon.expirationAt))
 			.innerJoin(coupon)
@@ -106,13 +106,13 @@ public class CustomizedMemberCouponRepositoryImpl extends QuerydslRepositorySupp
 	}
 
 	@Override
-	public List<GetMemberCouponResponse> findValidCouponsByStatus(Long memberId, String prefix,
-		MemberCouponStatus status, LocalDateTime expirationAt, LocalDateTime startedAt) {
+	public List<GetCouponResponse> findValidCouponsByStatus(Long memberId, String prefix,
+		CouponStatus status, LocalDateTime expirationAt, LocalDateTime startedAt) {
 		QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
 		QCoupon coupon = QCoupon.coupon;
 
 		return select(
-			Projections.constructor(GetMemberCouponResponse.class, memberCoupon.id.as("memberCouponId"), coupon.code,
+			Projections.constructor(GetCouponResponse.class, memberCoupon.id.as("memberCouponId"), coupon.code,
 				coupon.name, coupon.discountAmount, coupon.discountType, coupon.maxDiscountAmount,
 				coupon.minPurchaseAmount, coupon.startedAt, coupon.expirationAt)).from(memberCoupon)
 			.join(memberCoupon.coupon, coupon)

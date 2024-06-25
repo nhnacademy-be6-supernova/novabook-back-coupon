@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import store.novabook.coupon.coupon.entity.CouponTemplate;
 import store.novabook.coupon.coupon.entity.CouponType;
 
-public interface CouponTemplateRepository extends JpaRepository<CouponTemplate, String> {
+public interface CouponTemplateRepository extends JpaRepository<CouponTemplate, Long> {
 	Page<CouponTemplate> findAllByType(@NotNull CouponType type, Pageable pageable);
 
 	Optional<CouponTemplate> findTopByTypeOrderByCreatedAtDesc(@NotNull CouponType type);

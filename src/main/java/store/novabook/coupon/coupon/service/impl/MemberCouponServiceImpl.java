@@ -23,20 +23,19 @@ import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.ForbiddenException;
 import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.common.message.MemberRegistrationMessage;
-import store.novabook.coupon.coupon.domain.Coupon;
-import store.novabook.coupon.coupon.domain.CouponType;
-import store.novabook.coupon.coupon.domain.MemberCoupon;
-import store.novabook.coupon.coupon.domain.MemberCouponStatus;
+import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.CreateMemberCouponAllRequest;
-import store.novabook.coupon.coupon.dto.request.CreateMemberCouponRequest;
 import store.novabook.coupon.coupon.dto.request.PutMemberCouponRequest;
+import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
 import store.novabook.coupon.coupon.dto.response.CreateMemberCouponAllResponse;
-import store.novabook.coupon.coupon.dto.response.CreateMemberCouponResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponBookResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponByTypeResponse;
 import store.novabook.coupon.coupon.dto.response.GetMemberCouponCategoryResponse;
-import store.novabook.coupon.coupon.dto.response.GetMemberCouponResponse;
-import store.novabook.coupon.coupon.repository.CouponRepository;
+import store.novabook.coupon.coupon.entity.Coupon;
+import store.novabook.coupon.coupon.entity.CouponStatus;
+import store.novabook.coupon.coupon.entity.CouponTemplate;
+import store.novabook.coupon.coupon.entity.CouponType;
 import store.novabook.coupon.coupon.repository.MemberCouponRepository;
 import store.novabook.coupon.coupon.service.MemberCouponService;
 
@@ -52,26 +51,25 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 
 	@Override
 	@Transactional
-	public CreateMemberCouponResponse saveMemberCoupon(Long memberId, CreateMemberCouponRequest request) {
-		Coupon coupon = couponRepository.findById(request.couponCode())
+	public CreateCouponResponse saveMemberCoupon(Long memberId, CreateCouponRequest request) {
+		CouponTemplate couponTemplate = couponRepository.findById(request.couponCode())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 
 		// 다운로드 불가능 기간
-		if (coupon.getExpirationAt().isBefore(LocalDateTime.now()) || coupon.getStartedAt()
+		if (couponTemplate.getExpirationAt().isBefore(LocalDateTime.now()) || couponTemplate.getStartedAt()
 			.isAfter(LocalDateTime.now())) {
 			throw new BadRequestException(ErrorCode.EXPIRED_COUPON_CODE);
 		}
 
-		MemberCoupon memberCoupon = MemberCoupon.of(memberId, coupon, MemberCouponStatus.UNUSED,
-			request.expirationAt());
-		MemberCoupon saved = memberCouponRepository.save(memberCoupon);
-		return CreateMemberCouponResponse.fromEntity(saved);
+		Coupon coupon = Coupon.of(couponTemplate, CouponStatus.UNUSED, request.expirationAt());
+		Coupon saved = memberCouponRepository.save(coupon);
+		return CreateCouponResponse.fromEntity(saved);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public GetMemberCouponByTypeResponse getMemberCouponAllByValid(Long memberId, Boolean validOnly) {
-		List<GetMemberCouponResponse> generalCouponList = memberCouponRepository.findGeneralCouponsByMemberId(memberId,
+		List<GetCouponResponse> generalCouponList = memberCouponRepository.findGeneralCouponsByMemberId(memberId,
 			validOnly);
 		List<GetMemberCouponBookResponse> bookCouponList = memberCouponRepository.findBookCouponsByMemberId(memberId,
 			validOnly);
@@ -87,51 +85,50 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetMemberCouponResponse> getMemberCouponAllByStatus(Long memberId, MemberCouponStatus status,
+	public Page<GetCouponResponse> getMemberCouponAllByStatus(Long memberId, CouponStatus status,
 		Pageable pageable) {
-		Page<MemberCoupon> memberCouponPage = memberCouponRepository.findAllByStatus(status, pageable);
-		return memberCouponPage.map(GetMemberCouponResponse::fromEntity);
+		Page<Coupon> memberCouponPage = memberCouponRepository.findAllByStatus(status, pageable);
+		return memberCouponPage.map(GetCouponResponse::fromEntity);
 	}
 
 	@Override
 	@Transactional
 	public void updateMemberCouponStatus(Long memberId, String memberCouponId, PutMemberCouponRequest request) {
-		MemberCoupon memberCoupon = memberCouponRepository.findById(memberId)
+		Coupon coupon = memberCouponRepository.findById(memberId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 
-		validateMemberCoupon(memberId, memberCoupon);
+		validateMemberCoupon(memberId, coupon);
 
-		memberCoupon.updateStatus(request.status());
+		coupon.updateStatus(request.status());
 	}
 
 	@Override
 	@Transactional
 	public CreateMemberCouponAllResponse saveMemberCouponAll(CreateMemberCouponAllRequest request) {
-		Coupon coupon = couponRepository.findById(request.couponCode())
+		CouponTemplate couponTemplate = couponRepository.findById(request.couponCode())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 
-		List<MemberCoupon> memberCouponList = new ArrayList<>();
+		List<Coupon> couponList = new ArrayList<>();
 		for (Long id : request.memberIdList()) {
-			MemberCoupon memberCoupon = MemberCoupon.builder()
+			Coupon coupon = Coupon.builder()
 				.memberId(id)
-				.coupon(coupon)
+				.coupon(couponTemplate)
 				.expirationAt(request.expirationAt())
-				.status(MemberCouponStatus.UNUSED)
+				.status(CouponStatus.UNUSED)
 				.build();
-			memberCouponList.add(memberCoupon);
+			couponList.add(coupon);
 		}
 
-		List<MemberCoupon> saved = memberCouponRepository.saveAll(memberCouponList);
+		List<Coupon> saved = memberCouponRepository.saveAll(couponList);
 		return CreateMemberCouponAllResponse.fromEntity(saved);
 	}
 
-	private void validateMemberCoupon(Long memberId, MemberCoupon memberCoupon) {
-		if (!Objects.equals(memberCoupon.getMemberId(), memberId)) {
+	private void validateMemberCoupon(Long memberId, Coupon coupon) {
+		if (!Objects.equals(coupon.getMemberId(), memberId)) {
 			throw new ForbiddenException(ErrorCode.NOT_ENOUGH_PERMISSION);
 		}
 
-		if (memberCoupon.getStatus() != MemberCouponStatus.UNUSED || memberCoupon.getExpirationAt()
-			.isBefore(LocalDateTime.now())) {
+		if (coupon.getStatus() != CouponStatus.UNUSED || coupon.getExpirationAt().isBefore(LocalDateTime.now())) {
 			throw new BadRequestException(ErrorCode.INVALID_COUPON);
 		}
 	}
@@ -139,18 +136,18 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 	@RabbitListener(queues = "${rabbitmq.queue.coupon}")
 	@Transactional
 	public void handleMemberRegistrationMessage(MemberRegistrationMessage message) {
-		Coupon welcomeCoupon = couponRepository.findTopByCodeStartsWithOrderByCreatedAtDesc(
+		CouponTemplate welcomeCouponTemplate = couponRepository.findTopByCodeStartsWithOrderByCreatedAtDesc(
 				CouponType.WELCOME.getPrefix())
 			.orElseThrow(() -> new BadRequestException(ErrorCode.WELCOME_COUPON_NOT_FOUND));
 
-		memberCouponRepository.save(MemberCoupon.of(message.memberId(), welcomeCoupon, MemberCouponStatus.UNUSED,
-			LocalDateTime.now().plusHours(welcomeCoupon.getUsePeriod())));
+		memberCouponRepository.save(Coupon.of(message.memberId(), welcomeCouponTemplate, CouponStatus.UNUSED,
+			LocalDateTime.now().plusHours(welcomeCouponTemplate.getUsePeriod())));
 	}
 
 	@Scheduled(cron = "0 0 0 1 * ?")
 	@Transactional
 	public void issueBirthdayCoupons() {
-		Coupon birthdayCoupon = couponRepository.findTopByCodeStartsWithOrderByCreatedAtDesc(
+		CouponTemplate birthdayCouponTemplate = couponRepository.findTopByCodeStartsWithOrderByCreatedAtDesc(
 				CouponType.BIRTHDAY.getPrefix())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.BIRTHDAY_COUPON_NOT_FOUND));
 
@@ -159,19 +156,19 @@ public class MemberCouponServiceImpl implements MemberCouponService {
 			.build();
 		GetMemberIdAllResponse memberIdList = storeAdapter.getMemberAllWithBirthdays(request);
 
-		LocalDateTime nextStart = LocalDate.now().atStartOfDay().plusHours(birthdayCoupon.getUsePeriod());
+		LocalDateTime nextStart = LocalDate.now().atStartOfDay().plusHours(birthdayCouponTemplate.getUsePeriod());
 
-		List<MemberCoupon> memberCoupons = new ArrayList<>();
+		List<Coupon> coupons = new ArrayList<>();
 		for (Long userId : memberIdList.memberIds()) {
-			MemberCoupon memberCoupon = MemberCoupon.builder()
+			Coupon coupon = Coupon.builder()
 				.memberId(userId)
-				.coupon(birthdayCoupon)
-				.status(MemberCouponStatus.UNUSED)
+				.coupon(birthdayCouponTemplate)
+				.status(CouponStatus.UNUSED)
 				.expirationAt(nextStart)
 				.build();
-			memberCoupons.add(memberCoupon);
+			coupons.add(coupon);
 		}
-		memberCouponRepository.saveAll(memberCoupons);
+		memberCouponRepository.saveAll(coupons);
 	}
 
 }
