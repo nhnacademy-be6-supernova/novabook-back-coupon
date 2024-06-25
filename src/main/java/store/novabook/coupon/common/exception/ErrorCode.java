@@ -24,7 +24,11 @@ public enum ErrorCode {
 	INVALID_REQUEST_ARGUMENT("잘못된 요청입니다."),
 	EXPIRED_COUPON_CODE("만료된 쿠폰 코드입니다."),
 	INVALID_COUPON("유효하지 않은 쿠폰입니다."),
-
+	INVALID_COUPON_TYPE("유효하지 않은 쿠폰 타입입니다."),
+	WELCOME_COUPON_NOT_FOUND("웰컴 쿠폰이 존재하지 않습니다. "),
+	BIRTHDAY_COUPON_NOT_FOUND("생일 쿠폰이 존재하지 않습니다. "),
+	INVALID_ARGUMENT_TYPE("유효하지 않은 인자입니다."),
+	ALREADY_USED_COUPON("이미 사용된 쿠폰입니다."),
 	// 401 로그인 안됨
 
 	// 403
@@ -34,6 +38,7 @@ public enum ErrorCode {
 	COUPON_NOT_FOUND("존재하지 않는 쿠폰입니다."),
 	BOOK_COUPON_NOT_FOUND("해당 책에 대한 쿠폰이 존재하지 않습니다."),
 	CATEGORY_COUPON_NOT_FOUND("해당 카테고리에 대한 쿠폰이 존재하지 않습니다."),
+	COUPON_TEMPLATE_NOT_FOUND("해당 쿠폰 템플릿이 존재하지 않습니다."),
 
 	// 500
 	INTERNAL_SERVER_ERROR("서버 내부에 문제가 발생했습니다.");

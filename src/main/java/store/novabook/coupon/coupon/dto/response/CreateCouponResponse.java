@@ -1,27 +1,11 @@
 package store.novabook.coupon.coupon.dto.response;
 
 import lombok.Builder;
-import store.novabook.coupon.coupon.domain.BookCoupon;
-import store.novabook.coupon.coupon.domain.CategoryCoupon;
-import store.novabook.coupon.coupon.domain.Coupon;
+import store.novabook.coupon.coupon.entity.Coupon;
 
 @Builder
-public record CreateCouponResponse(String code) {
+public record CreateCouponResponse(Long id) {
 	public static CreateCouponResponse fromEntity(Coupon coupon) {
-		return CreateCouponResponse.builder()
-			.code(coupon.getCode())
-			.build();
-	}
-
-	public static CreateCouponResponse fromEntity(BookCoupon coupon) {
-		return CreateCouponResponse.builder()
-			.code(coupon.getCouponCode())
-			.build();
-	}
-
-	public static CreateCouponResponse fromEntity(CategoryCoupon coupon) {
-		return CreateCouponResponse.builder()
-			.code(coupon.getCouponCode())
-			.build();
+		return CreateCouponResponse.builder().id(coupon.getId()).build();
 	}
 }
