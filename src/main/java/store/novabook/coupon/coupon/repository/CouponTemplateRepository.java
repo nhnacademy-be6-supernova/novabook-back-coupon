@@ -15,6 +15,9 @@ import store.novabook.coupon.coupon.entity.CouponType;
 public interface CouponTemplateRepository extends JpaRepository<CouponTemplate, Long> {
 	Page<CouponTemplate> findAllByType(@NotNull CouponType type, Pageable pageable);
 
+	Page<CouponTemplate> findAllByTypeAndStartedAtBeforeAndExpirationAtAfter(@NotNull CouponType type,
+		LocalDateTime start, LocalDateTime end, Pageable pageable);
+
 	List<CouponTemplate> findAllByStartedAtAfter(@NotNull LocalDateTime startedAt);
 
 	Optional<CouponTemplate> findTopByTypeOrderByCreatedAtDesc(@NotNull CouponType type);

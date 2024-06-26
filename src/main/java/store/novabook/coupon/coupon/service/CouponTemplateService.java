@@ -9,7 +9,8 @@ import store.novabook.coupon.coupon.dto.response.GetCouponTemplateResponse;
 import store.novabook.coupon.coupon.entity.CouponType;
 
 public interface CouponTemplateService {
-	Page<GetCouponTemplateResponse> findByType(CouponType type, Pageable pageable);
+
+	Page<GetCouponTemplateResponse> findByTypeAndValid(CouponType type, boolean isValid, Pageable pageable);
 
 	Page<GetCouponTemplateResponse> findAll(Pageable pageable);
 

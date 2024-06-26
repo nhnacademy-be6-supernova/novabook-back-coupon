@@ -1,5 +1,7 @@
 package store.novabook.coupon.coupon.service.impl;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,11 @@ public class CouponTemplateServiceImpl implements CouponTemplateService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetCouponTemplateResponse> findByType(CouponType type, Pageable pageable) {
+	public Page<GetCouponTemplateResponse> findByTypeAndValid(CouponType type, boolean isValid, Pageable pageable) {
+		if (isValid) {
+			return couponTemplateRepository.findAllByTypeAndStartedAtBeforeAndExpirationAtAfter(type,
+				LocalDateTime.now(), LocalDateTime.now(), pageable).map(GetCouponTemplateResponse::fromEntity);
+		}
 		return couponTemplateRepository.findAllByType(type, pageable).map(GetCouponTemplateResponse::fromEntity);
 	}
 

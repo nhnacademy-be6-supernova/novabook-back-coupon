@@ -26,13 +26,14 @@ public class CouponTemplateController {
 	private final CouponTemplateService couponTemplateService;
 
 	@GetMapping
-	public ResponseEntity<Page<GetCouponTemplateResponse>> getCouponTemplateAllByType(
-		@RequestParam(required = false) CouponType type, Pageable pageable) {
-		if (type != null) {
-			Page<GetCouponTemplateResponse> response = couponTemplateService.findByType(type, pageable);
-			return ResponseEntity.ok(response);
-		}
+	public ResponseEntity<Page<GetCouponTemplateResponse>> getCouponTemplateAllByType(@RequestParam CouponType type,
+		@RequestParam(defaultValue = "true") Boolean isValid, Pageable pageable) {
+		Page<GetCouponTemplateResponse> response = couponTemplateService.findByTypeAndValid(type, isValid, pageable);
+		return ResponseEntity.ok(response);
+	}
 
+	@GetMapping
+	public ResponseEntity<Page<GetCouponTemplateResponse>> getCouponTemplateAll(Pageable pageable) {
 		Page<GetCouponTemplateResponse> response = couponTemplateService.findAll(pageable);
 		return ResponseEntity.ok(response);
 	}
