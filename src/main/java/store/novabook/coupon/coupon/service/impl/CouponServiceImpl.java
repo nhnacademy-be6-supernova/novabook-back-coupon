@@ -2,6 +2,7 @@ package store.novabook.coupon.coupon.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -81,10 +82,12 @@ public class CouponServiceImpl implements CouponService {
 	@RabbitListener(queues = "${rabbitmq.queue.coupon}")
 	@Transactional
 	public void handleMemberRegistrationMessage(MemberRegistrationMessage message) {
-		CouponTemplate welcomeCouponTemplate = couponTemplateRepository.findTopByTypeOrderByCreatedAtDesc(
-			CouponType.WELCOME).orElseThrow(() -> new BadRequestException(ErrorCode.WELCOME_COUPON_NOT_FOUND));
-		Coupon saved = couponRepository.save(Coupon.of(welcomeCouponTemplate, CouponStatus.UNUSED,
-			LocalDateTime.now().plusHours(welcomeCouponTemplate.getUsePeriod())));
+		Optional<CouponTemplate> opt = couponTemplateRepository.findTopByTypeOrderByCreatedAtDesc(CouponType.WELCOME);
+		if (opt.isEmpty()) {
+			return;
+		}
+		Coupon saved = couponRepository.save(
+			Coupon.of(opt.get(), CouponStatus.UNUSED, LocalDateTime.now().plusHours(opt.get().getUsePeriod())));
 		CouponCreatedMessage couponCreatedMessage = new CouponCreatedMessage(saved.getId(), message.memberId());
 		rabbitTemplate.convertAndSend(couponExchange, couponCreatedRoutingKey, couponCreatedMessage);
 
