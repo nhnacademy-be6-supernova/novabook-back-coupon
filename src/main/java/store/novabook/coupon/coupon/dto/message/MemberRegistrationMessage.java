@@ -1,4 +1,4 @@
-package store.novabook.coupon.common.message;
+package store.novabook.coupon.coupon.dto.message;
 
 public record MemberRegistrationMessage(Long memberId) {
 }

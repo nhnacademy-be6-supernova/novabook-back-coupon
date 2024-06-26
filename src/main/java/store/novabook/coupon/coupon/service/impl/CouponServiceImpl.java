@@ -2,6 +2,7 @@ package store.novabook.coupon.coupon.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -12,12 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.common.exception.BadRequestException;
 import store.novabook.coupon.common.exception.ErrorCode;
-import store.novabook.coupon.common.message.MemberRegistrationMessage;
 import store.novabook.coupon.coupon.dto.message.CouponCreatedMessage;
+import store.novabook.coupon.coupon.dto.message.MemberRegistrationMessage;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponAllResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 import store.novabook.coupon.coupon.entity.Coupon;
 import store.novabook.coupon.coupon.entity.CouponStatus;
 import store.novabook.coupon.coupon.entity.CouponTemplate;
@@ -35,7 +37,7 @@ public class CouponServiceImpl implements CouponService {
 	private final RabbitTemplate rabbitTemplate;
 
 	@Value("${rabbitmq.exchange.coupon}")
-	private String couponExchangeName;
+	private String couponExchange;
 
 	@Value("${rabbitmq.routing.couponCreated}")
 	private String couponCreatedRoutingKey;
@@ -55,7 +57,6 @@ public class CouponServiceImpl implements CouponService {
 			throw new BadRequestException(ErrorCode.ALREADY_USED_COUPON);
 		}
 		coupon.updateStatus(CouponStatus.USED);
-		couponRepository.save(coupon);
 	}
 
 	@Override
@@ -73,20 +74,22 @@ public class CouponServiceImpl implements CouponService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public GetCouponAllResponse findAllById(GetCouponAllRequest request) {
-		List<Coupon> couponList = couponRepository.findAllById(request.couponIdList());
-		return GetCouponAllResponse.fromEntity(couponList);
+	public GetCouponAllResponse findSufficientCouponAllById(GetCouponAllRequest request) {
+		List<GetCouponResponse> sufficientCoupons = couponRepository.findSufficientCoupons(request);
+		return GetCouponAllResponse.builder().couponResponseList(sufficientCoupons).build();
 	}
 
 	@RabbitListener(queues = "${rabbitmq.queue.coupon}")
 	@Transactional
 	public void handleMemberRegistrationMessage(MemberRegistrationMessage message) {
-		CouponTemplate welcomeCouponTemplate = couponTemplateRepository.findTopByTypeOrderByCreatedAtDesc(
-			CouponType.WELCOME).orElseThrow(() -> new BadRequestException(ErrorCode.WELCOME_COUPON_NOT_FOUND));
-		Coupon saved = couponRepository.save(Coupon.of(welcomeCouponTemplate, CouponStatus.UNUSED,
-			LocalDateTime.now().plusHours(welcomeCouponTemplate.getUsePeriod())));
+		Optional<CouponTemplate> opt = couponTemplateRepository.findTopByTypeOrderByCreatedAtDesc(CouponType.WELCOME);
+		if (opt.isEmpty()) {
+			return;
+		}
+		Coupon saved = couponRepository.save(
+			Coupon.of(opt.get(), CouponStatus.UNUSED, LocalDateTime.now().plusHours(opt.get().getUsePeriod())));
 		CouponCreatedMessage couponCreatedMessage = new CouponCreatedMessage(saved.getId(), message.memberId());
-		rabbitTemplate.convertAndSend(couponExchangeName, couponCreatedRoutingKey, couponCreatedMessage);
+		rabbitTemplate.convertAndSend(couponExchange, couponCreatedRoutingKey, couponCreatedMessage);
 
 	}
 }
