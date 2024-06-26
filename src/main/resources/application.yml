@@ -3,3 +3,7 @@ spring:
     name: coupon
 server:
   port: 8070
+
+#logging:
+#  file:
+#    path: ${user.home}

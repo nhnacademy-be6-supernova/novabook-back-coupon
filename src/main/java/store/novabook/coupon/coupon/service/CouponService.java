@@ -10,5 +10,5 @@ public interface CouponService {
 
 	CreateCouponResponse create(CreateCouponRequest request);
 
-	GetCouponAllResponse findAllById(GetCouponAllRequest request);
+	GetCouponAllResponse findSufficientCouponAllById(GetCouponAllRequest request);
 }

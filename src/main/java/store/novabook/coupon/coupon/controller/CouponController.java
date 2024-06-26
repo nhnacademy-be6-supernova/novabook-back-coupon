@@ -26,8 +26,9 @@ public class CouponController {
 	private final CouponService couponService;
 
 	@GetMapping
-	public ResponseEntity<GetCouponAllResponse> getCouponAll(@Valid @RequestBody GetCouponAllRequest request) {
-		GetCouponAllResponse response = couponService.findAllById(request);
+	public ResponseEntity<GetCouponAllResponse> getSufficientCouponAll(
+		@Valid @RequestBody GetCouponAllRequest request) {
+		GetCouponAllResponse response = couponService.findSufficientCouponAllById(request);
 		return ResponseEntity.ok(response);
 	}
 

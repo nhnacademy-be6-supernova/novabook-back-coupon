@@ -12,12 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.common.exception.BadRequestException;
 import store.novabook.coupon.common.exception.ErrorCode;
-import store.novabook.coupon.common.message.MemberRegistrationMessage;
 import store.novabook.coupon.coupon.dto.message.CouponCreatedMessage;
+import store.novabook.coupon.coupon.dto.message.MemberRegistrationMessage;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponAllResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 import store.novabook.coupon.coupon.entity.Coupon;
 import store.novabook.coupon.coupon.entity.CouponStatus;
 import store.novabook.coupon.coupon.entity.CouponTemplate;
@@ -73,9 +74,9 @@ public class CouponServiceImpl implements CouponService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public GetCouponAllResponse findAllById(GetCouponAllRequest request) {
-		List<Coupon> couponList = couponRepository.findAllById(request.couponIdList());
-		return GetCouponAllResponse.fromEntity(couponList);
+	public GetCouponAllResponse findSufficientCouponAllById(GetCouponAllRequest request) {
+		List<GetCouponResponse> sufficientCoupons = couponRepository.findSufficientCoupons(request);
+		return GetCouponAllResponse.builder().couponResponseList(sufficientCoupons).build();
 	}
 
 	@RabbitListener(queues = "${rabbitmq.queue.coupon}")

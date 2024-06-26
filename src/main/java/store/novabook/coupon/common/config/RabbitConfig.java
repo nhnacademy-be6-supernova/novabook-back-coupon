@@ -60,7 +60,7 @@ public class RabbitConfig {
 		args.put("x-dead-letter-exchange", memberExchangeName);
 		args.put("x-dead-letter-routing-key", deadQueueName);
 		args.put("x-original-queue", couponQueueName);
-		return new Queue(couponQueueName, false, false, false, args);
+		return new Queue(couponQueueName, true, false, false, args);
 	}
 
 	@Bean
@@ -69,7 +69,7 @@ public class RabbitConfig {
 		args.put("x-dead-letter-exchange", couponExchangeName);
 		args.put("x-dead-letter-routing-key", deadQueueName);
 		args.put("x-original-queue", memberCouponQueueName);
-		return new Queue(memberCouponQueueName, false, false, false, args);
+		return new Queue(memberCouponQueueName, true, false, false, args);
 	}
 
 	@Bean
