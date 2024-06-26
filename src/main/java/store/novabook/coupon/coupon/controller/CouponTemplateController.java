@@ -25,7 +25,7 @@ import store.novabook.coupon.coupon.service.CouponTemplateService;
 public class CouponTemplateController {
 	private final CouponTemplateService couponTemplateService;
 
-	@GetMapping
+	@GetMapping(params = "type")
 	public ResponseEntity<Page<GetCouponTemplateResponse>> getCouponTemplateAllByType(@RequestParam CouponType type,
 		@RequestParam(defaultValue = "true") Boolean isValid, Pageable pageable) {
 		Page<GetCouponTemplateResponse> response = couponTemplateService.findByTypeAndValid(type, isValid, pageable);
