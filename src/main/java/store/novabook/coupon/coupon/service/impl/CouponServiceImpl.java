@@ -36,7 +36,7 @@ public class CouponServiceImpl implements CouponService {
 	private final RabbitTemplate rabbitTemplate;
 
 	@Value("${rabbitmq.exchange.coupon}")
-	private String couponExchangeName;
+	private String couponExchange;
 
 	@Value("${rabbitmq.routing.couponCreated}")
 	private String couponCreatedRoutingKey;
@@ -56,7 +56,6 @@ public class CouponServiceImpl implements CouponService {
 			throw new BadRequestException(ErrorCode.ALREADY_USED_COUPON);
 		}
 		coupon.updateStatus(CouponStatus.USED);
-		couponRepository.save(coupon);
 	}
 
 	@Override
@@ -87,7 +86,7 @@ public class CouponServiceImpl implements CouponService {
 		Coupon saved = couponRepository.save(Coupon.of(welcomeCouponTemplate, CouponStatus.UNUSED,
 			LocalDateTime.now().plusHours(welcomeCouponTemplate.getUsePeriod())));
 		CouponCreatedMessage couponCreatedMessage = new CouponCreatedMessage(saved.getId(), message.memberId());
-		rabbitTemplate.convertAndSend(couponExchangeName, couponCreatedRoutingKey, couponCreatedMessage);
+		rabbitTemplate.convertAndSend(couponExchange, couponCreatedRoutingKey, couponCreatedMessage);
 
 	}
 }
