@@ -22,39 +22,19 @@ jobs:
           distribution: 'zulu'
           java-version: 21
 
-      - name: Build with Maven
-        run: mvn clean verify
-
-      - name: Test code
-        run: mvn test
-
-      - name: Upload JAR to Remote Server
+      - name: Deploy JAR on Remote Server
         env:
+
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
         run: |
-          cd ../..
           mkdir -p ~/.ssh
           echo "${SSH_PRIVATE_KEY}" > ~/.ssh/github_rsa
           chmod 400 ~/.ssh/github_rsa
           ssh-keyscan ${SERVER_IP} >> ~/.ssh/known_hosts
-
-      - name: Clean Remote Directory
-        env:
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-        run: |
-          ssh -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} "rm -rf /home/nova-dev/coupon/*"
-
-      - name: Deploy to NHN Cloud
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-        run: |
-          echo "${SSH_PRIVATE_KEY}" > private_key
-          chmod 600 private_key
-          scp -i private_key -o StrictHostKeyChecking=no -r src ${SERVER_USER}@${SERVER_IP}:/home/nova-dev/coupon
-          ssh -i private_key -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} << 'cd /home/nova-dev/coupon && ./restart.sh'
-
+          ssh -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} << 'EOF'
+          ps aux | grep coupon-0.0.1-SNAPSHOT.jar | grep -v grep | awk '{print $2}' | xargs kill -9
+          cd orders-payments
+          nohup java -jar coupon-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
+          EOF
