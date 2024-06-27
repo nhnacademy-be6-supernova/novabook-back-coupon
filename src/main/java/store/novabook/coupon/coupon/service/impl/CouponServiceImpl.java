@@ -4,115 +4,92 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.coupon.common.exception.BadRequestException;
 import store.novabook.coupon.common.exception.ErrorCode;
-import store.novabook.coupon.common.exception.NotFoundException;
-import store.novabook.coupon.common.util.CouponCodeGenerator;
-import store.novabook.coupon.coupon.domain.BookCoupon;
-import store.novabook.coupon.coupon.domain.CategoryCoupon;
-import store.novabook.coupon.coupon.domain.Coupon;
-import store.novabook.coupon.coupon.domain.CouponType;
-import store.novabook.coupon.coupon.dto.request.CreateCouponBookRequest;
-import store.novabook.coupon.coupon.dto.request.CreateCouponCategoryRequest;
+import store.novabook.coupon.coupon.dto.message.CouponCreatedMessage;
+import store.novabook.coupon.coupon.dto.message.MemberRegistrationMessage;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
-import store.novabook.coupon.coupon.dto.request.UpdateCouponExpirationRequest;
+import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
-import store.novabook.coupon.coupon.dto.response.GetCouponBookAllResponse;
-import store.novabook.coupon.coupon.dto.response.GetCouponBookResponse;
-import store.novabook.coupon.coupon.dto.response.GetCouponCategoryAllResponse;
-import store.novabook.coupon.coupon.dto.response.GetCouponCategoryResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
-import store.novabook.coupon.coupon.repository.BookCouponRepository;
-import store.novabook.coupon.coupon.repository.CategoryCouponRepository;
+import store.novabook.coupon.coupon.entity.Coupon;
+import store.novabook.coupon.coupon.entity.CouponStatus;
+import store.novabook.coupon.coupon.entity.CouponTemplate;
+import store.novabook.coupon.coupon.entity.CouponType;
 import store.novabook.coupon.coupon.repository.CouponRepository;
+import store.novabook.coupon.coupon.repository.CouponTemplateRepository;
 import store.novabook.coupon.coupon.service.CouponService;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class CouponServiceImpl implements CouponService {
-
-	private final CouponCodeGenerator codeGenerator;
-
 	private final CouponRepository couponRepository;
-	private final BookCouponRepository bookCouponRepository;
-	private final CategoryCouponRepository categoryCouponRepository;
+	private final CouponTemplateRepository couponTemplateRepository;
+	private final RabbitTemplate rabbitTemplate;
+
+	@Value("${rabbitmq.exchange.coupon}")
+	private String couponExchange;
+
+	@Value("${rabbitmq.routing.couponCreated}")
+	private String couponCreatedRoutingKey;
+
+	private static void validateExpiration(CouponTemplate couponTemplate) {
+		if (couponTemplate.getExpirationAt().isBefore(LocalDateTime.now()) || couponTemplate.getStartedAt()
+			.isAfter(LocalDateTime.now())) {
+			throw new BadRequestException(ErrorCode.EXPIRED_COUPON_CODE);
+		}
+	}
 
 	@Override
-	public CreateCouponResponse saveGeneralCoupon(CreateCouponRequest createCouponRequest) {
-		Coupon coupon = Coupon.of(codeGenerator.generateUniqueCode(CouponType.GENERAL), createCouponRequest);
+	public void updateStatusToUsed(Long id) {
+		Coupon coupon = couponRepository.findById(id)
+			.orElseThrow(() -> new BadRequestException(ErrorCode.COUPON_NOT_FOUND));
+		if (coupon.getStatus() == CouponStatus.USED) {
+			throw new BadRequestException(ErrorCode.ALREADY_USED_COUPON);
+		}
+		coupon.updateStatus(CouponStatus.USED);
+	}
+
+	@Override
+	public CreateCouponResponse create(CreateCouponRequest request) {
+		CouponTemplate couponTemplate = couponTemplateRepository.findById(request.couponTemplateId())
+			.orElseThrow(() -> new BadRequestException(ErrorCode.COUPON_TEMPLATE_NOT_FOUND));
+
+		validateExpiration(couponTemplate);
+
+		Coupon coupon = Coupon.of(couponTemplate, CouponStatus.UNUSED,
+			couponTemplate.getStartedAt().plusHours(couponTemplate.getUsePeriod()));
 		Coupon saved = couponRepository.save(coupon);
 		return CreateCouponResponse.fromEntity(saved);
 	}
 
-	@Override
-	public CreateCouponResponse saveBookCoupon(CreateCouponBookRequest createCouponBookRequest) {
-		Coupon coupon = Coupon.of(codeGenerator.generateUniqueCode(CouponType.BOOK), createCouponBookRequest);
-		Coupon saved = couponRepository.save(coupon);
-		bookCouponRepository.save(BookCoupon.of(saved, createCouponBookRequest.bookId()));
-		return CreateCouponResponse.fromEntity(saved);
-	}
-
-	@Override
-	public CreateCouponResponse saveCategoryCoupon(CreateCouponCategoryRequest createCouponCategoryRequest) {
-		Coupon coupon = Coupon.of(codeGenerator.generateUniqueCode(CouponType.CATEGORY), createCouponCategoryRequest);
-		Coupon saved = couponRepository.save(coupon);
-		categoryCouponRepository.save(CategoryCoupon.of(saved, createCouponCategoryRequest.categoryId()));
-		return CreateCouponResponse.fromEntity(saved);
-	}
-
-	@Override
-	public void updateCouponExpiration(UpdateCouponExpirationRequest request) {
-		Coupon coupon = couponRepository.findById(request.code())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
-		coupon.updateExprationAt(LocalDateTime.now());
-		couponRepository.save(coupon);
-	}
-
-	@Override
 	@Transactional(readOnly = true)
-	public Page<GetCouponResponse> getCouponGeneralAll(Pageable pageable) {
-		Page<Coupon> couponList = couponRepository.findAllByCodeStartsWith(CouponType.GENERAL.getPrefix(), pageable);
-		return couponList.map(GetCouponResponse::fromEntity);
-	}
-
 	@Override
-	@Transactional(readOnly = true)
-	public Page<GetCouponBookResponse> getCouponBookAll(Pageable pageable) {
-		Page<BookCoupon> bookCouponList = bookCouponRepository.findAll(pageable);
-		return bookCouponList.map(GetCouponBookResponse::fromEntity);
+	public GetCouponAllResponse findSufficientCouponAllById(GetCouponAllRequest request) {
+		List<GetCouponResponse> sufficientCoupons = couponRepository.findSufficientCoupons(request);
+		return GetCouponAllResponse.builder().couponResponseList(sufficientCoupons).build();
 	}
 
-	@Override
-	@Transactional(readOnly = true)
-	public Page<GetCouponCategoryResponse> getCouponCategryAll(Pageable pageable) {
-		Page<CategoryCoupon> categoryCouponList = categoryCouponRepository.findAll(pageable);
-		return categoryCouponList.map(GetCouponCategoryResponse::fromEntity);
-	}
+	@RabbitListener(queues = "${rabbitmq.queue.coupon}")
+	@Transactional
+	public void handleMemberRegistrationMessage(MemberRegistrationMessage message) {
+		Optional<CouponTemplate> opt = couponTemplateRepository.findTopByTypeOrderByCreatedAtDesc(CouponType.WELCOME);
+		if (opt.isEmpty()) {
+			return;
+		}
+		Coupon saved = couponRepository.save(
+			Coupon.of(opt.get(), CouponStatus.UNUSED, LocalDateTime.now().plusHours(opt.get().getUsePeriod())));
+		CouponCreatedMessage couponCreatedMessage = new CouponCreatedMessage(saved.getId(), message.memberId());
+		rabbitTemplate.convertAndSend(couponExchange, couponCreatedRoutingKey, couponCreatedMessage);
 
-	// 만료시간이 현재시간보다 후인 쿠폰들만 가져온다.
-	@Override
-	@Transactional(readOnly = true)
-	public GetCouponBookAllResponse getCouponBook(Long bookId) {
-		List<BookCoupon> bookCouponList = Optional.ofNullable(
-				bookCouponRepository.findAllByBookIdAndCoupon_ExpirationAtAfter(bookId, LocalDateTime.now()))
-			.filter(list -> !list.isEmpty())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.BOOK_COUPON_NOT_FOUND));
-		return GetCouponBookAllResponse.fromEntity(bookCouponList);
 	}
-
-	@Override
-	public GetCouponCategoryAllResponse getCouponCategory(Long categoryId) {
-		List<CategoryCoupon> categoryCouponList = Optional.ofNullable(
-				categoryCouponRepository.findAllByCategoryIdAndCoupon_ExpirationAtAfter(categoryId, LocalDateTime.now()))
-			.filter(list -> !list.isEmpty())
-			.orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_COUPON_NOT_FOUND));
-		return GetCouponCategoryAllResponse.fromEntity(categoryCouponList);
-	}
-
 }

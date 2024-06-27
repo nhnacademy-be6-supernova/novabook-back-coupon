@@ -1,75 +1,154 @@
-### 일반 쿠폰 생성
-POST http://localhost:8087/coupons/general
+### 모든 쿠폰 조회
+POST http://localhost:8080/api/v1/coupons
 Content-Type: application/json
 
 {
-  "name": "일반 쿠폰",
-  "discountAmount": 1000,
+  "couponIdList": [
+    1,
+    2,
+    3
+  ]
+}
+
+### 쿠폰 생성
+POST http://localhost:8080/api/v1/coupons
+Content-Type: application/json
+
+{
+  "couponTemplateId": 123
+}
+
+### 쿠폰 사용
+PUT http://localhost:8080/api/v1/coupons/{couponId}
+
+### 쿠폰 템플릿 생성
+POST http://localhost:8070/api/v1/coupon-templates
+Content-Type: application/json
+
+{
+  "name": "신규 사용자 할인",
+  "type": "WELCOME",
+  "discountAmount": 5000,
   "discountType": "AMOUNT",
   "maxDiscountAmount": 5000,
-  "minPurchaseAmount": 10000,
-  "startedAt": "2024-01-01T00:00:00",
-  "expirationAt": "2025-12-31T23:59:59"
+  "minPurchaseAmount": 20000,
+  "startedAt": "2023-12-01T00:00:00",
+  "expirationAt": "2025-01-01T00:00:00",
+  "usePeriod": 30
 }
 
-### 책 쿠폰 생성
-POST http://localhost:8087/coupons/book
+### 일반 쿠폰 템플릿 생성
+POST http://localhost:8070/api/v1/coupon-templates
 Content-Type: application/json
 
 {
-  "bookId": 1,
-  "name": "책 쿠폰",
-  "discountAmount": 1500,
+  "name": "일반 할인 쿠폰",
+  "type": "GENERAL",
+  "discountAmount": 3000,
   "discountType": "AMOUNT",
-  "maxDiscountAmount": 7000,
-  "minPurchaseAmount": 5000,
-  "startedAt": "2024-01-01T00:00:00",
-  "expirationAt": "2024-12-31T23:59:59"
+  "maxDiscountAmount": 3000,
+  "minPurchaseAmount": 15000,
+  "startedAt": "2023-12-01T00:00:00",
+  "expirationAt": "2025-01-01T00:00:00",
+  "usePeriod": 30
 }
 
-### 카테고리 쿠폰 생성
-POST http://localhost:8087/coupons/category
+### 생일 쿠폰 템플릿 생성
+POST http://localhost:8070/api/v1/coupon-templates
 Content-Type: application/json
 
 {
-  "categoryId": 3,
-  "name": "카테고리 쿠폰",
-  "discountAmount": 2000,
+  "name": "생일 축하 할인 쿠폰",
+  "type": "BIRTHDAY",
+  "discountAmount": 20,
   "discountType": "PERCENT",
-  "maxDiscountAmount": 8000,
-  "minPurchaseAmount": 4000,
-  "startedAt": "2024-01-01T00:00:00",
-  "expirationAt": "2024-12-31T23:59:59"
+  "maxDiscountAmount": 10000,
+  "minPurchaseAmount": 5000,
+  "startedAt": "2023-12-01T00:00:00",
+  "expirationAt": "2024-01-01T00:00:00",
+  "usePeriod": 7
 }
 
-### 쿠폰 만료 시간 업데이트
-PUT http://localhost:8087/coupons/expiration
+
+
+### 모든 쿠폰 템플릿 조회
+GET http://localhost:8080/api/v1/coupon-templates?page=0&size=10&type=WELCOME
+
+### 모든 책 쿠폰 템플릿 조회 (페이지네이션 적용)
+GET http://localhost:8080/api/v1/book-coupon-templates?page=0&size=10
+Accept: application/json
+
+
+### 새로운 책 쿠폰 템플릿 생성
+POST http://localhost:8070/api/v1/book-coupon-templates
+Content-Type: application/json
+Accept: application/json
+
+{
+  "bookId": 5,
+  "name": "할인 쿠폰",
+  "discountAmount": 10,
+  "discountType": "PERCENT",
+  "maxDiscountAmount": 10000,
+  "minPurchaseAmount": 20000,
+  "startedAt": "2024-03-01T00:00:00",
+  "expirationAt": "2024-12-31T23:59:59",
+  "usePeriod": 30
+}
+
+
+### 특정 책 ID로 쿠폰 템플릿 조회 (유효성 여부 필터 적용)
+GET http://localhost:8080/api/v1/book-coupon-templates/book/1?isValid=true
+Accept: application/json
+
+### 모든 카테고리 쿠폰 템플릿 조회 (페이지네이션 적용)
+GET http://localhost:8080/api/v1/category-coupon-templates?page=0&size=10
+Accept: application/json
+
+###
+
+### 특정 카테고리 ID로 쿠폰 템플릿 조회 (유효성 여부 필터 적용)
+GET http://localhost:8080/api/v1/category-coupon-templates/category/1?isValid=true
+Accept: application/json
+
+###
+
+### 새로운 카테고리 쿠폰 템플릿 생성
+POST http://localhost:8070/api/v1/category-coupon-templates
+Content-Type: application/json
+Accept: application/json
+
+{
+  "categoryId": 5,
+  "name": "할인 쿠폰ㅎㅇㅎㅇ",
+  "discountAmount": 20,
+  "discountType": "PERCENT",
+  "maxDiscountAmount": 10000,
+  "minPurchaseAmount": 20000,
+  "startedAt": "2024-07-01T00:00:00",
+  "expirationAt": "2024-12-31T23:59:59",
+  "usePeriod": 30
+}
+
+### Get Sufficient Coupons 쿠폰 망치기 ~ http 망치기 ~ 망치는 해머 ~ 이거 pr 하면 바보 ~ 하면 범인
+POST http://localhost:8070/api/v1/coupons/sufficient
 Content-Type: application/json
 
 {
-  "code": "C94SWZD95NBCLU77"
+  "couponIdList": [
+    12,
+    13
+  ],
+  "bookIdList": [
+    10,
+    20,
+    30
+  ],
+  "categoryIdList": [
+    100,
+    200,
+    300
+  ]
 }
 
-### 모든 일반 쿠폰 조회
-GET http://localhost:8087/coupons/general?page=0&size=5
-Content-Type: application/json
-
-
-### 책 쿠폰 조회
-GET http://localhost:8087/coupons/book?page=0&size=5
-Content-Type: application/json
-
-
-### 모든 카테고리 쿠폰 조회
-GET http://localhost:8087/coupons/category?page=1&size=5
-Content-Type: application/json
-
-### 특정 책 쿠폰 조회
-GET http://localhost:8087/coupons/book/1
-Content-Type: application/json
-
-### 특정 카테고리 쿠폰 단건 조회
-GET http://localhost:8087/coupons/category/2
-Content-Type: application/json
-
-
+###
