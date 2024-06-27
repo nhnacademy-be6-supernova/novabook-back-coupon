@@ -88,11 +88,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @param request   HTTP 요청
 	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
 	 */
-	//	@ExceptionHandler(Exception.class)
-	//	public ResponseEntity<ErrorResponse> handle(Exception exception, HttpServletRequest request) {
-	//		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	//				.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
-	//	}
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponse> handle(Exception exception, HttpServletRequest request) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
+	}
+
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
 		return ResponseEntity.badRequest().body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT_TYPE));

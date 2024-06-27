@@ -130,15 +130,14 @@ Accept: application/json
   "usePeriod": 30
 }
 
-### Get Sufficient Coupons
+### Get Sufficient Coupons 쿠폰 망치기 ~ http 망치기 ~ 망치는 해머 ~ 이거 pr 하면 바보 ~ 하면 범인
 POST http://localhost:8070/api/v1/coupons/sufficient
 Content-Type: application/json
 
 {
   "couponIdList": [
-    1,
-    2,
-    3
+    12,
+    13
   ],
   "bookIdList": [
     10,

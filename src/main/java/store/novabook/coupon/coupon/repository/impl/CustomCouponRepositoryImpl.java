@@ -1,5 +1,10 @@
 package store.novabook.coupon.coupon.repository.impl;
 
+import static store.novabook.coupon.coupon.entity.QBookCouponTemplate.*;
+import static store.novabook.coupon.coupon.entity.QCategoryCouponTemplate.*;
+import static store.novabook.coupon.coupon.entity.QCoupon.*;
+import static store.novabook.coupon.coupon.entity.QCouponTemplate.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,10 +17,6 @@ import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 import store.novabook.coupon.coupon.entity.Coupon;
 import store.novabook.coupon.coupon.entity.CouponType;
-import store.novabook.coupon.coupon.entity.QBookCouponTemplate;
-import store.novabook.coupon.coupon.entity.QCategoryCouponTemplate;
-import store.novabook.coupon.coupon.entity.QCoupon;
-import store.novabook.coupon.coupon.entity.QCouponTemplate;
 import store.novabook.coupon.coupon.repository.CustomCouponRepository;
 
 @Transactional(readOnly = true)
@@ -26,11 +27,6 @@ public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implem
 
 	@Override
 	public List<GetCouponResponse> findSufficientCoupons(GetCouponAllRequest request) {
-		QCoupon coupon = QCoupon.coupon;
-		QCouponTemplate couponTemplate = QCouponTemplate.couponTemplate;
-		QBookCouponTemplate bookCouponTemplate = QBookCouponTemplate.bookCouponTemplate;
-		QCategoryCouponTemplate categoryCouponTemplate = QCategoryCouponTemplate.categoryCouponTemplate;
-
 		List<GetCouponResponse> category = from(coupon).select(
 				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, couponTemplate.name,
 					couponTemplate.discountAmount, couponTemplate.discountType, couponTemplate.maxDiscountAmount,
