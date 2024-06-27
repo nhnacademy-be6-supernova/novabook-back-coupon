@@ -39,6 +39,14 @@ jobs:
           echo "${SSH_PRIVATE_KEY}" > ~/.ssh/github_rsa
           chmod 400 ~/.ssh/github_rsa
           ssh-keyscan ${SERVER_IP} >> ~/.ssh/known_hosts target/*.jar ${SERVER_USER}@${SERVER_IP}:/home/nova-dev/coupon
+
+      - name: Clean Remote Directory
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+        run: |
+          ssh -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} "rm -rf /home/nova-dev/coupon/*"
+
       - name: Deploy to NHN Cloud
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
