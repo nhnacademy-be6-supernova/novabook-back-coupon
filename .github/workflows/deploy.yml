@@ -56,7 +56,5 @@ jobs:
           echo "${SSH_PRIVATE_KEY}" > private_key
           chmod 600 private_key
           scp -i private_key -o StrictHostKeyChecking=no -r src ${SERVER_USER}@${SERVER_IP}:/home/nova-dev/coupon
-          ssh -i private_key -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} << 'EOF'
-          ssh -i private_key -o StrictHostKeyChecking=no cd /home/nova-dev/coupon
-          ssh -i private_key -o StrictHostKeyChecking=no ./restart.sh
+          ssh -i private_key -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} << 'cd /home/nova-dev/coupon && ./restart.sh'
           EOF
