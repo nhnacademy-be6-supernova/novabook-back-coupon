@@ -34,8 +34,8 @@ jobs:
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
         run: |
-          scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no mkdir -p ~/../.ssh
-          scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no echo "${SSH_PRIVATE_KEY}" > ~/.ssh/github_rsa
+          scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no mkdir -p /home/.ssh
+          scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no echo "${SSH_PRIVATE_KEY}" > /home/.ssh/github_rsa
           scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no chmod 400 ~/.ssh/github_rsa
           ssh-keyscan ${SERVER_IP} >> ~/.ssh/known_hosts
           scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no target/*.jar ${SERVER_USER}@${SERVER_IP}:/home/nova-dev/coupon
