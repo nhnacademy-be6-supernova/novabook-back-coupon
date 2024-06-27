@@ -35,6 +35,6 @@ jobs:
           ssh-keyscan ${SERVER_IP} >> ~/.ssh/known_hosts
           ssh -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} << 'EOF'
           ps aux | grep coupon-0.0.1-SNAPSHOT.jar | grep -v grep | awk '{print $2}' | xargs kill -9
-          cd orders-payments
+          cd /home/nova-dev/coupon
           nohup java -jar coupon-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
           EOF
