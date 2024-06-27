@@ -4,10 +4,10 @@ spring:
       #      개인 테스트 환경
       on-profile: local
   rabbitmq:
-    host: localhost
+    host: 133.186.241.167
     port: 5672
-    username: supernova
-    password: 1234
+    username: admin
+    password: nhnacademy123!
     listener:
       simple:
         acknowledge-mode: auto
