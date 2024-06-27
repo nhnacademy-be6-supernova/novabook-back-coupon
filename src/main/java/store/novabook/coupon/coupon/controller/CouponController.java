@@ -2,7 +2,6 @@ package store.novabook.coupon.coupon.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,7 +24,7 @@ public class CouponController {
 
 	private final CouponService couponService;
 
-	@GetMapping
+	@PostMapping("/sufficient")
 	public ResponseEntity<GetCouponAllResponse> getSufficientCouponAll(
 		@Valid @RequestBody GetCouponAllRequest request) {
 		GetCouponAllResponse response = couponService.findSufficientCouponAllById(request);

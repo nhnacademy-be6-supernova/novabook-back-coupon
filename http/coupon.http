@@ -73,3 +73,83 @@ Content-Type: application/json
 
 ### 모든 쿠폰 템플릿 조회
 GET http://localhost:8080/api/v1/coupon-templates?page=0&size=10&type=WELCOME
+
+### 모든 책 쿠폰 템플릿 조회 (페이지네이션 적용)
+GET http://localhost:8080/api/v1/book-coupon-templates?page=0&size=10
+Accept: application/json
+
+
+### 새로운 책 쿠폰 템플릿 생성
+POST http://localhost:8070/api/v1/book-coupon-templates
+Content-Type: application/json
+Accept: application/json
+
+{
+  "bookId": 5,
+  "name": "할인 쿠폰",
+  "discountAmount": 10,
+  "discountType": "PERCENT",
+  "maxDiscountAmount": 10000,
+  "minPurchaseAmount": 20000,
+  "startedAt": "2024-03-01T00:00:00",
+  "expirationAt": "2024-12-31T23:59:59",
+  "usePeriod": 30
+}
+
+
+### 특정 책 ID로 쿠폰 템플릿 조회 (유효성 여부 필터 적용)
+GET http://localhost:8080/api/v1/book-coupon-templates/book/1?isValid=true
+Accept: application/json
+
+### 모든 카테고리 쿠폰 템플릿 조회 (페이지네이션 적용)
+GET http://localhost:8080/api/v1/category-coupon-templates?page=0&size=10
+Accept: application/json
+
+###
+
+### 특정 카테고리 ID로 쿠폰 템플릿 조회 (유효성 여부 필터 적용)
+GET http://localhost:8080/api/v1/category-coupon-templates/category/1?isValid=true
+Accept: application/json
+
+###
+
+### 새로운 카테고리 쿠폰 템플릿 생성
+POST http://localhost:8070/api/v1/category-coupon-templates
+Content-Type: application/json
+Accept: application/json
+
+{
+  "categoryId": 5,
+  "name": "할인 쿠폰ㅎㅇㅎㅇ",
+  "discountAmount": 20,
+  "discountType": "PERCENT",
+  "maxDiscountAmount": 10000,
+  "minPurchaseAmount": 20000,
+  "startedAt": "2024-07-01T00:00:00",
+  "expirationAt": "2024-12-31T23:59:59",
+  "usePeriod": 30
+}
+
+### Get Sufficient Coupons
+POST http://localhost:8070/api/v1/coupons/sufficient
+Content-Type: application/json
+
+{
+  "couponIdList": [
+    1,
+    2,
+    3
+  ],
+  "bookIdList": [
+    10,
+    20,
+    30
+  ],
+  "categoryIdList": [
+    100,
+    200,
+    300
+  ]
+}
+
+###

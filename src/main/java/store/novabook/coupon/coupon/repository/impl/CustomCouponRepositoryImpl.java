@@ -1,13 +1,11 @@
 package store.novabook.coupon.coupon.repository.impl;
 
-import static com.querydsl.jpa.JPAExpressions.*;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 
 import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
@@ -33,39 +31,40 @@ public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implem
 		QBookCouponTemplate bookCouponTemplate = QBookCouponTemplate.bookCouponTemplate;
 		QCategoryCouponTemplate categoryCouponTemplate = QCategoryCouponTemplate.categoryCouponTemplate;
 
-		BooleanBuilder builder = new BooleanBuilder();
-
-		// Book 조건
-		BooleanBuilder bookCondition = new BooleanBuilder();
-		if (request.bookIdList() != null && !request.bookIdList().isEmpty()) {
-			bookCondition.and(couponTemplate.type.eq(CouponType.BOOK)
-				.and(bookCouponTemplate.bookId.in(request.bookIdList())));
-		}
-
-		// Category 조건
-		BooleanBuilder categoryCondition = new BooleanBuilder();
-		if (request.categoryIdList() != null && !request.categoryIdList().isEmpty()) {
-			categoryCondition.and(couponTemplate.type.eq(CouponType.CATEGORY)
-				.and(categoryCouponTemplate.categoryId.in(request.categoryIdList())));
-		}
-
-		// 다른 타입 조건
-		BooleanBuilder otherCondition = new BooleanBuilder();
-		otherCondition.and(couponTemplate.type.ne(CouponType.BOOK).and(couponTemplate.type.ne(CouponType.CATEGORY)));
-
-		// 최종 조건
-		builder.and(bookCondition.or(categoryCondition).or(otherCondition));
-
-		return select(
-			Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, couponTemplate.name,
-				couponTemplate.discountAmount, couponTemplate.discountType, couponTemplate.maxDiscountAmount,
-				couponTemplate.minPurchaseAmount, coupon.createdAt, coupon.expirationAt)).from(coupon)
-			.join(coupon.couponTemplate, couponTemplate)
-			.leftJoin(bookCouponTemplate)
-			.on(couponTemplate.id.eq(bookCouponTemplate.id))
-			.leftJoin(categoryCouponTemplate)
-			.on(couponTemplate.id.eq(categoryCouponTemplate.id))
-			.where(builder)
+		List<GetCouponResponse> category = from(coupon).select(
+				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, couponTemplate.name,
+					couponTemplate.discountAmount, couponTemplate.discountType, couponTemplate.maxDiscountAmount,
+					couponTemplate.minPurchaseAmount, coupon.createdAt, coupon.expirationAt))
+			.innerJoin(couponTemplate)
+			.on(coupon.couponTemplate.id.eq(couponTemplate.id))
+			.innerJoin(categoryCouponTemplate)
+			.on(categoryCouponTemplate.couponTemplate.id.eq(couponTemplate.id))
+			.where(coupon.id.in(request.couponIdList())
+				.and(categoryCouponTemplate.categoryId.in(request.categoryIdList())))
 			.fetch();
+		List<GetCouponResponse> response = new ArrayList<>(category);
+
+		List<GetCouponResponse> book = from(coupon).select(
+				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, couponTemplate.name,
+					couponTemplate.discountAmount, couponTemplate.discountType, couponTemplate.maxDiscountAmount,
+					couponTemplate.minPurchaseAmount, coupon.createdAt, coupon.expirationAt))
+			.innerJoin(couponTemplate)
+			.on(coupon.couponTemplate.id.eq(couponTemplate.id))
+			.innerJoin(bookCouponTemplate)
+			.on(bookCouponTemplate.couponTemplate.id.eq(coupon.couponTemplate.id))
+			.where(coupon.id.in(request.couponIdList()).and(bookCouponTemplate.bookId.in(request.bookIdList())))
+			.fetch();
+		response.addAll(book);
+
+		List<GetCouponResponse> general = from(coupon).select(
+				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, couponTemplate.name,
+					couponTemplate.discountAmount, couponTemplate.discountType, couponTemplate.maxDiscountAmount,
+					couponTemplate.minPurchaseAmount, coupon.createdAt, coupon.expirationAt))
+			.where(coupon.id.in(request.couponIdList())
+				.and(coupon.couponTemplate.type.notIn(CouponType.BOOK, CouponType.CATEGORY)))
+			.fetch();
+		response.addAll(general);
+
+		return response;
 	}
 }

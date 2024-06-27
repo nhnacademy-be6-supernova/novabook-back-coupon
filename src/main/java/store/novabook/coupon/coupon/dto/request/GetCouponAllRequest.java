@@ -11,3 +11,4 @@ public record GetCouponAllRequest(@NotNull(message = "쿠폰 번호는 필수 �
 								  @NotNull(message = "도서 아이디는 필수 입력 항목입니다.") Set<Long> bookIdList,
 								  @NotNull(message = "카테고리 아이디는 필수 입력 항목입니다.") Set<Long> categoryIdList) {
 }
+
