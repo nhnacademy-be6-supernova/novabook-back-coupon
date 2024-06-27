@@ -1,9 +1,11 @@
 name: Deploy to NHN Cloud
 
 on:
-  push:
+  pull_request:
     branches:
       - main
+
+permissions: write-all
 
 jobs:
   build:
@@ -25,6 +27,18 @@ jobs:
 
       - name: Test code
         run: mvn test
+
+      - name: Upload JAR to Remote Server
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_USER: ${{ secrets.SERVER_USER }}
+          REMOTE_HOST: ${{ secrets.SERVER_IP }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${SSH_PRIVATE_KEY}" > ~/.ssh/github_rsa
+          chmod 400 ~/.ssh/github_rsa
+          ssh-keyscan ${REMOTE_HOST} >> ~/.ssh/known_hosts
+          scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no target/*.jar ${REMOTE_USER}@${REMOTE_HOST}:/home/nova-dev/coupon
 
       - name: Deploy to NHN Cloud
         env:
