@@ -38,7 +38,7 @@ jobs:
           echo "${SSH_PRIVATE_KEY}" > ~/.ssh/github_rsa
           chmod 400 ~/.ssh/github_rsa
           ssh-keyscan ${REMOTE_HOST} >> ~/.ssh/known_hosts
-          scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no target/*.jar ${REMOTE_USER}@${REMOTE_HOST}:/home/nova-dev/coupon
+          scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no target/*.jar ${SERVER_USER}@${SERVER_IP}:/home/nova-dev/coupon
 
       - name: Deploy to NHN Cloud
         env:
