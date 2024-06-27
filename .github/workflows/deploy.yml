@@ -34,7 +34,7 @@ jobs:
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
         run: |
-          scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no ls -al ~/.ssh
+          scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no cd ../..
           scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no mkdir -p ~/.ssh
           scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no echo "${SSH_PRIVATE_KEY}" > ~/.ssh/github_rsa
           scp -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no chmod 400 ~/.ssh/github_rsa
