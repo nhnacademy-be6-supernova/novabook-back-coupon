@@ -16,8 +16,6 @@
     </springProfile>
 
     <springProfile name="dev">
-        <property name="LOG_PATH" value="${LOG_PATH:-/app/logs}"/>
-
         <include resource="logs/common/file-info-appender.xml"/>
         <include resource="logs/common/file-warn-appender.xml"/>
         <include resource="logs/common/file-error-appender.xml"/>
@@ -43,8 +41,6 @@
     </springProfile>
 
     <springProfile name="prod">
-        <property name="LOG_PATH" value="/home/nova-dev/log"/>
-
         <include resource="logs/common/file-info-appender.xml"/>
         <include resource="logs/common/file-warn-appender.xml"/>
         <include resource="logs/common/file-error-appender.xml"/>
