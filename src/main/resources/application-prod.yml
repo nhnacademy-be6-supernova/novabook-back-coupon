@@ -42,6 +42,7 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
 
+---
 rabbitmq:
   queue:
     coupon: nova.coupon.queue
@@ -53,10 +54,6 @@ rabbitmq:
   routing:
     member: member.registration
     couponCreated: coupon.created
-
-store:
-  service:
-    url: http://localhost:9777/api/v1/store
 
 
 #유레카 활성화
