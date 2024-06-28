@@ -4,10 +4,10 @@ spring:
       #      기본 개발 프로필
       on-profile: dev
   rabbitmq:
-    host: localhost
+    host: 133.186.241.167
     port: 5672
-    username: supernova
-    password: 1234
+    username: admin
+    password: nhnacademy123!
     listener:
       simple:
         acknowledge-mode: auto
