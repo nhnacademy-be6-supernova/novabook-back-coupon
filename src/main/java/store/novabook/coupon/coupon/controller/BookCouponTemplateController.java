@@ -22,7 +22,7 @@ import store.novabook.coupon.coupon.service.BookCouponTemplateService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/coupon/book-coupon-templates")
+@RequestMapping("/api/v1/coupon/templates/book")
 public class BookCouponTemplateController {
 
 	private final BookCouponTemplateService bookCouponTemplateService;
@@ -40,7 +40,7 @@ public class BookCouponTemplateController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@GetMapping("/book/{bookId}")
+	@GetMapping("/{bookId}")
 	public ResponseEntity<GetBookCouponTemplateAllResponse> getCouponTemplateByBookId(@PathVariable Long bookId,
 		@RequestParam(defaultValue = "true") boolean isValid) {
 		GetBookCouponTemplateAllResponse response = bookCouponTemplateService.findAllByBookId(bookId, isValid);
