@@ -2,7 +2,7 @@ spring:
   application:
     name: coupon
   profiles:
-    active: dev
+    active: prod
 server:
   port: 8070
 
