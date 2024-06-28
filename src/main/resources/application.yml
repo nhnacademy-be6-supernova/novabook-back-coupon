@@ -7,6 +7,6 @@ server:
   port: 8070
 
 
-#logging:
-#  file:
-#    path: ${user.home}
+logging:
+  file:
+    path: ${user.home}/logs/${spring.application.name}
