@@ -9,4 +9,4 @@ server:
 
 logging:
   file:
-    path: ${user.home}/logs/${spring.application.name}
+    path: ${user.dir}/logs/${spring.application.name}
