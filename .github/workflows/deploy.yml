@@ -30,7 +30,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT }}
-          source: "."
+          source: "target/*.jar"
           target: "home/nova-dev/coupon"
           rm: false
       - name: execute shell script
