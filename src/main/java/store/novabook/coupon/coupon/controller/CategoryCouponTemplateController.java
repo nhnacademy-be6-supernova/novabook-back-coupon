@@ -22,7 +22,7 @@ import store.novabook.coupon.coupon.service.CategoryCouponTemplateService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/category-coupon-templates")
+@RequestMapping("/api/v1/coupon/templates/category")
 public class CategoryCouponTemplateController {
 
 	private final CategoryCouponTemplateService categoryCouponTemplateService;
@@ -33,7 +33,7 @@ public class CategoryCouponTemplateController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/category/{categoryId}")
+	@GetMapping("/{categoryId}")
 	public ResponseEntity<GetCategoryCouponTemplateAllResponse> getCategoryCouponTemplateAllByCategoryId(
 		@PathVariable Long categoryId, @RequestParam(defaultValue = "true") boolean isValid) {
 		GetCategoryCouponTemplateAllResponse response = categoryCouponTemplateService.findAllByCategoryId(categoryId,
