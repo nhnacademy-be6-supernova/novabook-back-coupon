@@ -1,8 +1,4 @@
 spring:
-  config:
-    activate:
-      #      기본 개발 프로필
-      on-profile: dev
   rabbitmq:
     host: 133.186.241.167
     port: 5672
