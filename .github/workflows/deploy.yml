@@ -31,7 +31,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           source: "target/*.jar"
-          target: "home/nova-dev/coupon/"
+          target: "~/"
           rm: false
       - name: execute shell script
         uses: appleboy/ssh-action@master
