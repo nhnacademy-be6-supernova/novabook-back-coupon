@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
+    <property name="LOG_PATH" value="${LOG_PATH:-/app/logs}"/>
     <springProperty scope="context" name="springAppName" source="spring.application.name"/>
     <springProperty scope="context" name="logPath" source="logging.file.path"/>
     <property name="APP_NAME" value="${springAppName:-authority-server}"/>
