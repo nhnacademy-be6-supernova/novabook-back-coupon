@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "store-service", url = "${store.service.url}")
 public interface StoreAdapter {
 
-	@GetMapping("/books/{bookId}/name")
+	@GetMapping("/books/{bookId}")
 	String getBookName(@PathVariable("bookId") Long bookId);
 }
