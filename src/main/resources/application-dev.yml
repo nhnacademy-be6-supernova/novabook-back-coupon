@@ -4,10 +4,10 @@ spring:
       #      기본 개발 프로필
       on-profile: dev
   rabbitmq:
-    host: localhost
+    host: 133.186.241.167
     port: 5672
-    username: supernova
-    password: 1234
+    username: admin
+    password: nhnacademy123!
     listener:
       simple:
         acknowledge-mode: auto
@@ -46,12 +46,12 @@ logging:
 
 rabbitmq:
   queue:
-    coupon: couponQueue
-    dead: deadQueue
-    member-coupon: memberCouponQueue
+    coupon: nova.coupon.queue
+    dead: nova.dead.queue
+    member-coupon: nova.membercoupon.queue
   exchange:
-    member: memberExchange
-    coupon: couponExchange
+    member: nova.member.exchange
+    coupon: nova.coupon.exchange
   routing:
     member: member.registration
     couponCreated: coupon.created
@@ -63,3 +63,13 @@ batch:
   service:
     url: http://localhost:8060
 
+
+#유레카 활성화
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true

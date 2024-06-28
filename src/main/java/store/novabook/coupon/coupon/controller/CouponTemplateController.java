@@ -21,7 +21,7 @@ import store.novabook.coupon.coupon.service.CouponTemplateService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/coupon-templates")
+@RequestMapping("/api/v1/coupon/coupon-templates")
 public class CouponTemplateController {
 	private final CouponTemplateService couponTemplateService;
 

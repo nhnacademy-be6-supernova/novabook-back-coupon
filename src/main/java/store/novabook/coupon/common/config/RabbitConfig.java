@@ -3,10 +3,7 @@ package store.novabook.coupon.common.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -74,17 +71,17 @@ public class RabbitConfig {
 
 	@Bean
 	public Queue deadQueue() {
-		return new Queue(deadQueueName, false, false, false);
+		return new Queue(deadQueueName, true, false, false);
 	}
 
 	@Bean
-	public TopicExchange memberExchange() {
-		return new TopicExchange(memberExchangeName);
+	public DirectExchange memberExchange() {
+		return new DirectExchange(memberExchangeName);
 	}
 
 	@Bean
-	public TopicExchange couponExchange() {
-		return new TopicExchange(couponExchangeName);
+	public DirectExchange couponExchange() {
+		return new DirectExchange(couponExchangeName);
 	}
 
 	@Bean

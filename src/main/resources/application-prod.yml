@@ -1,38 +1,48 @@
 spring:
   config:
     activate:
-      #      개인 테스트 환경
-      on-profile: local
+      #      기본 개발 프로필
+      on-profile: dev
   rabbitmq:
-    host: 133.186.241.167
+    host: localhost
     port: 5672
-    username: admin
-    password: nhnacademy123!
+    username: supernova
+    password: 1234
     listener:
       simple:
         acknowledge-mode: auto
         retry:
           enabled: true
-          initial-interval: 3000  # 최초 메시지 처리 실패 후 재시도까지의 인터벌 (3초)
-          max-interval: 10000    # 최대 재시도 인터벌 (10초)
-          max-attempts: 3        # 최대 재시도 횟수
-          multiplier: 2.0        # 이전 interval * multiplier = 다음 interval
+          initial-interval: 3000 # 최초 메시지 처리 실패 후 재시도까지의 인터벌 (3초)
+          max-interval: 10000 # 최대 재시도 인터벌 (10초)
+          max-attempts: 3 # 최대 재시도 횟수
+          multiplier: 2.0 # 이전 interval * multiplier = 다음 interval
+
+  application:
+    name: 'coupon'
 
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:test
-    username: sa
-    password:
+    url: jdbc:mysql://133.186.241.167:3306/be6_supernova_coupon_dev
+    username: be6_supernova
+    password: Hv-]JRIyCw[[9O18
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  #절대 변경 금지
   jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
     open-in-view: false
+
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
   file:
     path: ${user.dir}
-
-
 
 rabbitmq:
   queue:
@@ -52,6 +62,7 @@ store:
 batch:
   service:
     url: http://localhost:8060
+
 
 #유레카 활성화
 eureka:

@@ -1,8 +1,11 @@
 spring:
   application:
     name: coupon
+  profiles:
+    active: dev
 server:
   port: 8070
+
 
 #logging:
 #  file:
