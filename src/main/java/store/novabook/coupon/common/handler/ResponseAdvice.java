@@ -1,4 +1,4 @@
-package store.novabook.coupon.common.hanlder;
+package store.novabook.coupon.common.handler;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Page;

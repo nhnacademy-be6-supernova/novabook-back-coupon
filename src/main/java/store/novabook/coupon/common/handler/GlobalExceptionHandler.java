@@ -1,4 +1,4 @@
-package store.novabook.coupon.common.hanlder;
+package store.novabook.coupon.common.handler;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -94,6 +94,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
 	}
 
+	/**
+	 * {@code MethodArgumentTypeMismatchException}을 처리하여 {@link ErrorResponse}를 반환합니다.
+	 *
+	 * @param ex {@code MethodArgumentTypeMismatchException}
+	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
+	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
 		return ResponseEntity.badRequest().body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT_TYPE));
