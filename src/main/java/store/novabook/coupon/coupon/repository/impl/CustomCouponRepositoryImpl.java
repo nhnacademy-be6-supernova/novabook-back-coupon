@@ -19,22 +19,33 @@ import store.novabook.coupon.coupon.entity.Coupon;
 import store.novabook.coupon.coupon.entity.CouponType;
 import store.novabook.coupon.coupon.repository.CustomCouponRepository;
 
+/**
+ * {@code CustomCouponRepositoryImpl} 클래스는 커스텀 쿠폰 리포지토리 구현체입니다.
+ */
 @Transactional(readOnly = true)
 public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implements CustomCouponRepository {
+
+	/**
+	 * {@code CustomCouponRepositoryImpl} 생성자.
+	 */
 	public CustomCouponRepositoryImpl() {
 		super(Coupon.class);
 	}
 
+	/**
+	 * 주어진 요청에 따라 유효한 모든 쿠폰을 조회합니다.
+	 *
+	 * @param request 쿠폰 조회 요청
+	 * @return 조회된 쿠폰 응답 리스트
+	 */
 	@Override
 	public List<GetCouponResponse> findSufficientCoupons(GetCouponAllRequest request) {
 		List<GetCouponResponse> category = from(coupon).select(
 				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, couponTemplate.name,
 					couponTemplate.discountAmount, couponTemplate.discountType, couponTemplate.maxDiscountAmount,
 					couponTemplate.minPurchaseAmount, coupon.createdAt, coupon.expirationAt))
-			.innerJoin(couponTemplate)
-			.on(coupon.couponTemplate.id.eq(couponTemplate.id))
-			.innerJoin(categoryCouponTemplate)
-			.on(categoryCouponTemplate.couponTemplate.id.eq(couponTemplate.id))
+			.innerJoin(couponTemplate).on(coupon.couponTemplate.id.eq(couponTemplate.id))
+			.innerJoin(categoryCouponTemplate).on(categoryCouponTemplate.couponTemplate.id.eq(couponTemplate.id))
 			.where(coupon.id.in(request.couponIdList())
 				.and(categoryCouponTemplate.categoryId.in(request.categoryIdList())))
 			.fetch();
@@ -44,10 +55,8 @@ public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implem
 				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, couponTemplate.name,
 					couponTemplate.discountAmount, couponTemplate.discountType, couponTemplate.maxDiscountAmount,
 					couponTemplate.minPurchaseAmount, coupon.createdAt, coupon.expirationAt))
-			.innerJoin(couponTemplate)
-			.on(coupon.couponTemplate.id.eq(couponTemplate.id))
-			.innerJoin(bookCouponTemplate)
-			.on(bookCouponTemplate.couponTemplate.id.eq(coupon.couponTemplate.id))
+			.innerJoin(couponTemplate).on(coupon.couponTemplate.id.eq(couponTemplate.id))
+			.innerJoin(bookCouponTemplate).on(bookCouponTemplate.couponTemplate.id.eq(coupon.couponTemplate.id))
 			.where(coupon.id.in(request.couponIdList()).and(bookCouponTemplate.bookId.in(request.bookIdList())))
 			.fetch();
 		response.addAll(book);

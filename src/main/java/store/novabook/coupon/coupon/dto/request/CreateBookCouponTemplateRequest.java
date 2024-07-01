@@ -9,6 +9,19 @@ import store.novabook.coupon.common.validator.ValidDiscount;
 import store.novabook.coupon.coupon.entity.DiscountType;
 import store.novabook.coupon.coupon.entity.Discountable;
 
+/**
+ * {@code CreateBookCouponTemplateRequest} 레코드는 도서 쿠폰 템플릿 생성 요청을 나타냅니다.
+ *
+ * @param bookId            책 ID
+ * @param name              쿠폰 이름
+ * @param discountAmount    할인 금액
+ * @param discountType      할인 유형
+ * @param maxDiscountAmount 최대 할인 금액
+ * @param minPurchaseAmount 최소 구매 금액
+ * @param startedAt         시작 날짜
+ * @param expirationAt      만료 날짜
+ * @param usePeriod         사용 가능일
+ */
 @ValidDiscount
 public record CreateBookCouponTemplateRequest(@NotNull(message = "책 ID는 필수 입력 항목입니다.") Long bookId,
 											  @NotNull(message = "이름은 필수 입력 항목입니다.") @Size(max = 255, message = "이름은 255자 이하로 입력해야 합니다.") String name,
@@ -20,6 +33,12 @@ public record CreateBookCouponTemplateRequest(@NotNull(message = "책 ID는 필�
 											  @NotNull(message = "만료 날짜는 필수 입력 항목입니다.") LocalDateTime expirationAt,
 											  @NotNull(message = "사용 가능일은 필수 입력 항목입니다.") Integer usePeriod)
 	implements Discountable {
+
+	/**
+	 * 시작 날짜가 만료 날짜보다 이전인지 확인합니다.
+	 *
+	 * @return 시작 날짜가 만료 날짜보다 이전인 경우 {@code true}, 그렇지 않은 경우 {@code false}
+	 */
 	@AssertTrue(message = "시작 날짜는 만료 날짜보다 이전이어야 합니다.")
 	public boolean isValidDates() {
 		return startedAt.isBefore(expirationAt);
@@ -35,5 +54,3 @@ public record CreateBookCouponTemplateRequest(@NotNull(message = "책 ID는 필�
 		return discountType;
 	}
 }
-
-

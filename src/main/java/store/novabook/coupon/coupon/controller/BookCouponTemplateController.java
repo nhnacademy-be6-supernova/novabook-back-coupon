@@ -21,6 +21,9 @@ import store.novabook.coupon.coupon.dto.response.GetBookCouponTemplateAllRespons
 import store.novabook.coupon.coupon.dto.response.GetBookCouponTemplateResponse;
 import store.novabook.coupon.coupon.service.BookCouponTemplateService;
 
+/**
+ * {@code BookCouponTemplateController} 클래스는 도서 쿠폰 템플릿 API를 처리합니다.
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/coupon/templates/book")
@@ -28,12 +31,24 @@ public class BookCouponTemplateController implements BookCouponTemplateControlle
 
 	private final BookCouponTemplateService bookCouponTemplateService;
 
+	/**
+	 * 모든 도서 쿠폰 템플릿을 조회합니다.
+	 *
+	 * @param pageable 페이지 정보
+	 * @return 도서 쿠폰 템플릿의 페이지 응답
+	 */
 	@GetMapping
 	public ResponseEntity<Page<GetBookCouponTemplateResponse>> getBookCouponTemplateAll(Pageable pageable) {
 		Page<GetBookCouponTemplateResponse> response = bookCouponTemplateService.findAll(pageable);
 		return ResponseEntity.ok(response);
 	}
 
+	/**
+	 * 새로운 도서 쿠폰 템플릿을 생성합니다.
+	 *
+	 * @param request 도서 쿠폰 템플릿 생성 요청
+	 * @return 생성된 도서 쿠폰 템플릿의 응답
+	 */
 	@PostMapping
 	public ResponseEntity<CreateCouponTemplateResponse> createBookCouponTemplate(
 		@Valid @RequestBody CreateBookCouponTemplateRequest request) {
@@ -41,6 +56,13 @@ public class BookCouponTemplateController implements BookCouponTemplateControlle
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
+	/**
+	 * ID를 이용해 특정 도서의 쿠폰 템플릿을 조회합니다.
+	 *
+	 * @param bookId  조회할 도서의 ID
+	 * @param isValid 유효성 여부
+	 * @return 조회된 도서 쿠폰 템플릿의 응답
+	 */
 	@GetMapping("/{bookId}")
 	public ResponseEntity<GetBookCouponTemplateAllResponse> getCouponTemplateByBookId(@PathVariable Long bookId,
 		@RequestParam(defaultValue = "true") boolean isValid) {
