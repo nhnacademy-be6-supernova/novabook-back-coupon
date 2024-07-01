@@ -11,14 +11,11 @@ import io.swagger.v3.oas.models.info.Info;
 public class SwaggerConfig {
 	@Bean
 	public OpenAPI openAPI() {
-		return new OpenAPI()
-			.components(new Components())
-			.info(apiInfo());
+		return new OpenAPI().components(new Components()).info(apiInfo());
 	}
 
 	private Info apiInfo() {
-		return new Info()
-			.title("NovaBook Coupon API")
+		return new Info().title("NovaBook Coupon API")
 			.description("Springdoc-Swagger NOVABOOK Coupon 명세서")
 			.version("0.0.1");
 	}
