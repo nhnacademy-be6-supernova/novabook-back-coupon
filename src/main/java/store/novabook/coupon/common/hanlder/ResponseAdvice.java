@@ -4,6 +4,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,7 +24,7 @@ import store.novabook.coupon.common.exception.dto.ValidErrorResponse;
  * </p>
  */
 @Slf4j
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = {"store.novabook.coupon"})
 public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 
 	/**
@@ -32,13 +33,13 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 	 * 모든 응답에 대해 이 어드바이스를 적용합니다.
 	 * </p>
 	 *
-	 * @param returnType      응답 본문의 타입
-	 * @param converterType   사용될 메시지 컨버터 타입
+	 * @param returnType    응답 본문의 타입
+	 * @param converterType 사용될 메시지 컨버터 타입
 	 * @return 항상 {@code true}를 반환하여 모든 응답에 대해 적용합니다.
 	 */
 	@Override
 	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-		return true;
+		return converterType != null && MappingJackson2HttpMessageConverter.class.isAssignableFrom(converterType);
 	}
 
 	/**
@@ -47,12 +48,12 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 	 * 응답 본문을 작성하기 전에 호출되며, 응답 본문을 표준 {@link ApiResponse} 형식으로 변환합니다.
 	 * </p>
 	 *
-	 * @param body                    응답 본문
-	 * @param returnType              응답 본문의 타입
-	 * @param selectedContentType     선택된 콘텐츠 타입
-	 * @param selectedConverterType   선택된 메시지 컨버터 타입
-	 * @param request                 서버 요청
-	 * @param response                서버 응답
+	 * @param body                  응답 본문
+	 * @param returnType            응답 본문의 타입
+	 * @param selectedContentType   선택된 콘텐츠 타입
+	 * @param selectedConverterType 선택된 메시지 컨버터 타입
+	 * @param request               서버 요청
+	 * @param response              서버 응답
 	 * @return 변환된 응답 본문을 반환합니다.
 	 */
 	@Override
