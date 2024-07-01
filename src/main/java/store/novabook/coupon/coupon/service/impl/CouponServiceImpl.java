@@ -79,6 +79,20 @@ public class CouponServiceImpl implements CouponService {
 		return GetCouponAllResponse.builder().couponResponseList(sufficientCoupons).build();
 	}
 
+	@Transactional(readOnly = true)
+	@Override
+	public GetCouponAllResponse findAllByIdAndStatus(List<Long> couponIdList, CouponStatus status) {
+		List<Coupon> coupons = couponRepository.findAllByIdInAndStatus(couponIdList, status);
+		return GetCouponAllResponse.fromEntity(coupons);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public GetCouponAllResponse findAllById(List<Long> couponIdList) {
+		List<Coupon> coupons = couponRepository.findAllById(couponIdList);
+		return GetCouponAllResponse.fromEntity(coupons);
+	}
+
 	@RabbitListener(queues = "${rabbitmq.queue.coupon}")
 	@Transactional
 	public void handleMemberRegistrationMessage(MemberRegistrationMessage message) {
