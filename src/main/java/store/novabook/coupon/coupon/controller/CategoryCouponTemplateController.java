@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.coupon.coupon.controller.docs.CategoryCouponTemplateControllerDocs;
 import store.novabook.coupon.coupon.dto.request.CreateCategoryCouponTemplateRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponTemplateResponse;
 import store.novabook.coupon.coupon.dto.response.GetCategoryCouponTemplateAllResponse;
@@ -23,7 +24,7 @@ import store.novabook.coupon.coupon.service.CategoryCouponTemplateService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/coupon/templates/category")
-public class CategoryCouponTemplateController {
+public class CategoryCouponTemplateController implements CategoryCouponTemplateControllerDocs {
 
 	private final CategoryCouponTemplateService categoryCouponTemplateService;
 
