@@ -41,4 +41,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script_stop: true
-          script: "./startup.sh"
+          script: |
+            fuser -k 8070/tcp
+            ./startup.sh
