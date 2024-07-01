@@ -28,10 +28,14 @@ import store.novabook.coupon.coupon.repository.CouponRepository;
 import store.novabook.coupon.coupon.repository.CouponTemplateRepository;
 import store.novabook.coupon.coupon.service.CouponService;
 
+/**
+ * {@code CouponServiceImpl} 클래스는 쿠폰 서비스의 구현체입니다.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class CouponServiceImpl implements CouponService {
+
 	private final CouponRepository couponRepository;
 	private final CouponTemplateRepository couponTemplateRepository;
 	private final RabbitTemplate rabbitTemplate;
@@ -42,6 +46,12 @@ public class CouponServiceImpl implements CouponService {
 	@Value("${rabbitmq.routing.couponCreated}")
 	private String couponCreatedRoutingKey;
 
+	/**
+	 * 쿠폰 템플릿의 유효성을 검증합니다.
+	 *
+	 * @param couponTemplate 쿠폰 템플릿
+	 * @throws BadRequestException 쿠폰 템플릿이 만료되었거나 아직 시작되지 않은 경우
+	 */
 	private static void validateExpiration(CouponTemplate couponTemplate) {
 		if (couponTemplate.getExpirationAt().isBefore(LocalDateTime.now()) || couponTemplate.getStartedAt()
 			.isAfter(LocalDateTime.now())) {
@@ -49,6 +59,12 @@ public class CouponServiceImpl implements CouponService {
 		}
 	}
 
+	/**
+	 * 쿠폰의 상태를 사용으로 업데이트합니다.
+	 *
+	 * @param id 쿠폰 ID
+	 * @throws BadRequestException 쿠폰이 존재하지 않거나 이미 사용된 경우
+	 */
 	@Override
 	public void updateStatusToUsed(Long id) {
 		Coupon coupon = couponRepository.findById(id)
@@ -59,6 +75,12 @@ public class CouponServiceImpl implements CouponService {
 		coupon.updateStatus(CouponStatus.USED);
 	}
 
+	/**
+	 * 새로운 쿠폰을 생성합니다.
+	 *
+	 * @param request 쿠폰 생성 요청
+	 * @return 생성된 쿠폰 응답
+	 */
 	@Override
 	public CreateCouponResponse create(CreateCouponRequest request) {
 		CouponTemplate couponTemplate = couponTemplateRepository.findById(request.couponTemplateId())
@@ -72,6 +94,12 @@ public class CouponServiceImpl implements CouponService {
 		return CreateCouponResponse.fromEntity(saved);
 	}
 
+	/**
+	 * 요청된 조건에 따라 유효한 모든 쿠폰을 조회합니다.
+	 *
+	 * @param request 쿠폰 조회 요청
+	 * @return 조회된 쿠폰 응답
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public GetCouponAllResponse findSufficientCouponAllById(GetCouponAllRequest request) {
@@ -79,6 +107,38 @@ public class CouponServiceImpl implements CouponService {
 		return GetCouponAllResponse.builder().couponResponseList(sufficientCoupons).build();
 	}
 
+	/**
+	 * 주어진 쿠폰 ID 리스트와 상태에 따라 모든 쿠폰을 조회합니다.
+	 *
+	 * @param couponIdList 쿠폰 ID 리스트
+	 * @param status       쿠폰 상태
+	 * @return 조회된 쿠폰 응답
+	 */
+	@Transactional(readOnly = true)
+	@Override
+	public GetCouponAllResponse findAllByIdAndStatus(List<Long> couponIdList, CouponStatus status) {
+		List<Coupon> coupons = couponRepository.findAllByIdInAndStatus(couponIdList, status);
+		return GetCouponAllResponse.fromEntity(coupons);
+	}
+
+	/**
+	 * 주어진 쿠폰 ID 리스트에 따라 모든 쿠폰을 조회합니다.
+	 *
+	 * @param couponIdList 쿠폰 ID 리스트
+	 * @return 조회된 쿠폰 응답
+	 */
+	@Transactional(readOnly = true)
+	@Override
+	public GetCouponAllResponse findAllById(List<Long> couponIdList) {
+		List<Coupon> coupons = couponRepository.findAllById(couponIdList);
+		return GetCouponAllResponse.fromEntity(coupons);
+	}
+
+	/**
+	 * 회원 가입 메시지를 처리합니다.
+	 *
+	 * @param message 회원 가입 메시지
+	 */
 	@RabbitListener(queues = "${rabbitmq.queue.coupon}")
 	@Transactional
 	public void handleMemberRegistrationMessage(MemberRegistrationMessage message) {
@@ -90,6 +150,5 @@ public class CouponServiceImpl implements CouponService {
 			Coupon.of(opt.get(), CouponStatus.UNUSED, LocalDateTime.now().plusHours(opt.get().getUsePeriod())));
 		CouponCreatedMessage couponCreatedMessage = new CouponCreatedMessage(saved.getId(), message.memberId());
 		rabbitTemplate.convertAndSend(couponExchange, couponCreatedRoutingKey, couponCreatedMessage);
-
 	}
 }

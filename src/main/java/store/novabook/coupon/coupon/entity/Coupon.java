@@ -22,6 +22,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+/**
+ * {@code Coupon} 엔티티는 쿠폰을 나타냅니다.
+ */
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
@@ -51,6 +54,13 @@ public class Coupon {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
+	/**
+	 * {@code Coupon} 생성자.
+	 *
+	 * @param couponTemplate 쿠폰 템플릿
+	 * @param status         쿠폰 상태
+	 * @param expirationAt   쿠폰 만료 날짜
+	 */
 	@Builder
 	public Coupon(CouponTemplate couponTemplate, CouponStatus status, LocalDateTime expirationAt) {
 		this.couponTemplate = couponTemplate;
@@ -58,12 +68,28 @@ public class Coupon {
 		this.expirationAt = expirationAt;
 	}
 
+	/**
+	 * 주어진 쿠폰 템플릿, 상태 및 만료 날짜로부터 {@code Coupon} 객체를 생성합니다.
+	 *
+	 * @param couponTemplate 쿠폰 템플릿
+	 * @param status         쿠폰 상태
+	 * @param expirationAt   쿠폰 만료 날짜
+	 * @return 생성된 {@code Coupon} 객체
+	 */
 	public static Coupon of(CouponTemplate couponTemplate, CouponStatus status, LocalDateTime expirationAt) {
-		return Coupon.builder().couponTemplate(couponTemplate).status(status).expirationAt(expirationAt).build();
+		return Coupon.builder()
+			.couponTemplate(couponTemplate)
+			.status(status)
+			.expirationAt(expirationAt)
+			.build();
 	}
 
+	/**
+	 * 쿠폰의 상태를 업데이트합니다.
+	 *
+	 * @param status 새로운 쿠폰 상태
+	 */
 	public void updateStatus(CouponStatus status) {
 		this.status = status;
 	}
-
 }

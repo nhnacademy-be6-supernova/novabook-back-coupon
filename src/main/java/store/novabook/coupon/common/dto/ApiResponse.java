@@ -41,8 +41,8 @@ public class ApiResponse<T> {
 	/**
 	 * 오류 응답을 생성합니다.
 	 *
-	 * @param body      응답 본문
-	 * @param <T>       응답 본문의 타입
+	 * @param body 응답 본문
+	 * @param <T>  응답 본문의 타입
 	 * @return 오류 응답을 감싼 {@code ApiResponse} 객체
 	 */
 	public static <T> ApiResponse<T> error(T body) {
