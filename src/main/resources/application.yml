@@ -1,12 +1,31 @@
 spring:
   application:
     name: coupon
-  profiles:
-    active: dev
 server:
   port: 8070
 
 
-#logging:
-#  file:
-#    path: ${user.home}
+logging:
+  file:
+    path: ${user.dir}/logs/${spring.application.name}
+
+
+#swagger 설정
+springdoc:
+  packages-to-scan: store.novabook
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /swagger
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: alpha
+
+---
+spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          store-service:
+            url: http://localhost:9777/api/v1/store

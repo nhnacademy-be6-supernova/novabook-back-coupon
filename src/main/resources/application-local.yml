@@ -48,10 +48,7 @@ rabbitmq:
 
 store:
   service:
-    url: http://localhost:8090
-batch:
-  service:
-    url: http://localhost:8060
+    url: http://localhost:9777/api/v1/store
 
 #유레카 활성화
 eureka:

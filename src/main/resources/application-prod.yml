@@ -1,13 +1,9 @@
 spring:
-  config:
-    activate:
-      #      기본 개발 프로필
-      on-profile: dev
   rabbitmq:
-    host: localhost
+    host: 133.186.241.167
     port: 5672
-    username: supernova
-    password: 1234
+    username: admin
+    password: nhnacademy123!
     listener:
       simple:
         acknowledge-mode: auto
@@ -41,9 +37,8 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
-  file:
-    path: ${user.dir}
 
+---
 rabbitmq:
   queue:
     coupon: nova.coupon.queue
@@ -55,13 +50,6 @@ rabbitmq:
   routing:
     member: member.registration
     couponCreated: coupon.created
-
-store:
-  service:
-    url: http://localhost:8090
-batch:
-  service:
-    url: http://localhost:8060
 
 
 #유레카 활성화
