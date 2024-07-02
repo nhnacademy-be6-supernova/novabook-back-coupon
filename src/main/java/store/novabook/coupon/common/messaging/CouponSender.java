@@ -1,0 +1,25 @@
+package store.novabook.coupon.common.messaging;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import store.novabook.coupon.common.messaging.dto.RegisterCouponMessage;
+
+@Service
+@RequiredArgsConstructor
+public class CouponSender {
+
+	private final RabbitTemplate rabbitTemplate;
+
+	@Value("${rabbitmq.exchange.couponOperation}")
+	private String couponOperationExchange;
+
+	@Value("${rabbitmq.routing.couponRegisterHighTraffic}")
+	private String couponRegisterHighTrafficRoutingKey;
+
+	public void sendToRegisterHighTrafficQueue(RegisterCouponMessage message) {
+		rabbitTemplate.convertAndSend(couponOperationExchange, couponRegisterHighTrafficRoutingKey, message);
+	}
+}

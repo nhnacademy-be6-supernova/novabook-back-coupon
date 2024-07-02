@@ -41,30 +41,37 @@ public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implem
 	@Override
 	public List<GetCouponResponse> findSufficientCoupons(GetCouponAllRequest request) {
 		List<GetCouponResponse> category = from(coupon).select(
-				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, couponTemplate.name,
-					couponTemplate.discountAmount, couponTemplate.discountType, couponTemplate.maxDiscountAmount,
-					couponTemplate.minPurchaseAmount, coupon.createdAt, coupon.expirationAt))
-			.innerJoin(couponTemplate).on(coupon.couponTemplate.id.eq(couponTemplate.id))
-			.innerJoin(categoryCouponTemplate).on(categoryCouponTemplate.couponTemplate.id.eq(couponTemplate.id))
+				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, coupon.status,
+					couponTemplate.name, couponTemplate.discountAmount, couponTemplate.discountType,
+					couponTemplate.maxDiscountAmount, couponTemplate.minPurchaseAmount, coupon.createdAt,
+					coupon.expirationAt))
+			.innerJoin(couponTemplate)
+			.on(coupon.couponTemplate.id.eq(couponTemplate.id))
+			.innerJoin(categoryCouponTemplate)
+			.on(categoryCouponTemplate.couponTemplate.id.eq(couponTemplate.id))
 			.where(coupon.id.in(request.couponIdList())
 				.and(categoryCouponTemplate.categoryId.in(request.categoryIdList())))
 			.fetch();
 		List<GetCouponResponse> response = new ArrayList<>(category);
 
 		List<GetCouponResponse> book = from(coupon).select(
-				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, couponTemplate.name,
-					couponTemplate.discountAmount, couponTemplate.discountType, couponTemplate.maxDiscountAmount,
-					couponTemplate.minPurchaseAmount, coupon.createdAt, coupon.expirationAt))
-			.innerJoin(couponTemplate).on(coupon.couponTemplate.id.eq(couponTemplate.id))
-			.innerJoin(bookCouponTemplate).on(bookCouponTemplate.couponTemplate.id.eq(coupon.couponTemplate.id))
+				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, coupon.status,
+					couponTemplate.name, couponTemplate.discountAmount, couponTemplate.discountType,
+					couponTemplate.maxDiscountAmount, couponTemplate.minPurchaseAmount, coupon.createdAt,
+					coupon.expirationAt))
+			.innerJoin(couponTemplate)
+			.on(coupon.couponTemplate.id.eq(couponTemplate.id))
+			.innerJoin(bookCouponTemplate)
+			.on(bookCouponTemplate.couponTemplate.id.eq(coupon.couponTemplate.id))
 			.where(coupon.id.in(request.couponIdList()).and(bookCouponTemplate.bookId.in(request.bookIdList())))
 			.fetch();
 		response.addAll(book);
 
 		List<GetCouponResponse> general = from(coupon).select(
-				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, couponTemplate.name,
-					couponTemplate.discountAmount, couponTemplate.discountType, couponTemplate.maxDiscountAmount,
-					couponTemplate.minPurchaseAmount, coupon.createdAt, coupon.expirationAt))
+				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, coupon.status,
+					couponTemplate.name, couponTemplate.discountAmount, couponTemplate.discountType,
+					couponTemplate.maxDiscountAmount, couponTemplate.minPurchaseAmount, coupon.createdAt,
+					coupon.expirationAt))
 			.where(coupon.id.in(request.couponIdList())
 				.and(coupon.couponTemplate.type.notIn(CouponType.BOOK, CouponType.CATEGORY)))
 			.fetch();
