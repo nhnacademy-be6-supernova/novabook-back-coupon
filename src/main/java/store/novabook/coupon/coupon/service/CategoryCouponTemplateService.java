@@ -1,5 +1,7 @@
 package store.novabook.coupon.coupon.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -28,7 +30,7 @@ public interface CategoryCouponTemplateService {
 	 * @param isValid    유효성 여부
 	 * @return 주어진 조건에 맞는 카테고리 쿠폰 템플릿의 응답
 	 */
-	GetCategoryCouponTemplateAllResponse findAllByCategoryId(Long categoryId, boolean isValid);
+	GetCategoryCouponTemplateAllResponse findAllByCategoryId(List<Long> categoryId, boolean isValid);
 
 	/**
 	 * 모든 카테고리 쿠폰 템플릿을 페이지 형식으로 조회합니다.
