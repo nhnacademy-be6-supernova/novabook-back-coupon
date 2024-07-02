@@ -5,6 +5,10 @@ import jakarta.validation.ConstraintValidatorContext;
 import store.novabook.coupon.coupon.entity.DiscountType;
 import store.novabook.coupon.coupon.entity.Discountable;
 
+/**
+ * {@code DiscountValidator} 클래스는 할인 금액의 유효성을 검증하는 유효성 검사기입니다.
+ * 할인 유형에 따라 적절한 범위 내의 할인 금액을 검증합니다.
+ */
 public class DiscountValidator implements ConstraintValidator<ValidDiscount, Discountable> {
 
 	public static final int DISCOUNT_MIN_PERCENT = 0;
@@ -12,6 +16,13 @@ public class DiscountValidator implements ConstraintValidator<ValidDiscount, Dis
 	public static final int DISCOUNT_MAX_PERCENT = 100;
 	public static final int DISCOUNT_MAX_AMOUNT = 100000;
 
+	/**
+	 * 할인 금액의 유효성을 검증합니다.
+	 *
+	 * @param request {@code Discountable} 객체
+	 * @param context 유효성 검사 컨텍스트
+	 * @return 유효한 경우 {@code true}, 그렇지 않은 경우 {@code false}
+	 */
 	@Override
 	public boolean isValid(Discountable request, ConstraintValidatorContext context) {
 		boolean isValid = true;
