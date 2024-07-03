@@ -1,8 +1,4 @@
 spring:
-  config:
-    activate:
-      #      개인 테스트 환경
-      on-profile: local
   rabbitmq:
     host: 133.186.241.167
     port: 5672
@@ -31,11 +27,6 @@ logging:
     org.hibernate.type: trace
   file:
     path: ${user.dir}
-
-
-store:
-  service:
-    url: http://localhost:9777/api/v1/store
 
 #유레카 활성화
 eureka:

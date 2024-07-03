@@ -1,18 +1,22 @@
 spring:
   application:
     name: coupon
-  config:
-    activate:
-      on-profile: dev
+
+  profiles:
+    active: dev
+
+    cloud:
+    openfeign:
+      client:
+        config:
+          store-service:
+            url: http://localhost:9777/api/v1/store
 server:
   port: 8070
-
-
 
 logging:
   file:
     path: ${user.dir}/logs/${spring.application.name}
-
 
 #swagger 설정
 springdoc:
@@ -25,16 +29,6 @@ springdoc:
     display-request-duration: true
     operations-sorter: alpha
 
----
-spring:
-  cloud:
-    openfeign:
-      client:
-        config:
-          store-service:
-            url: http://localhost:9777/api/v1/store
-
----
 rabbitmq:
   queue:
     couponCreateNormal: nova.coupon.create.normal.queue
@@ -50,3 +44,15 @@ rabbitmq:
     couponCreateHighTraffic: coupon.create.hightraffic
     couponRegisterNormal: coupon.register.normal
     couponRegisterHighTraffic: coupon.register.hightraffic
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
