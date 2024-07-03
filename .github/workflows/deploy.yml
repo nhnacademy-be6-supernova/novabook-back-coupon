@@ -42,5 +42,5 @@ jobs:
           script_stop: true
           script: |
             chmod 755 ./coupon/target/coupon-0.0.1-SNAPSHOT.jar
-            fuser -k 8070/tcp
+            fuser -k 8070/tcp | true
             ./coupon/startup.sh
