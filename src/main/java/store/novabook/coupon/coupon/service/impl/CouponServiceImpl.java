@@ -47,9 +47,9 @@ public class CouponServiceImpl implements CouponService {
 			.isAfter(LocalDateTime.now())) {
 			if (couponTemplate.getType().equals(CouponType.WELCOME) || couponTemplate.getType()
 				.equals(CouponType.BIRTHDAY)) {
-				throw new NotFoundException(ErrorCode.EXPIRED_COUPON_CODE);
+				throw new NotFoundException(ErrorCode.EXPIRED_COUPON);
 			}
-			throw new BadRequestException(ErrorCode.EXPIRED_COUPON_CODE);
+			throw new BadRequestException(ErrorCode.EXPIRED_COUPON);
 		}
 	}
 
@@ -134,10 +134,10 @@ public class CouponServiceImpl implements CouponService {
 		CouponTemplate couponTemplate;
 		if (message.couponType().equals(CouponType.WELCOME) || message.couponType().equals(CouponType.BIRTHDAY)) {
 			couponTemplate = couponTemplateRepository.findTopByTypeOrderByCreatedAtDesc(message.couponType())
-				.orElseThrow(() -> new NotFoundException(ErrorCode.WELCOME_COUPON_NOT_FOUND));
+				.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 		} else {
 			couponTemplate = couponTemplateRepository.findById(message.couponTemplateId())
-				.orElseThrow(() -> new BadRequestException(ErrorCode.COUPON_TEMPLATE_NOT_FOUND));
+				.orElseThrow(() -> new BadRequestException(ErrorCode.INVALID_COUPON));
 		}
 		validateExpiration(couponTemplate);
 

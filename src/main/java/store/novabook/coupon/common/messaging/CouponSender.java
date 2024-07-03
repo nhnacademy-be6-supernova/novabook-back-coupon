@@ -18,8 +18,14 @@ public class CouponSender {
 
 	@Value("${rabbitmq.routing.couponRegisterHighTraffic}")
 	private String couponRegisterHighTrafficRoutingKey;
+	@Value("${rabbitmq.routing.couponRegisterNormal}")
+	private String couponRegisterNormalRoutingKey;
 
 	public void sendToRegisterHighTrafficQueue(RegisterCouponMessage message) {
 		rabbitTemplate.convertAndSend(couponOperationExchange, couponRegisterHighTrafficRoutingKey, message);
+	}
+
+	public void sendToRegisterNormalQueue(RegisterCouponMessage message) {
+		rabbitTemplate.convertAndSend(couponOperationExchange, couponRegisterNormalRoutingKey, message);
 	}
 }
