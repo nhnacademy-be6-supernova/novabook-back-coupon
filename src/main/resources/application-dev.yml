@@ -49,14 +49,6 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
 
-store:
-  service:
-    url: http://localhost:8090
-batch:
-  service:
-    url: http://localhost:8060
-
-
 #유레카 활성화
 eureka:
   client:
