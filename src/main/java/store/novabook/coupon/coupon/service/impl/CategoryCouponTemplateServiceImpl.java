@@ -55,20 +55,21 @@ public class CategoryCouponTemplateServiceImpl implements CategoryCouponTemplate
 	/**
 	 * 주어진 카테고리 ID와 유효성 여부에 따라 모든 카테고리 쿠폰 템플릿을 조회합니다.
 	 *
-	 * @param categoryId 카테고리 ID
-	 * @param isValid    유효성 여부
+	 * @param categoryIdList 카테고리 ID
+	 * @param isValid        유효성 여부
 	 * @return 주어진 조건에 맞는 카테고리 쿠폰 템플릿의 응답
 	 */
 	@Transactional(readOnly = true)
 	@Override
-	public GetCategoryCouponTemplateAllResponse findAllByCategoryId(Long categoryId, boolean isValid) {
+	public GetCategoryCouponTemplateAllResponse findAllByCategoryId(List<Long> categoryIdList, boolean isValid) {
 		if (isValid) {
-			List<CategoryCouponTemplate> templateList = categoryCouponTemplateRepository.findAllByCategoryIdAndCouponTemplateExpirationAtAfterAndCouponTemplateStartedAtBefore(
-				categoryId, LocalDateTime.now(), LocalDateTime.now());
+			List<CategoryCouponTemplate> templateList = categoryCouponTemplateRepository.findAllByCategoryIdInAndCouponTemplateExpirationAtAfterAndCouponTemplateStartedAtBefore(
+				categoryIdList, LocalDateTime.now(), LocalDateTime.now());
 			return GetCategoryCouponTemplateAllResponse.fromEntity(templateList);
 		}
 
-		List<CategoryCouponTemplate> templateList = categoryCouponTemplateRepository.findAllByCategoryId(categoryId);
+		List<CategoryCouponTemplate> templateList = categoryCouponTemplateRepository.findAllByCategoryIdIn(
+			categoryIdList);
 		return GetCategoryCouponTemplateAllResponse.fromEntity(templateList);
 	}
 }

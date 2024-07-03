@@ -22,7 +22,7 @@ public enum ErrorCode {
 
 	// 400
 	INVALID_REQUEST_ARGUMENT("잘못된 요청입니다."),
-	EXPIRED_COUPON_CODE("만료된 쿠폰 코드입니다."),
+	EXPIRED_COUPON("만료된 쿠폰입니다."),
 	INVALID_COUPON("유효하지 않은 쿠폰입니다."),
 	INVALID_COUPON_TYPE("유효하지 않은 쿠폰 타입입니다."),
 	WELCOME_COUPON_NOT_FOUND("웰컴 쿠폰이 존재하지 않습니다. "),
@@ -35,8 +35,8 @@ public enum ErrorCode {
 	NOT_ENOUGH_PERMISSION("해당 권한이 없습니다."),
 
 	// 404
-	COUPON_NOT_FOUND("존재하지 않는 쿠폰입니다."),
-	BOOK_COUPON_NOT_FOUND("해당 책에 대한 쿠폰이 존재하지 않습니다."),
+	COUPON_NOT_FOUND("해당 쿠폰이 존재하지 않습니다."),
+	BOOK_COUPON_NOT_FOUND("해당 도서에 대한 쿠폰이 존재하지 않습니다."),
 	CATEGORY_COUPON_NOT_FOUND("해당 카테고리에 대한 쿠폰이 존재하지 않습니다."),
 	COUPON_TEMPLATE_NOT_FOUND("해당 쿠폰 템플릿이 존재하지 않습니다."),
 

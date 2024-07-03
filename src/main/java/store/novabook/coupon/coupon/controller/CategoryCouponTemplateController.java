@@ -1,11 +1,12 @@
 package store.novabook.coupon.coupon.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,17 +45,17 @@ public class CategoryCouponTemplateController implements CategoryCouponTemplateC
 	}
 
 	/**
-	 * 카테고리 ID로 쿠폰 템플릿을 조회합니다.
+	 * 여러 카테고리 ID로 쿠폰 템플릿을 조회합니다.
 	 *
-	 * @param categoryId 조회할 카테고리의 ID
-	 * @param isValid    유효성 여부
+	 * @param categoryIdList 조회할 카테고리의 ID 리스트
+	 * @param isValid        유효성 여부
 	 * @return 조회된 카테고리 쿠폰 템플릿의 응답
 	 */
-	@GetMapping("/{categoryId}")
-	public ResponseEntity<GetCategoryCouponTemplateAllResponse> getCategoryCouponTemplateAllByCategoryId(
-		@PathVariable Long categoryId, @RequestParam(defaultValue = "true") boolean isValid) {
-		GetCategoryCouponTemplateAllResponse response = categoryCouponTemplateService.findAllByCategoryId(categoryId,
-			isValid);
+	@GetMapping(value = "/categories", params = {"categoryIdList"})
+	public ResponseEntity<GetCategoryCouponTemplateAllResponse> getCategoryCouponTemplateAllByCategoryIdAll(
+		@RequestParam List<Long> categoryIdList, @RequestParam(defaultValue = "true") boolean isValid) {
+		GetCategoryCouponTemplateAllResponse response = categoryCouponTemplateService.findAllByCategoryId(
+			categoryIdList, isValid);
 		return ResponseEntity.ok(response);
 	}
 
