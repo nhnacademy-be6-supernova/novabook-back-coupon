@@ -41,6 +41,6 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script_stop: true
           script: |
-            chmod 755 /coupon/target/coupon-0.0.1-SNAPSHOT.jar
+            chmod 755 ~/coupon/target/coupon-0.0.1-SNAPSHOT.jar
             fuser -k 8070/tcp
             ./coupon/startup.sh
