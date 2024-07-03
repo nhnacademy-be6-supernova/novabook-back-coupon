@@ -30,7 +30,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           source: "target/*.jar"
-          target: "~/"
+          target: "~/coupon/"
           rm: false
       - name: execute shell script
         uses: appleboy/ssh-action@master
@@ -41,5 +41,6 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script_stop: true
           script: |
+            chmod 755 /coupon/target/coupon-0.0.1-SNAPSHOT.jar
             fuser -k 8070/tcp
-            ./startup.sh
+            ./coupon/startup.sh
