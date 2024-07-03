@@ -2,6 +2,8 @@ package store.novabook.coupon.coupon.service;
 
 import java.util.List;
 
+import store.novabook.coupon.common.messaging.dto.CreateCouponMessage;
+import store.novabook.coupon.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
@@ -52,4 +54,6 @@ public interface CouponService {
 	 * @return 주어진 조건에 맞는 쿠폰의 응답
 	 */
 	GetCouponAllResponse findAllById(List<Long> couponIdList);
+
+	RegisterCouponMessage createByMessage(CreateCouponMessage message);
 }

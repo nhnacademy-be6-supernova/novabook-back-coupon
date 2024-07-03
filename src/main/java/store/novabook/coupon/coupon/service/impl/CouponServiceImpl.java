@@ -2,19 +2,16 @@ package store.novabook.coupon.coupon.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.common.exception.BadRequestException;
 import store.novabook.coupon.common.exception.ErrorCode;
-import store.novabook.coupon.coupon.dto.message.CouponCreatedMessage;
-import store.novabook.coupon.coupon.dto.message.MemberRegistrationMessage;
+import store.novabook.coupon.common.exception.NotFoundException;
+import store.novabook.coupon.common.messaging.dto.CreateCouponMessage;
+import store.novabook.coupon.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
@@ -38,13 +35,6 @@ public class CouponServiceImpl implements CouponService {
 
 	private final CouponRepository couponRepository;
 	private final CouponTemplateRepository couponTemplateRepository;
-	private final RabbitTemplate rabbitTemplate;
-
-	@Value("${rabbitmq.exchange.coupon}")
-	private String couponExchange;
-
-	@Value("${rabbitmq.routing.couponCreated}")
-	private String couponCreatedRoutingKey;
 
 	/**
 	 * 쿠폰 템플릿의 유효성을 검증합니다.
@@ -55,7 +45,11 @@ public class CouponServiceImpl implements CouponService {
 	private static void validateExpiration(CouponTemplate couponTemplate) {
 		if (couponTemplate.getExpirationAt().isBefore(LocalDateTime.now()) || couponTemplate.getStartedAt()
 			.isAfter(LocalDateTime.now())) {
-			throw new BadRequestException(ErrorCode.EXPIRED_COUPON_CODE);
+			if (couponTemplate.getType().equals(CouponType.WELCOME) || couponTemplate.getType()
+				.equals(CouponType.BIRTHDAY)) {
+				throw new NotFoundException(ErrorCode.EXPIRED_COUPON);
+			}
+			throw new BadRequestException(ErrorCode.EXPIRED_COUPON);
 		}
 	}
 
@@ -134,21 +128,22 @@ public class CouponServiceImpl implements CouponService {
 		return GetCouponAllResponse.fromEntity(coupons);
 	}
 
-	/**
-	 * 회원 가입 메시지를 처리합니다.
-	 *
-	 * @param message 회원 가입 메시지
-	 */
-	@RabbitListener(queues = "${rabbitmq.queue.coupon}")
-	@Transactional
-	public void handleMemberRegistrationMessage(MemberRegistrationMessage message) {
-		Optional<CouponTemplate> opt = couponTemplateRepository.findTopByTypeOrderByCreatedAtDesc(CouponType.WELCOME);
-		if (opt.isEmpty()) {
-			return;
+	// 회원 가입 메시지를 처리합니다.
+	@Override
+	public RegisterCouponMessage createByMessage(CreateCouponMessage message) {
+		CouponTemplate couponTemplate;
+		if (message.couponType().equals(CouponType.WELCOME) || message.couponType().equals(CouponType.BIRTHDAY)) {
+			couponTemplate = couponTemplateRepository.findTopByTypeOrderByCreatedAtDesc(message.couponType())
+				.orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
+		} else {
+			couponTemplate = couponTemplateRepository.findById(message.couponTemplateId())
+				.orElseThrow(() -> new BadRequestException(ErrorCode.INVALID_COUPON));
 		}
-		Coupon saved = couponRepository.save(
-			Coupon.of(opt.get(), CouponStatus.UNUSED, LocalDateTime.now().plusHours(opt.get().getUsePeriod())));
-		CouponCreatedMessage couponCreatedMessage = new CouponCreatedMessage(saved.getId(), message.memberId());
-		rabbitTemplate.convertAndSend(couponExchange, couponCreatedRoutingKey, couponCreatedMessage);
+		validateExpiration(couponTemplate);
+
+		Coupon coupon = Coupon.of(couponTemplate, CouponStatus.UNUSED,
+			couponTemplate.getStartedAt().plusHours(couponTemplate.getUsePeriod()));
+		Coupon saved = couponRepository.save(coupon);
+		return RegisterCouponMessage.builder().memberId(message.memberId()).couponId(saved.getId()).build();
 	}
 }
