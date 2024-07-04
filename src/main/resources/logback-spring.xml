@@ -37,7 +37,6 @@
         <!--                </root>-->
         <include resource="console-appender.xml"/>
         <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 
