@@ -11,19 +11,20 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.util.annotation.NonNull;
+import store.novabook.coupon.common.security.dto.CustomUserDetails;
+import store.novabook.coupon.common.security.dto.request.GetMembersUUIDRequest;
+import store.novabook.coupon.common.security.dto.response.GetMembersUUIDResponse;
+import store.novabook.coupon.common.security.entity.AuthMembers;
+import store.novabook.coupon.common.security.service.AuthMembersClient;
 
 @Slf4j
+@RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
-
-	// private final MemberClient memberClient;
-	//
-	// public JWTFilter(MemberClient memberClient) {
-	//
-	// 	this.memberClient = memberClient;
-	// }
+	private final AuthMembersClient authMembersClient;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -38,26 +39,26 @@ public class JWTFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		// GetMembersUUIDRequest getMembersUUIDRequest = new GetMembersUUIDRequest(username);
-		//
-		// GetMembersUUIDResponse membersId = memberClient.getMembersId(getMembersUUIDRequest);
-		//
-		// //userEntity를 생성하여 값 set
-		// Users userEntity = new Users();
-		// userEntity.setId(Long.parseLong(membersId.usersId()));
-		// userEntity.setUsername(membersId.usersId());
-		// userEntity.setPassword("temppassword");
-		// userEntity.setRole(role);
-		//
-		// //UserDetails에 회원 정보 객체 담기
-		// CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
-		//
-		// //스프링 시큐리티 인증 토큰 생성
-		// Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null,
-		// 	customUserDetails.getAuthorities());
-		// //세션에 사용자 등록
-		// SecurityContextHolder.getContext().setAuthentication(authToken);
-		//
-		// filterChain.doFilter(request, response);
+		GetMembersUUIDRequest getMembersUUIDRequest = new GetMembersUUIDRequest(username);
+
+		GetMembersUUIDResponse getMembersUUIDResponse = authMembersClient.getMembersId(getMembersUUIDRequest);
+
+		//userEntity를 생성하여 값 set
+		AuthMembers membersEntity = new AuthMembers();
+		membersEntity.setId(Long.parseLong(getMembersUUIDResponse.membersId()));
+		membersEntity.setUsername(getMembersUUIDResponse.membersId());
+		membersEntity.setPassword("temppassword");
+		membersEntity.setRole(role);
+
+		//UserDetails에 회원 정보 객체 담기
+		CustomUserDetails customUserDetails = new CustomUserDetails(membersEntity);
+
+		//스프링 시큐리티 인증 토큰 생성
+		Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null,
+			customUserDetails.getAuthorities());
+		//세션에 사용자 등록
+		SecurityContextHolder.getContext().setAuthentication(authToken);
+
+		filterChain.doFilter(request, response);
 	}
 }
