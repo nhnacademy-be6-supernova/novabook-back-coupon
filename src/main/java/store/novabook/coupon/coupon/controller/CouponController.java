@@ -2,6 +2,8 @@ package store.novabook.coupon.coupon.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,7 @@ import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponAllResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 import store.novabook.coupon.coupon.entity.CouponStatus;
 import store.novabook.coupon.coupon.service.CouponService;
 
@@ -78,19 +81,19 @@ public class CouponController implements CouponControllerDocs {
 	 * @return 조회된 쿠폰의 응답
 	 */
 	@GetMapping
-	public ResponseEntity<GetCouponAllResponse> getCouponAll(@RequestParam List<Long> couponIdList,
-		@RequestParam(required = false) CouponStatus status) {
-		GetCouponAllResponse response;
+	public ResponseEntity<Page<GetCouponResponse>> getCouponAllWithPageable(@RequestParam List<Long> couponIdList,
+		@RequestParam(required = false) CouponStatus status, Pageable pageable) {
+		Page<GetCouponResponse> response;
 		if (status != null) {
-			response = couponService.findAllByIdAndStatus(couponIdList, status);
+			response = couponService.findAllByIdAndStatus(couponIdList, status, pageable);
 		} else {
-			response = couponService.findAllById(couponIdList);
+			response = couponService.findAllById(couponIdList, pageable);
 		}
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/is-valid")
-	public ResponseEntity<GetCouponAllResponse> getCouponAll(@RequestParam List<Long> couponIdList) {
+	public ResponseEntity<GetCouponAllResponse> getCouponAllWithPageable(@RequestParam List<Long> couponIdList) {
 		GetCouponAllResponse allValidById = couponService.findAllValidById(couponIdList);
 		return ResponseEntity.ok(allValidById);
 	}

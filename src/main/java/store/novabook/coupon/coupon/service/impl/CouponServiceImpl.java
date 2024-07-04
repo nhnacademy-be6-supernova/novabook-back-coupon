@@ -3,6 +3,8 @@ package store.novabook.coupon.coupon.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,9 +112,10 @@ public class CouponServiceImpl implements CouponService {
 	 */
 	@Transactional(readOnly = true)
 	@Override
-	public GetCouponAllResponse findAllByIdAndStatus(List<Long> couponIdList, CouponStatus status) {
-		List<Coupon> coupons = couponRepository.findAllByIdInAndStatus(couponIdList, status);
-		return GetCouponAllResponse.fromEntity(coupons);
+	public Page<GetCouponResponse> findAllByIdAndStatus(List<Long> couponIdList, CouponStatus status,
+		Pageable pageable) {
+		Page<Coupon> couponList = couponRepository.findAllByIdInAndStatus(couponIdList, status, pageable);
+		return couponList.map(GetCouponResponse::fromEntity);
 	}
 
 	/**
@@ -123,9 +126,9 @@ public class CouponServiceImpl implements CouponService {
 	 */
 	@Transactional(readOnly = true)
 	@Override
-	public GetCouponAllResponse findAllById(List<Long> couponIdList) {
-		List<Coupon> coupons = couponRepository.findAllById(couponIdList);
-		return GetCouponAllResponse.fromEntity(coupons);
+	public Page<GetCouponResponse> findAllById(List<Long> couponIdList, Pageable pageable) {
+		Page<Coupon> couponList = couponRepository.findAllByIdIn(couponIdList, pageable);
+		return couponList.map(GetCouponResponse::fromEntity);
 	}
 
 	@Transactional(readOnly = true)
