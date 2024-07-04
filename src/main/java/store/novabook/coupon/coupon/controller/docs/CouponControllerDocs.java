@@ -1,11 +1,8 @@
 package store.novabook.coupon.coupon.controller.docs;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,7 +14,6 @@ import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponAllResponse;
-import store.novabook.coupon.coupon.entity.CouponStatus;
 
 /**
  * {@code CouponControllerDocs} 인터페이스는 쿠폰 API의 문서화를 제공합니다.
@@ -56,17 +52,4 @@ public interface CouponControllerDocs {
 	@Operation(summary = "쿠폰 사용", description = "쿠폰 ID를 이용해 쿠폰을 사용처리합니다.")
 	@ApiResponse(responseCode = "200", description = "쿠폰 사용처리에 성공하였습니다.")
 	ResponseEntity<Void> useCoupon(@PathVariable Long couponId);
-
-	/**
-	 * 쿠폰 ID 리스트와 상태를 이용해 쿠폰을 조회합니다.
-	 *
-	 * @param couponIdList 조회할 쿠폰 ID 리스트
-	 * @param status       쿠폰 상태 (선택 사항)
-	 * @return 조회된 쿠폰의 응답
-	 */
-	@Operation(summary = "쿠폰 ID 리스트로 쿠폰 조회", description = "쿠폰 ID 리스트와 상태를 이용해 쿠폰을 조회합니다.")
-	@ApiResponse(responseCode = "200", description = "쿠폰 조회에 성공하였습니다.", content = {
-		@Content(mediaType = "application/json", schema = @Schema(implementation = GetCouponAllResponse.class))})
-	ResponseEntity<GetCouponAllResponse> getCouponAll(@RequestParam List<Long> couponIdList,
-		@RequestParam(required = false) CouponStatus status);
 }

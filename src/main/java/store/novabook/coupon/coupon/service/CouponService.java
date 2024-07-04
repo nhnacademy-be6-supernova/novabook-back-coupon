@@ -2,12 +2,17 @@ package store.novabook.coupon.coupon.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+
 import store.novabook.coupon.common.messaging.dto.CreateCouponMessage;
 import store.novabook.coupon.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponAllResponse;
+import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
 import store.novabook.coupon.coupon.entity.CouponStatus;
 
 /**
@@ -38,22 +43,11 @@ public interface CouponService {
 	 */
 	GetCouponAllResponse findSufficientCouponAllById(GetCouponAllRequest request);
 
-	/**
-	 * 주어진 쿠폰 ID 리스트와 상태에 해당하는 모든 쿠폰을 조회합니다.
-	 *
-	 * @param couponIdList 쿠폰 ID 리스트
-	 * @param status       쿠폰 상태
-	 * @return 주어진 조건에 맞는 쿠폰의 응답
-	 */
-	GetCouponAllResponse findAllByIdAndStatus(List<Long> couponIdList, CouponStatus status);
+	@Transactional(readOnly = true)
+	Page<GetCouponResponse> findAllByIdAndStatus(List<Long> couponIdList, CouponStatus status, Pageable pageable);
 
-	/**
-	 * 주어진 쿠폰 ID 리스트에 해당하는 모든 쿠폰을 조회합니다.
-	 *
-	 * @param couponIdList 쿠폰 ID 리스트
-	 * @return 주어진 조건에 맞는 쿠폰의 응답
-	 */
-	GetCouponAllResponse findAllById(List<Long> couponIdList);
+	@Transactional(readOnly = true)
+	Page<GetCouponResponse> findAllById(List<Long> couponIdList, Pageable pageable);
 
 	GetCouponAllResponse findAllValidById(List<Long> couponIdList);
 
