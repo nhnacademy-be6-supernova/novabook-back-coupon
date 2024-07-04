@@ -49,27 +49,6 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
 
-
-rabbitmq:
-  queue:
-    coupon: nova.coupon.queue
-    dead: nova.dead.queue
-    member-coupon: nova.membercoupon.queue
-  exchange:
-    member: nova.member.exchange
-    coupon: nova.coupon.exchange
-  routing:
-    member: member.registration
-    couponCreated: coupon.created
-
-store:
-  service:
-    url: http://localhost:8090
-batch:
-  service:
-    url: http://localhost:8060
-
-
 #유레카 활성화
 eureka:
   client:
@@ -79,3 +58,13 @@ eureka:
       defaultZone: http://localhost:8761/eureka
   instance:
     prefer-ip-address: true
+
+---
+spring:
+  data:
+    redis:
+      url: jdbc:redis://133.186.241.167:6379/31
+      host: 133.186.241.167
+      database: 31
+      password: \*N2vya7H@muDTwdNMR!
+      port: 6379
