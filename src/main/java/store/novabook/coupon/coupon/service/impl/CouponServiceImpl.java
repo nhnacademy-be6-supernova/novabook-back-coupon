@@ -128,6 +128,14 @@ public class CouponServiceImpl implements CouponService {
 		return GetCouponAllResponse.fromEntity(coupons);
 	}
 
+	@Transactional(readOnly = true)
+	@Override
+	public GetCouponAllResponse findAllValidById(List<Long> couponIdList) {
+		List<Coupon> couponList = couponRepository.findAllByIdInAndStatusAndExpirationAtAfter(couponIdList,
+			CouponStatus.UNUSED, LocalDateTime.now());
+		return GetCouponAllResponse.fromEntity(couponList);
+	}
+
 	// 회원 가입 메시지를 처리합니다.
 	@Override
 	public RegisterCouponMessage createByMessage(CreateCouponMessage message) {

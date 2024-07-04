@@ -7,11 +7,9 @@ spring:
 server:
   port: 8070
 
-
 logging:
   file:
     path: ${user.dir}/logs/${spring.application.name}
-
 
 #swagger 설정
 springdoc:
@@ -26,12 +24,15 @@ springdoc:
 
 ---
 spring:
-  cloud:
-    openfeign:
-      client:
-        config:
-          store-service:
-            url: http://localhost:9777/api/v1/store
+  config:
+    activate:
+      on-profile: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
 
 ---
 rabbitmq:

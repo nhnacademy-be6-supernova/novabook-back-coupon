@@ -88,4 +88,10 @@ public class CouponController implements CouponControllerDocs {
 		}
 		return ResponseEntity.ok(response);
 	}
+
+	@GetMapping("/is-valid")
+	public ResponseEntity<GetCouponAllResponse> getCouponAll(@RequestParam List<Long> couponIdList) {
+		GetCouponAllResponse allValidById = couponService.findAllValidById(couponIdList);
+		return ResponseEntity.ok(allValidById);
+	}
 }

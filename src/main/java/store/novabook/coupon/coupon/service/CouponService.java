@@ -55,5 +55,7 @@ public interface CouponService {
 	 */
 	GetCouponAllResponse findAllById(List<Long> couponIdList);
 
+	GetCouponAllResponse findAllValidById(List<Long> couponIdList);
+
 	RegisterCouponMessage createByMessage(CreateCouponMessage message);
 }
