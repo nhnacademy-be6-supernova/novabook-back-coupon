@@ -35,3 +35,4 @@ rabbitmq:
     couponCreateHighTraffic: coupon.create.hightraffic
     couponRegisterNormal: coupon.register.normal
     couponRegisterHighTraffic: coupon.register.hightraffic
+
