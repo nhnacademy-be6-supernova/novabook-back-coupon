@@ -35,12 +35,20 @@ public class CategoryCouponTemplateController implements CategoryCouponTemplateC
 	/**
 	 * 모든 카테고리 쿠폰 템플릿을 조회합니다.
 	 *
-	 * @param pageable 페이지 정보
+	 * @param isValid 유효한 쿠폰 템플릿만 조회할지 여부
 	 * @return 카테고리 쿠폰 템플릿의 페이지 응답
 	 */
 	@GetMapping
-	public ResponseEntity<Page<GetCategoryCouponTemplateResponse>> getCategoryCouponTemplateAll(Pageable pageable) {
-		Page<GetCategoryCouponTemplateResponse> response = categoryCouponTemplateService.findAll(pageable);
+	public ResponseEntity<Page<GetCategoryCouponTemplateResponse>> getCategoryCouponTemplateAll(
+		@RequestParam(defaultValue = "true ") boolean isValid, Pageable pageable) {
+		Page<GetCategoryCouponTemplateResponse> response;
+
+		if (isValid) {
+			response = categoryCouponTemplateService.findAllWithValid(pageable);
+		} else {
+			response = categoryCouponTemplateService.findAll(pageable);
+		}
+
 		return ResponseEntity.ok(response);
 	}
 
