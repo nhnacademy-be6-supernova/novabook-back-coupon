@@ -17,10 +17,9 @@
     </springProfile>
 
     <springProfile name="dev">
+        <include resource="console-appender.xml"/>
         <root level="INFO">
-            <appender-ref ref="FILE-INFO"/>
-            <appender-ref ref="FILE-WARN"/>
-            <appender-ref ref="FILE-ERROR"/>
+            <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 

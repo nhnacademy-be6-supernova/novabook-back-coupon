@@ -1,5 +1,7 @@
 package store.novabook.coupon.coupon.dto.request;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
@@ -9,5 +11,7 @@ import lombok.Builder;
  * @param couponTemplateId 쿠폰 템플릿 ID
  */
 @Builder
-public record CreateCouponRequest(@NotNull(message = "쿠폰 템플릿 ID는 필수 입력 항목입니다.") Long couponTemplateId) {
+public record CreateCouponRequest(List<Long> couponIdList,
+								  @NotNull(message = "쿠폰 템플릿 ID는 필수 입력 항목입니다.") Long couponTemplateId) {
 }
+

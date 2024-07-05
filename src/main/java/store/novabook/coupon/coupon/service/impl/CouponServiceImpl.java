@@ -82,6 +82,11 @@ public class CouponServiceImpl implements CouponService {
 		CouponTemplate couponTemplate = couponTemplateRepository.findById(request.couponTemplateId())
 			.orElseThrow(() -> new BadRequestException(ErrorCode.COUPON_TEMPLATE_NOT_FOUND));
 
+		if (!request.couponIdList().isEmpty() && Boolean.TRUE.equals(
+			couponRepository.existsByIdInAndCouponTemplateId(request.couponIdList(), request.couponTemplateId()))) {
+			throw new BadRequestException(ErrorCode.COUPON_ALREADY_EXIST);
+		}
+
 		validateExpiration(couponTemplate);
 
 		Coupon coupon = Coupon.of(couponTemplate, CouponStatus.UNUSED,

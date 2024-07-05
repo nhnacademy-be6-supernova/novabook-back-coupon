@@ -46,7 +46,7 @@ public class ApiResponse<T> {
 	 * @return 오류 응답을 감싼 {@code ApiResponse} 객체
 	 */
 	public static <T> ApiResponse<T> error(T body) {
-		return new ApiResponse<>("FAIL", false, body);
+		return new ApiResponse<>("ERROR", false, body);
 	}
 
 	/**
