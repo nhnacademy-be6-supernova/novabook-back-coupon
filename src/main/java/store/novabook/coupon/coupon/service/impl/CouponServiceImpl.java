@@ -108,6 +108,7 @@ public class CouponServiceImpl implements CouponService {
 	 *
 	 * @param couponIdList 쿠폰 ID 리스트
 	 * @param status       쿠폰 상태
+	 * @param pageable     페이징 정보
 	 * @return 조회된 쿠폰 응답
 	 */
 	@Transactional(readOnly = true)
@@ -122,6 +123,7 @@ public class CouponServiceImpl implements CouponService {
 	 * 주어진 쿠폰 ID 리스트에 따라 모든 쿠폰을 조회합니다.
 	 *
 	 * @param couponIdList 쿠폰 ID 리스트
+	 * @param pageable     페이징 정보
 	 * @return 조회된 쿠폰 응답
 	 */
 	@Transactional(readOnly = true)
@@ -131,6 +133,12 @@ public class CouponServiceImpl implements CouponService {
 		return couponList.map(GetCouponResponse::fromEntity);
 	}
 
+	/**
+	 * 주어진 쿠폰 ID 리스트로 유효한 모든 쿠폰을 조회합니다.
+	 *
+	 * @param couponIdList 쿠폰 ID 리스트
+	 * @return 조회된 쿠폰 응답
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public GetCouponAllResponse findAllValidById(List<Long> couponIdList) {
@@ -139,7 +147,12 @@ public class CouponServiceImpl implements CouponService {
 		return GetCouponAllResponse.fromEntity(couponList);
 	}
 
-	// 회원 가입 메시지를 처리합니다.
+	/**
+	 * 회원 가입 메시지를 처리합니다.
+	 *
+	 * @param message 쿠폰 생성 메시지
+	 * @return 등록된 쿠폰 메시지
+	 */
 	@Override
 	public RegisterCouponMessage createByMessage(CreateCouponMessage message) {
 		CouponTemplate couponTemplate;

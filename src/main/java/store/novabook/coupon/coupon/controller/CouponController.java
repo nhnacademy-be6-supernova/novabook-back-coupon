@@ -92,6 +92,12 @@ public class CouponController implements CouponControllerDocs {
 		return ResponseEntity.ok(response);
 	}
 
+	/**
+	 * 쿠폰 ID 리스트로 유효한 모든 쿠폰을 조회합니다.
+	 *
+	 * @param couponIdList 조회할 쿠폰 ID 리스트
+	 * @return 유효한 쿠폰의 응답
+	 */
 	@GetMapping("/is-valid")
 	public ResponseEntity<GetCouponAllResponse> getCouponAllWithPageable(@RequestParam List<Long> couponIdList) {
 		GetCouponAllResponse allValidById = couponService.findAllValidById(couponIdList);

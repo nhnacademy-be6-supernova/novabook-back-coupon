@@ -12,9 +12,14 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+/**
+ * Redis 설정 클래스.
+ * Redis와 관련된 연결 팩토리, 템플릿 및 채널 주제를 설정합니다.
+ */
 @Configuration
 @EnableRedisRepositories
 public class RedisConfig {
+
 	@Value("${spring.data.redis.host}")
 	private String host;
 
@@ -27,9 +32,13 @@ public class RedisConfig {
 	@Value("${spring.data.redis.database}")
 	private int database;
 
+	/**
+	 * Redis 연결 팩토리 빈을 생성합니다.
+	 *
+	 * @return RedisConnectionFactory 객체
+	 */
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
-
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
 		redisStandaloneConfiguration.setHostName(host);
 		redisStandaloneConfiguration.setPort(port);
@@ -38,6 +47,11 @@ public class RedisConfig {
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 	}
 
+	/**
+	 * RedisTemplate 빈을 생성합니다.
+	 *
+	 * @return RedisTemplate 객체
+	 */
 	@Bean
 	public RedisTemplate<String, String> redisTemplate() {
 		RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
@@ -48,6 +62,11 @@ public class RedisConfig {
 		return redisTemplate;
 	}
 
+	/**
+	 * Redis 채널 주제 빈을 생성합니다.
+	 *
+	 * @return ChannelTopic 객체
+	 */
 	@Bean
 	public ChannelTopic topic() {
 		return new ChannelTopic("notificationTopic");
