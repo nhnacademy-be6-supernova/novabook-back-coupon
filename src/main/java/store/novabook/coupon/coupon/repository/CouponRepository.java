@@ -32,4 +32,5 @@ public interface CouponRepository extends JpaRepository<Coupon, Long>, CustomCou
 	@EntityGraph(attributePaths = {"couponTemplate"})
 	Page<Coupon> findAllByIdIn(List<Long> couponIdList, Pageable pageable);
 
+	boolean existsByIdInAndCouponTemplateId(List<Long> couponIdList, Long couponTemplateId);
 }
