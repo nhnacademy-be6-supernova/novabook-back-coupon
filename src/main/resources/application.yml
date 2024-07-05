@@ -1,14 +1,7 @@
 spring:
   application:
     name: coupon
-  profiles:
-    active: dev
-    cloud:
-    openfeign:
-      client:
-        config:
-          store-service:
-            url: http://www.novabook.store/api/v1/store
+
 server:
   port: 8070
 
@@ -27,8 +20,6 @@ springdoc:
     display-request-duration: true
     operations-sorter: alpha
 
----
-
 rabbitmq:
   queue:
     couponCreateNormal: nova.coupon.create.normal.queue
@@ -45,14 +36,3 @@ rabbitmq:
     couponRegisterNormal: coupon.register.normal
     couponRegisterHighTraffic: coupon.register.hightraffic
 
----
-spring:
-  config:
-    activate:
-      on-profile: dev
-
----
-spring:
-  config:
-    activate:
-      on-profile: local

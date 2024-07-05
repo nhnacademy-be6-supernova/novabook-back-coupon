@@ -39,4 +39,6 @@ public interface CategoryCouponTemplateService {
 	 * @return 모든 카테고리 쿠폰 템플릿의 페이지
 	 */
 	Page<GetCategoryCouponTemplateResponse> findAll(Pageable pageable);
+
+	Page<GetCategoryCouponTemplateResponse> findAllWithValid(Pageable pageable);
 }

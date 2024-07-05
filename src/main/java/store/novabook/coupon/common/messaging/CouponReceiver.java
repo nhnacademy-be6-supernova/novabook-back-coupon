@@ -22,7 +22,7 @@ public class CouponReceiver {
 	private final CouponNotifier couponNotifier;
 
 	/**
-	 * 고트래픽 큐로부터 쿠폰 생성 메시지를 수신합니다.
+	 * rabbitmq 큐로부터 쿠폰 생성 메시지를 수신합니다.
 	 *
 	 * @param message 유효성 검사를 통과한 CreateCouponMessage 객체
 	 */

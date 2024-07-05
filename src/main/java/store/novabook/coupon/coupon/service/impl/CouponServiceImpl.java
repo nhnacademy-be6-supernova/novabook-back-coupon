@@ -44,7 +44,7 @@ public class CouponServiceImpl implements CouponService {
 	 * @param couponTemplate 쿠폰 템플릿
 	 * @throws BadRequestException 쿠폰 템플릿이 만료되었거나 아직 시작되지 않은 경우
 	 */
-	private static void validateExpiration(CouponTemplate couponTemplate) {
+	protected void validateExpiration(CouponTemplate couponTemplate) {
 		if (couponTemplate.getExpirationAt().isBefore(LocalDateTime.now()) || couponTemplate.getStartedAt()
 			.isAfter(LocalDateTime.now())) {
 			if (couponTemplate.getType().equals(CouponType.WELCOME) || couponTemplate.getType()

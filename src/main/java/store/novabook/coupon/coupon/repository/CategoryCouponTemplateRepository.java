@@ -3,9 +3,13 @@ package store.novabook.coupon.coupon.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import jakarta.validation.constraints.NotNull;
+import reactor.util.annotation.NonNull;
 import store.novabook.coupon.coupon.entity.CategoryCouponTemplate;
 
 /**
@@ -31,4 +35,12 @@ public interface CategoryCouponTemplateRepository extends JpaRepository<Category
 	 * @return 카테고리 ID에 해당하는 쿠폰 템플릿 리스트
 	 */
 	List<CategoryCouponTemplate> findAllByCategoryIdIn(@NotNull List<Long> categoryIdList);
+
+	@EntityGraph(attributePaths = {"couponTemplate"})
+	@NonNull
+	Page<CategoryCouponTemplate> findAll(@NonNull Pageable pageable);
+
+	@EntityGraph(attributePaths = {"couponTemplate"})
+	Page<CategoryCouponTemplate> findAllByCouponTemplateStartedAtBeforeAndCouponTemplateExpirationAtAfter(
+		@NotNull LocalDateTime startedAt, @NotNull LocalDateTime expirationAt, Pageable pageable);
 }
