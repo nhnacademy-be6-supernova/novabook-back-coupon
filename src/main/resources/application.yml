@@ -1,16 +1,14 @@
 spring:
   application:
     name: coupon
-
   profiles:
     active: dev
-
     cloud:
     openfeign:
       client:
         config:
           store-service:
-            url: http://localhost:9777/api/v1/store
+            url: http://www.novabook.store/api/v1/store
 server:
   port: 8070
 
@@ -28,6 +26,8 @@ springdoc:
     disable-swagger-default-url: true
     display-request-duration: true
     operations-sorter: alpha
+
+---
 
 rabbitmq:
   queue:

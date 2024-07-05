@@ -48,6 +48,8 @@ public class Coupon {
 	@NotNull
 	private LocalDateTime expirationAt;
 
+	private LocalDateTime usedAt;
+
 	@CreatedDate
 	private LocalDateTime createdAt;
 
@@ -77,11 +79,7 @@ public class Coupon {
 	 * @return 생성된 {@code Coupon} 객체
 	 */
 	public static Coupon of(CouponTemplate couponTemplate, CouponStatus status, LocalDateTime expirationAt) {
-		return Coupon.builder()
-			.couponTemplate(couponTemplate)
-			.status(status)
-			.expirationAt(expirationAt)
-			.build();
+		return Coupon.builder().couponTemplate(couponTemplate).status(status).expirationAt(expirationAt).build();
 	}
 
 	/**
@@ -91,5 +89,9 @@ public class Coupon {
 	 */
 	public void updateStatus(CouponStatus status) {
 		this.status = status;
+
+		if (status.equals(CouponStatus.USED)) {
+			this.usedAt = LocalDateTime.now();
+		}
 	}
 }

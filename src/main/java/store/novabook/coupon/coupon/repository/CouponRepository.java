@@ -1,7 +1,10 @@
 package store.novabook.coupon.coupon.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import store.novabook.coupon.coupon.entity.Coupon;
@@ -20,5 +23,11 @@ public interface CouponRepository extends JpaRepository<Coupon, Long>, CustomCou
 	 * @param status       쿠폰 상태
 	 * @return 쿠폰 ID 리스트와 상태에 해당하는 쿠폰 리스트
 	 */
-	List<Coupon> findAllByIdInAndStatus(List<Long> couponIdList, CouponStatus status);
+	Page<Coupon> findAllByIdInAndStatus(List<Long> couponIdList, CouponStatus status, Pageable pageable);
+
+	List<Coupon> findAllByIdInAndStatusAndExpirationAtAfter(List<Long> couponIdList, CouponStatus status,
+		LocalDateTime expirationAt);
+
+	Page<Coupon> findAllByIdIn(List<Long> couponIdList, Pageable pageable);
+
 }

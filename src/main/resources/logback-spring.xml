@@ -29,7 +29,6 @@
             <appender-ref ref="ERROR_WARN"/>
             <appender-ref ref="ERROR_INFO"/>
         </logger>
-
         <root level="INFO">
             <appender-ref ref="FILE-INFO"/>
             <appender-ref ref="FILE-WARN"/>

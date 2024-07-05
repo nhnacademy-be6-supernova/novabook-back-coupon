@@ -21,6 +21,7 @@ import store.novabook.coupon.coupon.entity.DiscountType;
  * @param minPurchaseAmount 최소 구매 금액
  * @param createdAt         쿠폰 생성 날짜
  * @param expirationAt      쿠폰 만료 날짜
+ * @param usedAt            쿠폰 사용 날짜
  */
 @Builder
 public record GetCouponResponse(
@@ -33,7 +34,8 @@ public record GetCouponResponse(
 	long maxDiscountAmount,
 	long minPurchaseAmount,
 	LocalDateTime createdAt,
-	LocalDateTime expirationAt) {
+	LocalDateTime expirationAt,
+	LocalDateTime usedAt) {
 
 	/**
 	 * 주어진 쿠폰 엔티티로부터 {@code GetCouponResponse} 객체를 생성합니다.
@@ -53,6 +55,7 @@ public record GetCouponResponse(
 			.minPurchaseAmount(coupon.getCouponTemplate().getMinPurchaseAmount())
 			.createdAt(coupon.getCreatedAt())
 			.expirationAt(coupon.getExpirationAt())
+			.usedAt(coupon.getUsedAt())
 			.build();
 	}
 }

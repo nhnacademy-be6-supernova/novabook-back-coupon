@@ -3,6 +3,8 @@ package store.novabook.coupon.coupon.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -106,29 +108,51 @@ public class CouponServiceImpl implements CouponService {
 	 *
 	 * @param couponIdList 쿠폰 ID 리스트
 	 * @param status       쿠폰 상태
+	 * @param pageable     페이징 정보
 	 * @return 조회된 쿠폰 응답
 	 */
 	@Transactional(readOnly = true)
 	@Override
-	public GetCouponAllResponse findAllByIdAndStatus(List<Long> couponIdList, CouponStatus status) {
-		List<Coupon> coupons = couponRepository.findAllByIdInAndStatus(couponIdList, status);
-		return GetCouponAllResponse.fromEntity(coupons);
+	public Page<GetCouponResponse> findAllByIdAndStatus(List<Long> couponIdList, CouponStatus status,
+		Pageable pageable) {
+		Page<Coupon> couponList = couponRepository.findAllByIdInAndStatus(couponIdList, status, pageable);
+		return couponList.map(GetCouponResponse::fromEntity);
 	}
 
 	/**
 	 * 주어진 쿠폰 ID 리스트에 따라 모든 쿠폰을 조회합니다.
 	 *
 	 * @param couponIdList 쿠폰 ID 리스트
+	 * @param pageable     페이징 정보
 	 * @return 조회된 쿠폰 응답
 	 */
 	@Transactional(readOnly = true)
 	@Override
-	public GetCouponAllResponse findAllById(List<Long> couponIdList) {
-		List<Coupon> coupons = couponRepository.findAllById(couponIdList);
-		return GetCouponAllResponse.fromEntity(coupons);
+	public Page<GetCouponResponse> findAllById(List<Long> couponIdList, Pageable pageable) {
+		Page<Coupon> couponList = couponRepository.findAllByIdIn(couponIdList, pageable);
+		return couponList.map(GetCouponResponse::fromEntity);
 	}
 
-	// 회원 가입 메시지를 처리합니다.
+	/**
+	 * 주어진 쿠폰 ID 리스트로 유효한 모든 쿠폰을 조회합니다.
+	 *
+	 * @param couponIdList 쿠폰 ID 리스트
+	 * @return 조회된 쿠폰 응답
+	 */
+	@Transactional(readOnly = true)
+	@Override
+	public GetCouponAllResponse findAllValidById(List<Long> couponIdList) {
+		List<Coupon> couponList = couponRepository.findAllByIdInAndStatusAndExpirationAtAfter(couponIdList,
+			CouponStatus.UNUSED, LocalDateTime.now());
+		return GetCouponAllResponse.fromEntity(couponList);
+	}
+
+	/**
+	 * 회원 가입 메시지를 처리합니다.
+	 *
+	 * @param message 쿠폰 생성 메시지
+	 * @return 등록된 쿠폰 메시지
+	 */
 	@Override
 	public RegisterCouponMessage createByMessage(CreateCouponMessage message) {
 		CouponTemplate couponTemplate;

@@ -58,43 +58,85 @@ public class RabbitMQConfig {
 	@Value("${rabbitmq.routing.couponRegisterHighTraffic}")
 	private String couponRegisterHighTrafficRoutingKey;
 
+	/**
+	 * couponOperationExchange 빈을 생성합니다.
+	 *
+	 * @return TopicExchange 객체
+	 */
 	@Bean
 	public TopicExchange couponOperationExchange() {
 		return new TopicExchange(couponOperationExchange);
 	}
 
+	/**
+	 * deadLetterExchange 빈을 생성합니다.
+	 *
+	 * @return DirectExchange 객체
+	 */
 	@Bean
 	public DirectExchange deadLetterExchange() {
 		return new DirectExchange(deadLetterExchange);
 	}
 
+	/**
+	 * couponCreateNormalQueue 빈을 생성합니다.
+	 *
+	 * @return Queue 객체
+	 */
 	@Bean
 	public Queue couponCreateNormalQueue() {
 		return new Queue(couponCreateNormalQueue, true, false, false, queueArguments(couponCreateNormalQueue));
 	}
 
+	/**
+	 * couponCreateHighTrafficQueue 빈을 생성합니다.
+	 *
+	 * @return Queue 객체
+	 */
 	@Bean
 	public Queue couponCreateHighTrafficQueue() {
 		return new Queue(couponCreateHighTrafficQueue, true, false, false,
 			queueArguments(couponCreateHighTrafficQueue));
 	}
 
+	/**
+	 * couponRegisterNormalQueue 빈을 생성합니다.
+	 *
+	 * @return Queue 객체
+	 */
 	@Bean
 	public Queue couponRegisterNormalQueue() {
 		return new Queue(couponRegisterNormalQueue, true, false, false, queueArguments(couponRegisterNormalQueue));
 	}
 
+	/**
+	 * couponRegisterHighTrafficQueue 빈을 생성합니다.
+	 *
+	 * @return Queue 객체
+	 */
 	@Bean
 	public Queue couponRegisterHighTrafficQueue() {
 		return new Queue(couponRegisterHighTrafficQueue, true, false, false,
 			queueArguments(couponRegisterHighTrafficQueue));
 	}
 
+	/**
+	 * deadLetterQueue 빈을 생성합니다.
+	 *
+	 * @return Queue 객체
+	 */
 	@Bean
 	public Queue deadLetterQueue() {
 		return new Queue(deadLetterQueue, true);
 	}
 
+	/**
+	 * createCouponNormalBinding 빈을 생성합니다.
+	 *
+	 * @param couponCreateNormalQueue 큐
+	 * @param couponOperationExchange 토픽 익스체인지
+	 * @return Binding 객체
+	 */
 	@Bean
 	public Binding createCouponNormalBinding(Queue couponCreateNormalQueue, TopicExchange couponOperationExchange) {
 		return BindingBuilder.bind(couponCreateNormalQueue)
@@ -102,6 +144,13 @@ public class RabbitMQConfig {
 			.with(couponCreateNormalRoutingKey);
 	}
 
+	/**
+	 * createCouponHighTrafficBinding 빈을 생성합니다.
+	 *
+	 * @param couponCreateHighTrafficQueue 큐
+	 * @param couponOperationExchange      토픽 익스체인지
+	 * @return Binding 객체
+	 */
 	@Bean
 	public Binding createCouponHighTrafficBinding(Queue couponCreateHighTrafficQueue,
 		TopicExchange couponOperationExchange) {
@@ -110,6 +159,13 @@ public class RabbitMQConfig {
 			.with(couponCreateHighTrafficRoutingKey);
 	}
 
+	/**
+	 * registerCouponNormalBinding 빈을 생성합니다.
+	 *
+	 * @param couponRegisterNormalQueue 큐
+	 * @param couponOperationExchange   토픽 익스체인지
+	 * @return Binding 객체
+	 */
 	@Bean
 	public Binding registerCouponNormalBinding(Queue couponRegisterNormalQueue, TopicExchange couponOperationExchange) {
 		return BindingBuilder.bind(couponRegisterNormalQueue)
@@ -117,6 +173,13 @@ public class RabbitMQConfig {
 			.with(couponRegisterNormalRoutingKey);
 	}
 
+	/**
+	 * registerCouponHighTrafficBinding 빈을 생성합니다.
+	 *
+	 * @param couponRegisterHighTrafficQueue 큐
+	 * @param couponOperationExchange        토픽 익스체인지
+	 * @return Binding 객체
+	 */
 	@Bean
 	public Binding registerCouponHighTrafficBinding(Queue couponRegisterHighTrafficQueue,
 		TopicExchange couponOperationExchange) {
@@ -125,11 +188,24 @@ public class RabbitMQConfig {
 			.with(couponRegisterHighTrafficRoutingKey);
 	}
 
+	/**
+	 * deadLetterBinding 빈을 생성합니다.
+	 *
+	 * @param deadLetterQueue    큐
+	 * @param deadLetterExchange 토픽 익스체인지
+	 * @return Binding 객체
+	 */
 	@Bean
 	public Binding deadLetterBinding(Queue deadLetterQueue, TopicExchange deadLetterExchange) {
 		return BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with("#");
 	}
 
+	/**
+	 * RabbitTemplate 빈을 생성합니다.
+	 *
+	 * @param connectionFactory 커넥션 팩토리
+	 * @return RabbitTemplate 객체
+	 */
 	@Bean
 	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
 		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
@@ -137,11 +213,22 @@ public class RabbitMQConfig {
 		return rabbitTemplate;
 	}
 
+	/**
+	 * Jackson2JsonMessageConverter 빈을 생성합니다.
+	 *
+	 * @return MessageConverter 객체
+	 */
 	@Bean
 	public MessageConverter jackson2JsonMessageConverter() {
 		return new Jackson2JsonMessageConverter();
 	}
 
+	/**
+	 * 큐에 대한 추가 인자를 설정합니다.
+	 *
+	 * @param queueName 큐 이름
+	 * @return 큐 인자 맵
+	 */
 	private Map<String, Object> queueArguments(String queueName) {
 		Map<String, Object> args = new HashMap<>();
 		args.put("x-dead-letter-exchange", deadLetterExchange);

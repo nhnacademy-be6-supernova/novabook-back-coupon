@@ -27,7 +27,6 @@ public class DiscountValidator implements ConstraintValidator<ValidDiscount, Dis
 	public boolean isValid(Discountable request, ConstraintValidatorContext context) {
 		boolean isValid = true;
 
-		// 할인 유형에 따른 할인 금액 검증
 		if (request.getDiscountType() == DiscountType.PERCENT) {
 			if (request.getDiscountAmount() < DISCOUNT_MIN_PERCENT
 				|| request.getDiscountAmount() > DISCOUNT_MAX_PERCENT) {
