@@ -3,9 +3,13 @@ package store.novabook.coupon.coupon.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import jakarta.validation.constraints.NotNull;
+import reactor.util.annotation.NonNull;
 import store.novabook.coupon.coupon.entity.BookCouponTemplate;
 
 /**
@@ -22,10 +26,7 @@ public interface BookCouponTemplateRepository extends JpaRepository<BookCouponTe
 	 * @return 도서 ID와 유효 기간 내에 있는 쿠폰 템플릿 리스트
 	 */
 	List<BookCouponTemplate> findAllByBookIdAndCouponTemplateExpirationAtAfterAndCouponTemplateStartedAtBefore(
-		@NotNull Long bookId,
-		@NotNull LocalDateTime couponExpirationAt,
-		@NotNull LocalDateTime couponStartedAt
-	);
+		@NotNull Long bookId, @NotNull LocalDateTime couponExpirationAt, @NotNull LocalDateTime couponStartedAt);
 
 	/**
 	 * 주어진 도서 ID에 해당하는 모든 쿠폰 템플릿을 조회합니다.
@@ -34,4 +35,8 @@ public interface BookCouponTemplateRepository extends JpaRepository<BookCouponTe
 	 * @return 도서 ID에 해당하는 쿠폰 템플릿 리스트
 	 */
 	List<BookCouponTemplate> findAllByBookId(Long bookId);
+
+	@NonNull
+	@EntityGraph(attributePaths = {"couponTemplate"})
+	Page<BookCouponTemplate> findAll(@NonNull Pageable pageable);
 }

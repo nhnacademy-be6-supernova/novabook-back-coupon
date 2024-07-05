@@ -17,18 +17,6 @@
     </springProfile>
 
     <springProfile name="dev">
-        <include resource="logs/common/file-info-appender.xml"/>
-        <include resource="logs/common/file-warn-appender.xml"/>
-        <include resource="logs/common/file-error-appender.xml"/>
-        <include resource="logs/error/file-info-appender.xml"/>
-        <include resource="logs/error/file-warn-appender.xml"/>
-        <include resource="logs/error/file-error-appender.xml"/>
-
-        <logger additivity="false" level="INFO" name="ErrorLogger">
-            <appender-ref ref="ERROR_ERROR"/>
-            <appender-ref ref="ERROR_WARN"/>
-            <appender-ref ref="ERROR_INFO"/>
-        </logger>
         <root level="INFO">
             <appender-ref ref="FILE-INFO"/>
             <appender-ref ref="FILE-WARN"/>
@@ -37,18 +25,9 @@
     </springProfile>
 
     <springProfile name="prod">
-        <include resource="logs/common/file-info-appender.xml"/>
-        <include resource="logs/common/file-warn-appender.xml"/>
-        <include resource="logs/common/file-error-appender.xml"/>
-        <include resource="logs/error/file-info-appender.xml"/>
-        <include resource="logs/error/file-warn-appender.xml"/>
-        <include resource="logs/error/file-error-appender.xml"/>
-
-        <logger additivity="false" level="INFO" name="ErrorLogger">
-            <appender-ref ref="ERROR_ERROR"/>
-            <appender-ref ref="ERROR_WARN"/>
-            <appender-ref ref="ERROR_INFO"/>
-        </logger>
+        <include resource="logs/prod/file-info-appender.xml"/>
+        <include resource="logs/prod/file-warn-appender.xml"/>
+        <include resource="logs/prod/file-error-appender.xml"/>
 
         <root level="INFO">
             <appender-ref ref="FILE-INFO"/>

@@ -39,6 +39,12 @@ public class CategoryCouponTemplateServiceImpl implements CategoryCouponTemplate
 		return categoryCouponTemplateRepository.findAll(pageable).map(GetCategoryCouponTemplateResponse::fromEntity);
 	}
 
+	@Override
+	public Page<GetCategoryCouponTemplateResponse> findAllWithValid(Pageable pageable) {
+		return categoryCouponTemplateRepository.findAllByCouponTemplateStartedAtBeforeAndCouponTemplateExpirationAtAfter(
+			LocalDateTime.now(), LocalDateTime.now(), pageable).map(GetCategoryCouponTemplateResponse::fromEntity);
+	}
+
 	/**
 	 * 새로운 카테고리 쿠폰 템플릿을 생성합니다.
 	 *

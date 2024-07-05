@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import store.novabook.coupon.coupon.entity.Coupon;
@@ -28,6 +29,7 @@ public interface CouponRepository extends JpaRepository<Coupon, Long>, CustomCou
 	List<Coupon> findAllByIdInAndStatusAndExpirationAtAfter(List<Long> couponIdList, CouponStatus status,
 		LocalDateTime expirationAt);
 
+	@EntityGraph(attributePaths = {"couponTemplate"})
 	Page<Coupon> findAllByIdIn(List<Long> couponIdList, Pageable pageable);
 
 }

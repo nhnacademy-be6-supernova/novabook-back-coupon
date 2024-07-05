@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import store.novabook.coupon.coupon.controller.docs.CouponTemplateControllerDocs;
 import store.novabook.coupon.coupon.dto.request.CreateCouponTemplateRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponTemplateResponse;
@@ -23,6 +24,7 @@ import store.novabook.coupon.coupon.service.CouponTemplateService;
 /**
  * {@code CouponTemplateController} 클래스는 쿠폰 템플릿 API를 처리합니다.
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/coupon/templates")

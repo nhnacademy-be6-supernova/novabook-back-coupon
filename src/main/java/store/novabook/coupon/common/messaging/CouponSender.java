@@ -26,7 +26,7 @@ public class CouponSender {
 	private String couponRegisterNormalRoutingKey;
 
 	/**
-	 * 고트래픽 큐로 쿠폰 등록 메시지를 전송합니다.
+	 * rabbitmq 큐로 쿠폰 등록 메시지를 전송합니다.
 	 *
 	 * @param message RegisterCouponMessage 객체
 	 */
