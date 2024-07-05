@@ -29,6 +29,7 @@ public enum ErrorCode {
 	BIRTHDAY_COUPON_NOT_FOUND("생일 쿠폰이 존재하지 않습니다. "),
 	INVALID_ARGUMENT_TYPE("유효하지 않은 인자입니다."),
 	ALREADY_USED_COUPON("이미 사용된 쿠폰입니다."),
+	COUPON_ALREADY_EXIST("이미 다운받은 쿠폰입니다."),
 
 	// 401 로그인 안됨
 	UNAUTHORIZED("인증되지 않은 사용자입니다."),
