@@ -1,9 +1,7 @@
 spring:
   application:
     name: coupon
-  config:
-    activate:
-      on-profile: dev
+
 server:
   port: 8070
 
@@ -22,19 +20,6 @@ springdoc:
     display-request-duration: true
     operations-sorter: alpha
 
----
-spring:
-  config:
-    activate:
-      on-profile: dev
-
----
-spring:
-  config:
-    activate:
-      on-profile: local
-
----
 rabbitmq:
   queue:
     couponCreateNormal: nova.coupon.create.normal.queue
