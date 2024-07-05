@@ -43,13 +43,40 @@ public interface CouponService {
 	 */
 	GetCouponAllResponse findSufficientCouponAllById(GetCouponAllRequest request);
 
+	/**
+	 * 주어진 쿠폰 ID 리스트와 상태에 따라 모든 쿠폰을 조회합니다.
+	 *
+	 * @param couponIdList 쿠폰 ID 리스트
+	 * @param status       쿠폰 상태
+	 * @param pageable     페이징 정보
+	 * @return 조회된 쿠폰의 응답
+	 */
 	@Transactional(readOnly = true)
 	Page<GetCouponResponse> findAllByIdAndStatus(List<Long> couponIdList, CouponStatus status, Pageable pageable);
 
+	/**
+	 * 주어진 쿠폰 ID 리스트에 따라 모든 쿠폰을 조회합니다.
+	 *
+	 * @param couponIdList 쿠폰 ID 리스트
+	 * @param pageable     페이징 정보
+	 * @return 조회된 쿠폰의 응답
+	 */
 	@Transactional(readOnly = true)
 	Page<GetCouponResponse> findAllById(List<Long> couponIdList, Pageable pageable);
 
+	/**
+	 * 주어진 쿠폰 ID 리스트로 유효한 모든 쿠폰을 조회합니다.
+	 *
+	 * @param couponIdList 쿠폰 ID 리스트
+	 * @return 유효한 모든 쿠폰의 응답
+	 */
 	GetCouponAllResponse findAllValidById(List<Long> couponIdList);
 
+	/**
+	 * 회원 가입 메시지를 처리합니다.
+	 *
+	 * @param message 쿠폰 생성 메시지
+	 * @return 등록된 쿠폰 메시지
+	 */
 	RegisterCouponMessage createByMessage(CreateCouponMessage message);
 }

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.common.messaging.dto.RegisterCouponMessage;
 
+/**
+ * 쿠폰 메시지를 전송하는 서비스 클래스.
+ */
 @Service
 @RequiredArgsConstructor
 public class CouponSender {
@@ -18,13 +21,24 @@ public class CouponSender {
 
 	@Value("${rabbitmq.routing.couponRegisterHighTraffic}")
 	private String couponRegisterHighTrafficRoutingKey;
+
 	@Value("${rabbitmq.routing.couponRegisterNormal}")
 	private String couponRegisterNormalRoutingKey;
 
+	/**
+	 * 고트래픽 큐로 쿠폰 등록 메시지를 전송합니다.
+	 *
+	 * @param message RegisterCouponMessage 객체
+	 */
 	public void sendToRegisterHighTrafficQueue(RegisterCouponMessage message) {
 		rabbitTemplate.convertAndSend(couponOperationExchange, couponRegisterHighTrafficRoutingKey, message);
 	}
 
+	/**
+	 * 일반 큐로 쿠폰 등록 메시지를 전송합니다.
+	 *
+	 * @param message RegisterCouponMessage 객체
+	 */
 	public void sendToRegisterNormalQueue(RegisterCouponMessage message) {
 		rabbitTemplate.convertAndSend(couponOperationExchange, couponRegisterNormalRoutingKey, message);
 	}
