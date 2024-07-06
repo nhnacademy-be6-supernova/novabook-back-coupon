@@ -1,4 +1,4 @@
-package store.novabook.coupon.common.exception.dto;
+package store.novabook.coupon.common.dto;
 
 import static java.util.stream.Collectors.*;
 
