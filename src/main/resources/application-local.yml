@@ -13,7 +13,13 @@ spring:
           max-interval: 10000    # 최대 재시도 인터벌 (10초)
           max-attempts: 3        # 최대 재시도 횟수
           multiplier: 2.0        # 이전 interval * multiplier = 다음 interval
-
+  data:
+    redis:
+      url: jdbc:redis://133.186.241.167:6379/31
+      host: 133.186.241.167
+      database: 31
+      password: "*N2vya7H@muDTwdNMR!"
+      port: 6379
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:test

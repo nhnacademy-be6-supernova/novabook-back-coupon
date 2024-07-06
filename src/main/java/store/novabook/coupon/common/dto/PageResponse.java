@@ -4,6 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -68,5 +73,10 @@ public class PageResponse<T> {
 	 */
 	public void addHeader(String key, Object value) {
 		this.header.put(key, value);
+	}
+
+	public Page<T> toPage() {
+		Pageable pageable = PageRequest.of(this.pageNum, this.pageSize);
+		return new PageImpl<>(this.data, pageable, this.totalCount);
 	}
 }
