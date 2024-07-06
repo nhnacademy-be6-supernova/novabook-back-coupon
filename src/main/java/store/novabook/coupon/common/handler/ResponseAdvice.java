@@ -12,9 +12,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.coupon.common.dto.ApiResponse;
+import store.novabook.coupon.common.dto.ErrorResponse;
 import store.novabook.coupon.common.dto.PageResponse;
-import store.novabook.coupon.common.exception.dto.ErrorResponse;
-import store.novabook.coupon.common.exception.dto.ValidErrorResponse;
+import store.novabook.coupon.common.dto.ValidErrorResponse;
 
 /**
  * {@code ResponseAdvice} 클래스는 클라이언트에게 응답을 작성하기 전에 응답 본문을 처리하는

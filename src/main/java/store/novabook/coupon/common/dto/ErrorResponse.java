@@ -1,4 +1,4 @@
-package store.novabook.coupon.common.exception.dto;
+package store.novabook.coupon.common.dto;
 
 import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.NovaException;

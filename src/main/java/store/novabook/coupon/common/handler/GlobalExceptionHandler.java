@@ -12,12 +12,12 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
+import store.novabook.coupon.common.dto.ErrorResponse;
+import store.novabook.coupon.common.dto.ValidErrorResponse;
 import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.ForbiddenException;
 import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.common.exception.NovaException;
-import store.novabook.coupon.common.exception.dto.ErrorResponse;
-import store.novabook.coupon.common.exception.dto.ValidErrorResponse;
 
 /**
  * {@code GlobalExceptionHandler} 클래스는 애플리케이션 전역에서 발생하는 예외를 처리하는 핸들러입니다.
