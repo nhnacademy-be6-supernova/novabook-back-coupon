@@ -12,6 +12,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import store.novabook.coupon.common.dto.ErrorResponse;
 import store.novabook.coupon.common.dto.ValidErrorResponse;
 import store.novabook.coupon.common.exception.ErrorCode;
@@ -24,6 +25,7 @@ import store.novabook.coupon.common.exception.NovaException;
  * 다양한 예외 유형에 대해 적절한 HTTP 상태 코드와 함께 응답을 반환합니다.
  */
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	/**
@@ -41,6 +43,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
 		HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		log.error("handleMethodArgumentNotValid - Exception: {} | Request: {}", exception.getMessage(),
+			request.getDescription(false));
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidErrorResponse.from(exception));
 	}
 
@@ -52,7 +56,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
 	 */
 	@ExceptionHandler(NotFoundException.class)
-	public ResponseEntity<ErrorResponse> handle(NotFoundException exception, HttpServletRequest request) {
+	public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException exception,
+		HttpServletRequest request) {
+		log.error("handleNotFoundException - Exception: {} | URI: {}", exception.getMessage(), request.getRequestURI(),
+			exception);
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(exception));
 	}
 
@@ -64,21 +71,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
 	 */
 	@ExceptionHandler(ForbiddenException.class)
-	public ResponseEntity<ErrorResponse> handle(ForbiddenException exception, HttpServletRequest request) {
+	public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException exception,
+		HttpServletRequest request) {
+		log.error("handleForbiddenException - Exception: {} | URI: {}", exception.getMessage(), request.getRequestURI(),
+			exception);
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.from(exception));
 	}
 
 	/**
 	 * {@code NovaException}을 처리하여 {@link ErrorResponse}를 반환합니다.
 	 *
-	 * @param ex      {@code NovaException}
-	 * @param request 웹 요청
+	 * @param exception {@code NovaException}
+	 * @param request   웹 요청
 	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
 	 */
 	@ExceptionHandler(NovaException.class)
-	protected ResponseEntity<Object> handleNovaException(NovaException ex, WebRequest request) {
-		ErrorResponse errorResponse = ErrorResponse.from(ex);
-		return handleExceptionInternal(ex, errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	protected ResponseEntity<Object> handleNovaException(NovaException exception, WebRequest request) {
+		log.error("handleNovaException - Exception: {} | Request: {}", exception.getMessage(),
+			request.getDescription(false), exception);
+		ErrorResponse errorResponse = ErrorResponse.from(exception);
+		return handleExceptionInternal(exception, errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 
 	/**
@@ -89,7 +101,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
 	 */
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handle(Exception exception, HttpServletRequest request) {
+	public ResponseEntity<ErrorResponse> handleException(Exception exception, HttpServletRequest request) {
+		log.error("handleException - Exception: {} | URI: {}", exception.getMessage(), request.getRequestURI(),
+			exception);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
 	}
@@ -102,6 +116,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+		log.error("handleTypeMismatch - Exception: {}", ex.getMessage(), ex);
 		return ResponseEntity.badRequest().body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT_TYPE));
 	}
 }
