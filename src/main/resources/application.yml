@@ -31,8 +31,6 @@ rabbitmq:
   queue:
     couponCreateNormal: nova.coupon.create.normal.queue
     couponCreateHighTraffic: nova.coupon.create.hightraffic.queue
-    couponRegisterNormal: nova.coupon.register.normal.queue
-    couponRegisterHighTraffic: nova.coupon.register.hightraffic.queue
     deadLetter: nova.coupon.deadletter.queue
   exchange:
     couponOperation: nova.coupon.operation.exchange
@@ -40,6 +38,3 @@ rabbitmq:
   routing:
     couponCreateNormal: coupon.create.normal
     couponCreateHighTraffic: coupon.create.hightraffic
-    couponRegisterNormal: coupon.register.normal
-    couponRegisterHighTraffic: coupon.register.hightraffic
-
