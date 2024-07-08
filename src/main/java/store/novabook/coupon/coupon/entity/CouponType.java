@@ -27,5 +27,10 @@ public enum CouponType {
 	/**
 	 * 카테고리 쿠폰 유형.
 	 */
-	CATEGORY;
+	CATEGORY,
+
+	/**
+	 * 선착순 쿠폰 유형.
+	 */
+	LIMITED;
 }

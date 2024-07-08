@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import store.novabook.coupon.common.messaging.dto.CreateCouponMessage;
-import store.novabook.coupon.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.coupon.coupon.dto.request.CreateCouponRequest;
 import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
@@ -76,7 +75,7 @@ public interface CouponService {
 	 * 회원 가입 메시지를 처리합니다.
 	 *
 	 * @param message 쿠폰 생성 메시지
-	 * @return 등록된 쿠폰 메시지
+	 * @return
 	 */
-	RegisterCouponMessage createByMessage(CreateCouponMessage message);
+	CreateCouponResponse createByMessage(CreateCouponMessage message);
 }

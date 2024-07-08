@@ -4,6 +4,7 @@ import lombok.Builder;
 import store.novabook.coupon.coupon.entity.BookCouponTemplate;
 import store.novabook.coupon.coupon.entity.CategoryCouponTemplate;
 import store.novabook.coupon.coupon.entity.CouponTemplate;
+import store.novabook.coupon.coupon.entity.LimitedCouponTemplate;
 
 /**
  * {@code CreateCouponTemplateResponse} 레코드는 쿠폰 템플릿 생성 응답을 나타냅니다.
@@ -41,5 +42,15 @@ public record CreateCouponTemplateResponse(Long id) {
 	 */
 	public static CreateCouponTemplateResponse fromEntity(CategoryCouponTemplate categoryCouponTemplate) {
 		return CreateCouponTemplateResponse.builder().id(categoryCouponTemplate.getId()).build();
+	}
+
+	/**
+	 * 주어진 선착순 쿠폰 템플릿 엔티티로부터 {@code CreateCouponTemplateResponse} 객체를 생성합니다.
+	 *
+	 * @param limitedCouponTemplate 선착순 쿠폰 템플릿 엔티티
+	 * @return 생성된 {@code CreateCouponTemplateResponse} 객체
+	 */
+	public static CreateCouponTemplateResponse fromEntity(LimitedCouponTemplate limitedCouponTemplate) {
+		return CreateCouponTemplateResponse.builder().id(limitedCouponTemplate.getId()).build();
 	}
 }
