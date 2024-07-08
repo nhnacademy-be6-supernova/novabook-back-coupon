@@ -75,7 +75,7 @@ public interface CouponService {
 	 * 회원 가입 메시지를 처리합니다.
 	 *
 	 * @param message 쿠폰 생성 메시지
-	 * @return
+	 * @return 유효한 모든 쿠폰의 응답
 	 */
 	CreateCouponResponse createByMessage(CreateCouponMessage message);
 }

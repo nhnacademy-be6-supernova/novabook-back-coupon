@@ -46,7 +46,7 @@ public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implem
 				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, coupon.status,
 					couponTemplate.name, couponTemplate.discountAmount, couponTemplate.discountType,
 					couponTemplate.maxDiscountAmount, couponTemplate.minPurchaseAmount, coupon.createdAt,
-					coupon.expirationAt))
+					coupon.expirationAt, coupon.usedAt))
 			.innerJoin(couponTemplate)
 			.on(coupon.couponTemplate.id.eq(couponTemplate.id))
 			.innerJoin(categoryCouponTemplate)
@@ -62,7 +62,7 @@ public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implem
 				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, coupon.status,
 					couponTemplate.name, couponTemplate.discountAmount, couponTemplate.discountType,
 					couponTemplate.maxDiscountAmount, couponTemplate.minPurchaseAmount, coupon.createdAt,
-					coupon.expirationAt))
+					coupon.expirationAt, coupon.usedAt))
 			.innerJoin(couponTemplate)
 			.on(coupon.couponTemplate.id.eq(couponTemplate.id))
 			.innerJoin(bookCouponTemplate)
@@ -78,7 +78,7 @@ public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implem
 				Projections.constructor(GetCouponResponse.class, coupon.id, couponTemplate.type, coupon.status,
 					couponTemplate.name, couponTemplate.discountAmount, couponTemplate.discountType,
 					couponTemplate.maxDiscountAmount, couponTemplate.minPurchaseAmount, coupon.createdAt,
-					coupon.expirationAt))
+					coupon.expirationAt, coupon.usedAt))
 			.where(coupon.id.in(request.couponIdList())
 				.and(coupon.couponTemplate.type.notIn(CouponType.BOOK, CouponType.CATEGORY))
 				.and(coupon.status.eq(CouponStatus.UNUSED))
