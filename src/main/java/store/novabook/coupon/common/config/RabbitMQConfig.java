@@ -76,6 +76,7 @@ public class RabbitMQConfig {
 		return connectionFactory;
 	}
 
+
 	/**
 	 * couponOperationExchange 빈을 생성합니다.
 	 *
