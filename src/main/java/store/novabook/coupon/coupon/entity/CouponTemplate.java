@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import store.novabook.coupon.coupon.dto.request.CreateBookCouponTemplateRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCategoryCouponTemplateRequest;
 import store.novabook.coupon.coupon.dto.request.CreateCouponTemplateRequest;
+import store.novabook.coupon.coupon.dto.request.CreateLimitedCouponTemplateRequest;
 
 /**
  * {@code CouponTemplate} 엔티티는 쿠폰 템플릿을 나타냅니다.
@@ -152,6 +153,26 @@ public class CouponTemplate {
 		return CouponTemplate.builder()
 			.name(request.name())
 			.type(CouponType.CATEGORY)
+			.discountAmount(request.discountAmount())
+			.discountType(request.discountType())
+			.maxDiscountAmount(request.maxDiscountAmount())
+			.minPurchaseAmount(request.minPurchaseAmount())
+			.startedAt(request.startedAt())
+			.expirationAt(request.expirationAt())
+			.usePeriod(request.usePeriod())
+			.build();
+	}
+
+	/**
+	 * 주어진 카테고리 쿠폰 템플릿 요청으로부터 {@code CouponTemplate} 객체를 생성합니다.
+	 *
+	 * @param request 카테고리 쿠폰 템플릿 생성 요청
+	 * @return 생성된 {@code CouponTemplate} 객체
+	 */
+	public static CouponTemplate of(CreateLimitedCouponTemplateRequest request) {
+		return CouponTemplate.builder()
+			.name(request.name())
+			.type(CouponType.LIMITED)
 			.discountAmount(request.discountAmount())
 			.discountType(request.discountType())
 			.maxDiscountAmount(request.maxDiscountAmount())

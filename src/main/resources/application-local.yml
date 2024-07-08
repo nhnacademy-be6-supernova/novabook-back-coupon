@@ -1,9 +1,5 @@
 spring:
   rabbitmq:
-    host: 133.186.241.167
-    port: 5672
-    username: admin
-    password: nhnacademy123!
     listener:
       simple:
         acknowledge-mode: auto
@@ -13,13 +9,7 @@ spring:
           max-interval: 10000    # 최대 재시도 인터벌 (10초)
           max-attempts: 3        # 최대 재시도 횟수
           multiplier: 2.0        # 이전 interval * multiplier = 다음 interval
-  data:
-    redis:
-      url: jdbc:redis://133.186.241.167:6379/31
-      host: 133.186.241.167
-      database: 31
-      password: "*N2vya7H@muDTwdNMR!"
-      port: 6379
+
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:test
@@ -44,4 +34,11 @@ eureka:
   instance:
     prefer-ip-address: true
 
-
+nhn:
+  cloud:
+    keyManager:
+      appkey: 2SxwmBzUfnqJaA2A
+      redisKey: 60427297022b4bdb9650789537e4b945
+      rabbitMQKey: 57e5b5f62b404b58b7a7cc79352d5d82
+      userAccessKey: J9VxQFQEsmerR1n7FeJ6
+      secretAccessKey: zZEVopUHt6dxgRMt
