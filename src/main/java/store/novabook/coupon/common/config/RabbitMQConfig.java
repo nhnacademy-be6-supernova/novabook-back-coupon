@@ -39,6 +39,12 @@ public class RabbitMQConfig {
 	@Value("${rabbitmq.queue.couponCreateHighTraffic}")
 	private String couponCreateHighTrafficQueue;
 
+	@Value("${rabbitmq.queue.couponRegisterNormal}")
+	private String couponRegisterNormalQueue;
+
+	@Value("${rabbitmq.queue.couponRegisterHighTraffic}")
+	private String couponRegisterHighTrafficQueue;
+
 	@Value("${rabbitmq.queue.deadLetter}")
 	private String deadLetterQueue;
 
@@ -113,6 +119,27 @@ public class RabbitMQConfig {
 	}
 
 	/**
+	 * couponRegisterNormalQueue 빈을 생성합니다.
+	 *
+	 * @return Queue 객체
+	 */
+	@Bean
+	public Queue couponRegisterNormalQueue() {
+		return new Queue(couponRegisterNormalQueue, true, false, false, queueArguments(couponRegisterNormalQueue));
+	}
+
+	/**
+	 * couponRegisterHighTrafficQueue 빈을 생성합니다.
+	 *
+	 * @return Queue 객체
+	 */
+	@Bean
+	public Queue couponRegisterHighTrafficQueue() {
+		return new Queue(couponRegisterHighTrafficQueue, true, false, false,
+			queueArguments(couponRegisterHighTrafficQueue));
+	}
+
+	/**
 	 * deadLetterQueue 빈을 생성합니다.
 	 *
 	 * @return Queue 객체
@@ -149,6 +176,35 @@ public class RabbitMQConfig {
 		return BindingBuilder.bind(couponCreateHighTrafficQueue)
 			.to(couponOperationExchange)
 			.with(couponCreateHighTrafficRoutingKey);
+	}
+
+	/**
+	 * registerCouponNormalBinding 빈을 생성합니다.
+	 *
+	 * @param couponRegisterNormalQueue 큐
+	 * @param couponOperationExchange   토픽 익스체인지
+	 * @return Binding 객체
+	 */
+	@Bean
+	public Binding registerCouponNormalBinding(Queue couponRegisterNormalQueue, TopicExchange couponOperationExchange) {
+		return BindingBuilder.bind(couponRegisterNormalQueue)
+			.to(couponOperationExchange)
+			.with(couponRegisterNormalRoutingKey);
+	}
+
+	/**
+	 * registerCouponHighTrafficBinding 빈을 생성합니다.
+	 *
+	 * @param couponRegisterHighTrafficQueue 큐
+	 * @param couponOperationExchange        토픽 익스체인지
+	 * @return Binding 객체
+	 */
+	@Bean
+	public Binding registerCouponHighTrafficBinding(Queue couponRegisterHighTrafficQueue,
+		TopicExchange couponOperationExchange) {
+		return BindingBuilder.bind(couponRegisterHighTrafficQueue)
+			.to(couponOperationExchange)
+			.with(couponRegisterHighTrafficRoutingKey);
 	}
 
 	/**

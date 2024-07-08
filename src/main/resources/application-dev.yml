@@ -46,8 +46,6 @@ eureka:
   instance:
     prefer-ip-address: true
 
-
-
 nhn:
   cloud:
     keyManager:
