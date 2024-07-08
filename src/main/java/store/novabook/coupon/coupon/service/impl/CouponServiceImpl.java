@@ -138,12 +138,7 @@ public class CouponServiceImpl implements CouponService {
 		return GetCouponAllResponse.fromEntity(couponList);
 	}
 
-	/**
-	 * 회원 가입 메시지를 처리합니다.
-	 *
-	 * @param message 쿠폰 생성 메시지
-	 * @return
-	 */
+	// 선착순 쿠폰
 	@Override
 	public CreateCouponResponse createByMessage(CreateCouponMessage message) {
 		CouponTemplate couponTemplate;

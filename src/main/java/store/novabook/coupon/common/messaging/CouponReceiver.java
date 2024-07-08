@@ -10,6 +10,7 @@ import store.novabook.coupon.common.adapter.StoreAdapter;
 import store.novabook.coupon.common.adapter.dto.RegisterCouponRequest;
 import store.novabook.coupon.common.messaging.dto.CreateCouponMessage;
 import store.novabook.coupon.common.messaging.dto.CreateCouponNotifyMessage;
+import store.novabook.coupon.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
 import store.novabook.coupon.coupon.service.CouponService;
 
@@ -24,13 +25,11 @@ public class CouponReceiver {
 
 	private final CouponService couponService;
 	private final CouponNotifier couponNotifier;
+	private final CouponSender couponSender;
+
 	private final StoreAdapter storeAdapter;
 
-	/**
-	 * rabbitmq 큐로부터 쿠폰 생성 메시지를 수신합니다.
-	 *
-	 * @param message 유효성 검사를 통과한 CreateCouponMessage 객체
-	 */
+	// 선착순 쿠폰
 	@RabbitListener(queues = "${rabbitmq.queue.couponCreateHighTraffic}")
 	public void receiveCreateCouponHighTrafficMessage(@Payload CreateCouponNotifyMessage message,
 		@Header("Authorization") String token, @Header("Refresh") String refresh) {
@@ -45,15 +44,11 @@ public class CouponReceiver {
 		couponNotifier.notify(String.valueOf(message.uuid()), SUCCESS_MESSAGE);
 	}
 
-	/**
-	 * 일반 큐로부터 쿠폰 생성 메시지를 수신합니다.
-	 *
-	 * @param message 유효성 검사를 통과한 CreateCouponMessage 객체
-	 */
+	// 웰컴쿠폰 ( 토큰이 없음_
 	@RabbitListener(queues = "${rabbitmq.queue.couponCreateNormal}")
-	public void receiveCreateCouponNormalMessage(CreateCouponMessage message, @Header("Authorization") String token,
-		@Header("Refresh") String refresh) {
+	public void receiveCreateCouponNormalMessage(CreateCouponMessage message) {
 		CreateCouponResponse response = couponService.createByMessage(message);
-		storeAdapter.registerCoupon(token, refresh, RegisterCouponRequest.builder().couponId(response.id()).build());
+		couponSender.sendToRegisterNormalQueue(
+			RegisterCouponMessage.builder().memberId(message.memberId()).couponId(response.id()).build());
 	}
 }

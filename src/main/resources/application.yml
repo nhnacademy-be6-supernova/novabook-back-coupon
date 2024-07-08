@@ -1,12 +1,6 @@
 spring:
   application:
     name: coupon
-  cloud:
-    openfeign:
-      client:
-        config:
-          store-service:
-            url: http://localhost:9777/api/v1/store
 
 server:
   port: 8070
@@ -14,8 +8,7 @@ server:
 logging:
   file:
     path: ${user.dir}/logs/${spring.application.name}
-  level:
-    org.springframework.amqp: DEBUG
+
 #swagger 설정
 springdoc:
   packages-to-scan: store.novabook
@@ -31,6 +24,8 @@ rabbitmq:
   queue:
     couponCreateNormal: nova.coupon.create.normal.queue
     couponCreateHighTraffic: nova.coupon.create.hightraffic.queue
+    couponRegisterNormal: nova.coupon.register.normal.queue
+    couponRegisterHighTraffic: nova.coupon.register.hightraffic.queue
     deadLetter: nova.coupon.deadletter.queue
   exchange:
     couponOperation: nova.coupon.operation.exchange
@@ -38,3 +33,5 @@ rabbitmq:
   routing:
     couponCreateNormal: coupon.create.normal
     couponCreateHighTraffic: coupon.create.hightraffic
+    couponRegisterNormal: coupon.register.normal
+    couponRegisterHighTraffic: coupon.register.hightraffic
