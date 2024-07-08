@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import store.novabook.coupon.common.dto.DatabaseConfigDto;
+import store.novabook.coupon.common.dto.RabbitMQConfigDto;
 import store.novabook.coupon.common.dto.RedisConfigDto;
 
 public class KeyManagerUtil {
@@ -64,6 +65,15 @@ public class KeyManagerUtil {
 		try {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.redisKey");
 			return objectMapper.readValue(getDataSource(environment, keyid), RedisConfigDto.class);
+		} catch (JsonProcessingException e) {
+			//오류처리
+			throw new RuntimeException(e);
+		}
+	}
+	public static RabbitMQConfigDto getRabbitMQConfig(Environment environment) {
+		try {
+			String keyid = environment.getProperty("nhn.cloud.keyManager.rabbitMQKey");
+			return objectMapper.readValue(getDataSource(environment, keyid), RabbitMQConfigDto.class);
 		} catch (JsonProcessingException e) {
 			//오류처리
 			throw new RuntimeException(e);
