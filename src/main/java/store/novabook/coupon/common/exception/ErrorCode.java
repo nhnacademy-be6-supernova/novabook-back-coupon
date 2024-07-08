@@ -37,12 +37,17 @@ public enum ErrorCode {
 	// 403
 	NOT_ENOUGH_PERMISSION("해당 권한이 없습니다."),
 	FORBIDDEN("접근 권한이 없습니다."),
+	FORBIDDEN_COUPON_TYPE("해당 경로로는 선착순 쿠폰을 요청할 수 없습니다."),
 
 	// 404
 	COUPON_NOT_FOUND("해당 쿠폰이 존재하지 않습니다."),
 	BOOK_COUPON_NOT_FOUND("해당 도서에 대한 쿠폰이 존재하지 않습니다."),
 	CATEGORY_COUPON_NOT_FOUND("해당 카테고리에 대한 쿠폰이 존재하지 않습니다."),
 	COUPON_TEMPLATE_NOT_FOUND("해당 쿠폰 템플릿이 존재하지 않습니다."),
+
+	// 409
+	CONFLICT_COUPON_TYPE("쿠폰 타입이 올바르지 않습니다. "),
+	INSUFFICIENT_COUPON_QUANTITY("쿠폰이 모두 소진되었습니다."),
 
 	// 500
 	INTERNAL_SERVER_ERROR("서버 내부에 문제가 발생했습니다.");
