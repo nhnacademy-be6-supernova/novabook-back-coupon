@@ -36,7 +36,7 @@ public class CouponSender {
 	}
 
 	public void sendToApplyCouponQueue(OrderSagaMessage orderSagaMessage) {
-		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.api1-producer-routing-key", orderSagaMessage);
+		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.api2-producer-routing-key", orderSagaMessage);
 	}
 
 }
