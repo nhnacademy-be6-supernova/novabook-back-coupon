@@ -43,8 +43,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
 		HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-		log.error("handleMethodArgumentNotValid - Exception: {} | Request: {}", exception.getMessage(),
-			request.getDescription(false));
+		exception.printStackTrace();
+		log.error("handleMethodArgumentNotValid - Exception: {} | Location: {} | Request: {}", exception.getMessage(),
+			getLocation(exception), request.getDescription(false));
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidErrorResponse.from(exception));
 	}
 
@@ -58,8 +59,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException exception,
 		HttpServletRequest request) {
-		log.error("handleNotFoundException - Exception: {} | URI: {}", exception.getMessage(), request.getRequestURI(),
-			exception);
+		exception.printStackTrace();
+		log.error("handleNotFoundException - Exception: {} | Location: {} | URI: {}", exception.getMessage(),
+			getLocation(exception), request.getRequestURI(), exception);
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(exception));
 	}
 
@@ -73,8 +75,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(ForbiddenException.class)
 	public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException exception,
 		HttpServletRequest request) {
-		log.error("handleForbiddenException - Exception: {} | URI: {}", exception.getMessage(), request.getRequestURI(),
-			exception);
+		exception.printStackTrace();
+		log.error("handleForbiddenException - Exception: {} | Location: {} | URI: {}", exception.getMessage(),
+			getLocation(exception), request.getRequestURI(), exception);
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.from(exception));
 	}
 
@@ -87,8 +90,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 */
 	@ExceptionHandler(NovaException.class)
 	protected ResponseEntity<Object> handleNovaException(NovaException exception, WebRequest request) {
-		log.error("handleNovaException - Exception: {} | Request: {}", exception.getMessage(),
-			request.getDescription(false), exception);
+		exception.printStackTrace();
+
+		log.error("handleNovaException - Exception: {} | Location: {} | Request: {}", exception.getMessage(),
+			getLocation(exception), request.getDescription(false), exception);
 		ErrorResponse errorResponse = ErrorResponse.from(exception);
 		return handleExceptionInternal(exception, errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
@@ -102,8 +107,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 */
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleException(Exception exception, HttpServletRequest request) {
-		log.error("handleException - Exception: {} | URI: {}", exception.getMessage(), request.getRequestURI(),
-			exception);
+		exception.printStackTrace();
+
+		log.error("handleException - Exception: {} | Location: {} | URI: {}", exception.getMessage(),
+			getLocation(exception), request.getRequestURI(), exception);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
 	}
@@ -111,12 +118,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	/**
 	 * {@code MethodArgumentTypeMismatchException}을 처리하여 {@link ErrorResponse}를 반환합니다.
 	 *
-	 * @param ex {@code MethodArgumentTypeMismatchException}
+	 * @param exception {@code MethodArgumentTypeMismatchException}
 	 * @return {@link ErrorResponse}를 포함하는 {@link ResponseEntity} 객체
 	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
-	public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-		log.error("handleTypeMismatch - Exception: {}", ex.getMessage(), ex);
+	public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException exception) {
+		exception.printStackTrace();
+		log.error("handleTypeMismatch - Exception: {} | Location: {}", exception.getMessage(), getLocation(exception),
+			exception);
 		return ResponseEntity.badRequest().body(ErrorResponse.from(ErrorCode.INVALID_ARGUMENT_TYPE));
+	}
+
+	/**
+	 * 예외가 발생한 위치 정보를 반환합니다.
+	 *
+	 * @param exception 예외 객체
+	 * @return 예외가 발생한 클래스와 메서드, 라인 정보
+	 */
+	private String getLocation(Throwable exception) {
+		StackTraceElement element = exception.getStackTrace()[0];
+		return String.format("%s.%s(%s:%d)", element.getClassName(), element.getMethodName(), element.getFileName(),
+			element.getLineNumber());
 	}
 }

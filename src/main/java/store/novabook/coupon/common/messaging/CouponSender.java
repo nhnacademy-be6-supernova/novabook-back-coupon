@@ -26,15 +26,6 @@ public class CouponSender {
 	private String couponRegisterNormalRoutingKey;
 
 	/**
-	 * rabbitmq 큐로 쿠폰 등록 메시지를 전송합니다.
-	 *
-	 * @param message RegisterCouponMessage 객체
-	 */
-	public void sendToRegisterHighTrafficQueue(RegisterCouponMessage message) {
-		rabbitTemplate.convertAndSend(couponOperationExchange, couponRegisterHighTrafficRoutingKey, message);
-	}
-
-	/**
 	 * 일반 큐로 쿠폰 등록 메시지를 전송합니다.
 	 *
 	 * @param message RegisterCouponMessage 객체

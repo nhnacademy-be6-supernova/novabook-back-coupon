@@ -1,16 +1,19 @@
 package store.novabook.coupon.common.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import lombok.RequiredArgsConstructor;
+import store.novabook.coupon.common.dto.RedisConfigDto;
+import store.novabook.coupon.common.util.KeyManagerUtil;
 
 /**
  * Redis 설정 클래스.
@@ -18,19 +21,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  */
 @Configuration
 @EnableRedisRepositories
+@RequiredArgsConstructor
 public class RedisConfig {
-
-	@Value("${spring.data.redis.host}")
-	private String host;
-
-	@Value("${spring.data.redis.port}")
-	private int port;
-
-	@Value("${spring.data.redis.password}")
-	private String password;
-
-	@Value("${spring.data.redis.database}")
-	private int database;
+	private final Environment environment;
 
 	/**
 	 * Redis 연결 팩토리 빈을 생성합니다.
@@ -39,11 +32,16 @@ public class RedisConfig {
 	 */
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
+
+
+		RedisConfigDto config = KeyManagerUtil.getRedisConfig(environment);
+
+
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-		redisStandaloneConfiguration.setHostName(host);
-		redisStandaloneConfiguration.setPort(port);
-		redisStandaloneConfiguration.setPassword(password);
-		redisStandaloneConfiguration.setDatabase(database);
+		redisStandaloneConfiguration.setHostName(config.host());
+		redisStandaloneConfiguration.setPort(config.port());
+		redisStandaloneConfiguration.setPassword(config.password());
+		redisStandaloneConfiguration.setDatabase(config.database());
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 	}
 
@@ -56,9 +54,10 @@ public class RedisConfig {
 	public RedisTemplate<String, String> redisTemplate() {
 		RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
 		redisTemplate.setKeySerializer(new StringRedisSerializer());
-		redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+		redisTemplate.setValueSerializer(new StringRedisSerializer());
 		redisTemplate.setConnectionFactory(redisConnectionFactory());
 		redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+		redisTemplate.setHashValueSerializer(new StringRedisSerializer());
 		return redisTemplate;
 	}
 
