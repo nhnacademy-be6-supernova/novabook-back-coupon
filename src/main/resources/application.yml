@@ -7,6 +7,8 @@ spring:
         config:
           store-service:
             url: http://localhost:9777/api/v1/store
+  profiles:
+    active: dev
 
 server:
   port: 8070
