@@ -6,11 +6,15 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import store.novabook.coupon.common.adapter.StoreAdapter;
 import store.novabook.coupon.common.adapter.dto.RegisterCouponRequest;
+import store.novabook.coupon.common.exception.ErrorCode;
+import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.common.messaging.dto.CreateCouponMessage;
 import store.novabook.coupon.common.messaging.dto.CreateCouponNotifyMessage;
 import store.novabook.coupon.common.messaging.dto.OrderSagaMessage;
@@ -60,38 +64,44 @@ public class CouponReceiver {
 			RegisterCouponMessage.builder().memberId(message.memberId()).couponId(response.id()).build());
 	}
 
+	/**
+	 * 주문서에서 couponID를 가져와 검증합니다.
+	 * coupon을 적용합니다.
+	 * @param orderSagaMessage
+	 */
 	@RabbitListener(queues = "nova.coupon.apply.queue")
+	@Transactional
 	public void orderApplyCoupon(@Payload OrderSagaMessage orderSagaMessage) {
-		Long memberId = orderSagaMessage.getPaymentRequest().memberId();
-		String key = "OrderForm:" + memberId;
-		String field = "couponId";
-
-		HashOperations<String, Object, Object> hashOperation = redisTemplate.opsForHash();
-		String stringCouponId = (String) hashOperation.get(key, field);
-
-		if (stringCouponId == null) {
-			log.error("Redis에서 쿠폰 ID를 찾을 수 없습니다. 회원 ID: {}", memberId);
-			return;
-		}
-
-		long couponId;
 		try {
-			couponId = Long.parseLong(stringCouponId);
-		} catch (NumberFormatException e) {
-			log.error("잘못된 쿠폰 ID 형식입니다: {}", stringCouponId, e);
-			return;
-		}
+			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
+			String key = "OrderForm:" + memberId;
+			String field = "couponId";
 
-		Coupon coupon;
-		try {
-			coupon = couponService.findById(couponId);
+			HashOperations<String, Object, Object> hashOperation = redisTemplate.opsForHash();
+			String stringCouponId = (String) hashOperation.get(key, field);
+
+			if (stringCouponId == null) {
+				throw new NotFoundException(ErrorCode.COUPON_NOT_FOUND);
+			}
+
+			long couponId = Long.parseLong(stringCouponId);
+			Coupon coupon = couponService.findById(couponId);
+			CouponTemplate couponTemplate = coupon.getCouponTemplate();
+
+			applyCouponDiscount(orderSagaMessage, couponTemplate);
+
+			couponService.updateStatusToUsed(couponId);
+			orderSagaMessage.setStatus("SUCCESS_APPLY_COUPON");
 		} catch (Exception e) {
-			log.error("해당 쿠폰 ID로 쿠폰을 찾을 수 없습니다: {}", couponId, e);
-			return;
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			orderSagaMessage.setStatus("FAIL_APPLY_COUPON");
+			throw e;
+		} finally {
+			couponSender.sendToApplyCouponQueue(orderSagaMessage);
 		}
+	}
 
-		CouponTemplate couponTemplate = coupon.getCouponTemplate();
-
+	private void applyCouponDiscount(OrderSagaMessage orderSagaMessage, CouponTemplate couponTemplate) {
 		if (couponTemplate.getDiscountType() == DiscountType.PERCENT) {
 			long totalAmount = orderSagaMessage.getCalculateTotalAmount();
 			long minPurchaseAmount = couponTemplate.getMinPurchaseAmount();
@@ -100,19 +110,28 @@ public class CouponReceiver {
 				throw new IllegalArgumentException("구매금액이 쿠폰 최저 구매가보다 낮습니다.");
 			}
 
-			long applyAmount = totalAmount * couponTemplate.getDiscountAmount() / 100;
-
-			if (applyAmount > couponTemplate.getMaxDiscountAmount()) {
-				log.info("쿠폰 할인 금액이 최대 할인 금액보다 높아 최대할인가로 적용합니다.");
-				applyAmount = couponTemplate.getMaxDiscountAmount();
-			}
-
+			long applyAmount = calculateDiscountAmount(totalAmount, couponTemplate);
 			orderSagaMessage.setCalculateTotalAmount(totalAmount - applyAmount);
+
 			log.debug("쿠폰 적용가 {}", applyAmount);
+
+		} else if(couponTemplate.getDiscountType() == DiscountType.AMOUNT) {
+			long totalAmount = orderSagaMessage.getCalculateTotalAmount();
+			orderSagaMessage.setCalculateTotalAmount(totalAmount - couponTemplate.getDiscountAmount());
+
+			log.debug("쿠폰 적용가 {}", couponTemplate.getDiscountAmount());
+		}
+	}
+
+	private long calculateDiscountAmount(long totalAmount, CouponTemplate couponTemplate) {
+		long applyAmount = totalAmount * couponTemplate.getDiscountAmount() / 100;
+
+		if (applyAmount > couponTemplate.getMaxDiscountAmount()) {
+			log.info("쿠폰 할인 금액이 최대 할인 금액보다 높아 최대할인가로 적용합니다.");
+			applyAmount = couponTemplate.getMaxDiscountAmount();
 		}
 
-		couponService.updateStatusToUsed(couponId);
-		orderSagaMessage.setStatus("SUCCESS_APPLY_COUPON");
-		couponSender.sendToApplyCouponQueue(orderSagaMessage);
+		return applyAmount;
 	}
+
 }
