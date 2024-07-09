@@ -12,6 +12,7 @@ import store.novabook.coupon.coupon.dto.request.GetCouponAllRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponAllResponse;
 import store.novabook.coupon.coupon.dto.response.GetCouponResponse;
+import store.novabook.coupon.coupon.entity.Coupon;
 import store.novabook.coupon.coupon.entity.CouponStatus;
 
 /**
@@ -78,4 +79,6 @@ public interface CouponService {
 	 * @return 유효한 모든 쿠폰의 응답
 	 */
 	CreateCouponResponse createByMessage(CreateCouponMessage message);
+
+	Coupon findById(Long id);
 }

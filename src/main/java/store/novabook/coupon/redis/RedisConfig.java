@@ -1,4 +1,4 @@
-package store.novabook.coupon.common.config;
+package store.novabook.coupon.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
