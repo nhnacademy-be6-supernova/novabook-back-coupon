@@ -21,6 +21,7 @@ import store.novabook.coupon.common.messaging.dto.OrderSagaMessage;
 import store.novabook.coupon.common.messaging.dto.RegisterCouponMessage;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
 import store.novabook.coupon.coupon.entity.Coupon;
+import store.novabook.coupon.coupon.entity.CouponStatus;
 import store.novabook.coupon.coupon.entity.CouponTemplate;
 import store.novabook.coupon.coupon.entity.DiscountType;
 import store.novabook.coupon.coupon.service.CouponService;
@@ -90,7 +91,7 @@ public class CouponReceiver {
 
 			applyCouponDiscount(orderSagaMessage, couponTemplate);
 
-			couponService.updateStatusToUsed(couponId);
+			couponService.updateStatus(couponId, CouponStatus.UNUSED);
 			orderSagaMessage.setStatus("SUCCESS_APPLY_COUPON");
 		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -115,7 +116,7 @@ public class CouponReceiver {
 
 			log.debug("쿠폰 적용가 {}", applyAmount);
 
-		} else if(couponTemplate.getDiscountType() == DiscountType.AMOUNT) {
+		} else if (couponTemplate.getDiscountType() == DiscountType.AMOUNT) {
 			long totalAmount = orderSagaMessage.getCalculateTotalAmount();
 			orderSagaMessage.setCalculateTotalAmount(totalAmount - couponTemplate.getDiscountAmount());
 
@@ -132,6 +133,32 @@ public class CouponReceiver {
 		}
 
 		return applyAmount;
+	}
+
+	@RabbitListener(queues = "nova.coupon.compensate.apply.queue")
+	@Transactional
+	public void compensateApplyCoupon(@Payload OrderSagaMessage orderSagaMessage) {
+		try {
+			Long memberId = orderSagaMessage.getPaymentRequest().memberId();
+			String key = "OrderForm:" + memberId;
+			String field = "couponId";
+
+			HashOperations<String, Object, Object> hashOperation = redisTemplate.opsForHash();
+			String stringCouponId = (String)hashOperation.get(key, field);
+
+			if (stringCouponId == null) {
+				throw new NotFoundException(ErrorCode.COUPON_NOT_FOUND);
+			}
+
+			long couponId = Long.parseLong(stringCouponId);
+			couponService.updateStatus(couponId, CouponStatus.UNUSED);
+			log.info("success compensate transaction");
+		} catch (Exception e) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			orderSagaMessage.setStatus("FAIL_COMPENSATE_APPLY_COUPON");
+			couponSender.sendToCompensateApplyCouponQueue(orderSagaMessage);
+			throw e;
+		}
 	}
 
 }

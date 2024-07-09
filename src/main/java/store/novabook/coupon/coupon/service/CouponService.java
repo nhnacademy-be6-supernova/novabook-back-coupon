@@ -20,12 +20,14 @@ import store.novabook.coupon.coupon.entity.CouponStatus;
  */
 public interface CouponService {
 
+	void updateStatusToUsed(Long id);
+
 	/**
 	 * 쿠폰의 상태를 '사용됨'으로 업데이트합니다.
 	 *
 	 * @param id 쿠폰 ID
 	 */
-	void updateStatusToUsed(Long id);
+	void updateStatus(Long id, CouponStatus status);
 
 	/**
 	 * 새로운 쿠폰을 생성합니다.

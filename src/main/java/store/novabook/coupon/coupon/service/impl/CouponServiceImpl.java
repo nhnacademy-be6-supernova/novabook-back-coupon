@@ -61,6 +61,13 @@ public class CouponServiceImpl implements CouponService {
 		coupon.updateStatus(CouponStatus.USED);
 	}
 
+	@Override
+	public void updateStatus(Long id, CouponStatus status) {
+		Coupon coupon = couponRepository.findById(id)
+			.orElseThrow(() -> new BadRequestException(ErrorCode.COUPON_NOT_FOUND));
+		coupon.updateStatus(CouponStatus.USED);
+	}
+
 	/**
 	 * 새로운 쿠폰을 생성합니다.
 	 *
