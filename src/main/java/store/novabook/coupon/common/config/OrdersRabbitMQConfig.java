@@ -30,35 +30,12 @@ public class OrdersRabbitMQConfig {
 
 	// QUEUES
 	@Bean
-	public Queue ordersConfirmFormQueue() {
-		return QueueBuilder.durable("nova.orders.form.confirm.queue").build();
-	}
-
-	@Bean
-	public Queue ordersDecrementPoint() {
-		return QueueBuilder.durable("nova.point.decrement.queue").build();
-	}
-
-	@Bean
-	public Queue ordersApplyCoupon() {
+	public Queue ordersApplyCouponQueue() {
 		return QueueBuilder.durable("nova.coupon.apply.queue").build();
-	}
-
-	@Bean
-	public Queue ordersPaymentApprove() {
-		return QueueBuilder.durable("nova.orders.approve.payment.queue").build();
 	}
 
 
 	/*보상 트랜잭션 큐*/
-	@Bean
-	public Queue compensateOrdersConfirmFormQueue() {
-		return QueueBuilder.durable("nova.orders.compensate.form.confirm.queue").build();
-	}
-	@Bean
-	public Queue compensateOrdersDecrementPointQueue() {
-		return QueueBuilder.durable("nova.point.compensate.decrement.queue").build();
-	}
 	@Bean
 	public Queue compensateOrdersApplyCouponQueue() {
 		return QueueBuilder.durable("nova.coupon.compensate.apply.queue").build();
@@ -91,20 +68,8 @@ public class OrdersRabbitMQConfig {
 
 	// BINDING
 	@Bean
-	public Binding ordersConfirmBinding() {
-		return BindingBuilder.bind(ordersConfirmFormQueue()).to(sagaExchange())
-			.with("orders.form.confirm.routing.key").noargs();
-	}
-
-	@Bean
-	public Binding decrementPointBinding() {
-		return BindingBuilder.bind(ordersDecrementPoint()).to(sagaExchange())
-			.with("point.decrement.routing.key").noargs();
-	}
-
-	@Bean
 	public Binding applyCouponBinding() {
-		return BindingBuilder.bind(ordersConfirmFormQueue()).to(sagaExchange())
+		return BindingBuilder.bind(ordersApplyCouponQueue()).to(sagaExchange())
 			.with("coupon.apply.routing.key").noargs();
 	}
 
@@ -114,25 +79,6 @@ public class OrdersRabbitMQConfig {
 			.with("nova.orders.saga.dead.routing.key").noargs();
 	}
 	// dead queue
-	@Bean
-	public Binding approvePaymentBinding() {
-		return BindingBuilder.bind(ordersConfirmFormQueue()).to(sagaExchange())
-			.with("orders.approve.payment.routing.key").noargs();
-	}
-
-
-	// 보상트랜잭션 바인딩
-	@Bean
-	public Binding compensateOrdersConfirmBinding() {
-		return BindingBuilder.bind(compensateOrdersConfirmFormQueue()).to(sagaExchange())
-			.with("compensate.orders.form.confirm.routing.key").noargs();
-	}
-
-	@Bean
-	public Binding compensateDecrementPointBinding() {
-		return BindingBuilder.bind(compensateOrdersDecrementPointQueue()).to(sagaExchange())
-			.with("compensate.point.decrement.routing.key").noargs();
-	}
 
 	@Bean
 	public Binding compensateApplyCouponBinding() {
@@ -172,13 +118,4 @@ public class OrdersRabbitMQConfig {
 		return BindingBuilder.bind(api3ProducerQueue()).to(sagaExchange()).with("nova.api3-producer-routing-key").noargs();
 	}
 
-
-	// private Map<String, Object> queueArguments(String queueName) {
-	// 	Map<String, Object> args = new HashMap<>();
-	// 	args.put("x-dead-letter-exchange", "nova.orders.deadletter.exchange");
-	// 	args.put("x-dead-letter-routing-key", "orders.form.confirm");
-	// 	args.put("x-original-queue", queueName);
-	// 	args.put("x-queue-type", "classic");
-	// 	return args;
-	// }
 }

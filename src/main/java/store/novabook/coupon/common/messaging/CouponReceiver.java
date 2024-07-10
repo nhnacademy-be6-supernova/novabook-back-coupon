@@ -152,7 +152,7 @@ public class CouponReceiver {
 
 			long couponId = Long.parseLong(stringCouponId);
 			couponService.updateStatus(couponId, CouponStatus.UNUSED);
-			log.info("success compensate transaction");
+			log.info("success coupon compensate transaction");
 		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_COMPENSATE_APPLY_COUPON");
