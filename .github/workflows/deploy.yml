@@ -41,4 +41,4 @@ jobs:
           script_stop: true
           script: |
             chmod 755 ~/coupon/target/coupon-0.0.1-SNAPSHOT.jar
-            ./deploy.sh
+            ./coupon/deploy.sh
