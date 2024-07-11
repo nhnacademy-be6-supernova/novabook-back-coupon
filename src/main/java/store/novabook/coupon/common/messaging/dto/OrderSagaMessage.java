@@ -1,0 +1,24 @@
+package store.novabook.coupon.common.messaging.dto;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+@Builder
+@JsonDeserialize(builder = OrderSagaMessage.OrderSagaMessageBuilder.class)
+public class OrderSagaMessage {
+	long bookAmount;   //순수 금액
+	long calculateTotalAmount;  //총 결제금액
+	boolean noUsePoint;
+	boolean noUseCoupon;
+	String status;
+	PaymentRequest paymentRequest;
+	@JsonPOJOBuilder(withPrefix = "")
+	public static class OrderSagaMessageBuilder {
+	}
+}

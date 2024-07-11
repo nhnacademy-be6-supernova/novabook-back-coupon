@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import store.novabook.coupon.common.messaging.dto.OrderSagaMessage;
 import store.novabook.coupon.common.messaging.dto.RegisterCouponMessage;
 
 /**
@@ -33,4 +34,13 @@ public class CouponSender {
 	public void sendToRegisterNormalQueue(RegisterCouponMessage message) {
 		rabbitTemplate.convertAndSend(couponOperationExchange, couponRegisterNormalRoutingKey, message);
 	}
+
+	public void sendToApplyCouponQueue(OrderSagaMessage orderSagaMessage) {
+		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.api2-producer-routing-key", orderSagaMessage);
+	}
+
+	public void sendToCompensateApplyCouponQueue(OrderSagaMessage orderSagaMessage) {
+		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.orders.saga.dead.routing.key", orderSagaMessage);
+	}
+
 }

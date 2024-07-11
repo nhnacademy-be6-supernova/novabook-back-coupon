@@ -2,13 +2,13 @@ spring:
   rabbitmq:
     listener:
       simple:
-        acknowledge-mode: auto
-        retry:
-          enabled: true
-          initial-interval: 3000 # 최초 메시지 처리 실패 후 재시도까지의 인터벌 (3초)
-          max-interval: 10000 # 최대 재시도 인터벌 (10초)
-          max-attempts: 3 # 최대 재시도 횟수
-          multiplier: 2.0 # 이전 interval * multiplier = 다음 interval
+        acknowledge-mode: none
+#        retry:
+#          enabled: true
+#          initial-interval: 3000 # 최초 메시지 처리 실패 후 재시도까지의 인터벌 (3초)
+#          max-interval: 10000 # 최대 재시도 인터벌 (10초)
+#          max-attempts: 3 # 최대 재시도 횟수
+#          multiplier: 2.0 # 이전 interval * multiplier = 다음 interval
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -35,6 +35,18 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+
+  #로그 크러쉬 정보
+  logstash:
+    host: 133.186.241.167
+    platform: NovaBook-Coupon-Dev
+    url: https://api-logncrash.cloud.toast.com/v2/log
+    projectName: Xyx7DoyszcG66ULx
+    projectVersion: 1.0.0
+    logVersion: v2
+    logSource: http
+    logType: log
+    secretKey: JsGDL5oTWPImKY8nag9igsUAdnUOvLMI
 
 #유레카 활성화
 eureka:

@@ -2,6 +2,7 @@ package store.novabook.coupon.coupon.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,6 +58,13 @@ public class CouponServiceImpl implements CouponService {
 		if (coupon.getStatus() == CouponStatus.USED) {
 			throw new BadRequestException(ErrorCode.ALREADY_USED_COUPON);
 		}
+		coupon.updateStatus(CouponStatus.USED);
+	}
+
+	@Override
+	public void updateStatus(Long id, CouponStatus status) {
+		Coupon coupon = couponRepository.findById(id)
+			.orElseThrow(() -> new BadRequestException(ErrorCode.COUPON_NOT_FOUND));
 		coupon.updateStatus(CouponStatus.USED);
 	}
 
@@ -159,6 +167,17 @@ public class CouponServiceImpl implements CouponService {
 		Coupon saved = couponRepository.save(coupon);
 		return CreateCouponResponse.fromEntity(saved);
 	}
+
+	@Override
+	public Coupon findById(Long id) {
+		Optional<Coupon> optionalCoupon = couponRepository.findById(id);
+		if(optionalCoupon.isEmpty()) {
+			throw new NotFoundException(ErrorCode.COUPON_NOT_FOUND);
+		}
+
+		return optionalCoupon.get();
+	}
+
 
 	private void checkQuantity(CouponTemplate couponTemplate) {
 		if (couponTemplate.getType().equals(CouponType.LIMITED)) {
