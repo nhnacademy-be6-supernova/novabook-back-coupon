@@ -12,7 +12,8 @@ import lombok.Setter;
 @Builder
 @JsonDeserialize(builder = OrderSagaMessage.OrderSagaMessageBuilder.class)
 public class OrderSagaMessage {
-	long calculateTotalAmount;
+	long bookAmount;   //순수 금액
+	long calculateTotalAmount;  //총 결제금액
 	boolean noUsePoint;
 	boolean noUseCoupon;
 	String status;

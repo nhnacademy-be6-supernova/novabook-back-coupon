@@ -66,8 +66,8 @@ public class CouponReceiver {
 	}
 
 	/**
-	 * 주문서에서 couponID를 가져와 검증합니다.
-	 * coupon을 적용합니다.
+	 * 주문서에서 couponID를 가져와 검증
+	 * coupon을 적용
 	 * @param orderSagaMessage
 	 */
 	@RabbitListener(queues = "nova.coupon.apply.queue")
@@ -96,7 +96,7 @@ public class CouponReceiver {
 		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_APPLY_COUPON");
-			throw e;
+			log.error("{}",e.getMessage());
 		} finally {
 			couponSender.sendToApplyCouponQueue(orderSagaMessage);
 		}
@@ -104,17 +104,19 @@ public class CouponReceiver {
 
 	private void applyCouponDiscount(OrderSagaMessage orderSagaMessage, CouponTemplate couponTemplate) {
 		if (couponTemplate.getDiscountType() == DiscountType.PERCENT) {
-			long totalAmount = orderSagaMessage.getCalculateTotalAmount();
+
+			long bookAmount = orderSagaMessage.getBookAmount();
 			long minPurchaseAmount = couponTemplate.getMinPurchaseAmount();
 
-			if (totalAmount < minPurchaseAmount) {
-				throw new IllegalArgumentException("구매금액이 쿠폰 최저 구매가보다 낮습니다.");
+			if (bookAmount < minPurchaseAmount) {
+				throw new IllegalArgumentException("도서 순수 금액이 쿠폰 최저 구매가보다 낮습니다.");
 			}
 
-			long applyAmount = calculateDiscountAmount(totalAmount, couponTemplate);
-			orderSagaMessage.setCalculateTotalAmount(totalAmount - applyAmount);
+			long applyAmount = calculateDiscountAmount(bookAmount, couponTemplate);
+			orderSagaMessage.setCalculateTotalAmount(orderSagaMessage.getCalculateTotalAmount() - applyAmount);
 
 			log.debug("쿠폰 적용가 {}", applyAmount);
+			log.debug("쿠폰 적용 후  {}", couponTemplate.getDiscountAmount());
 
 		} else if (couponTemplate.getDiscountType() == DiscountType.AMOUNT) {
 			long totalAmount = orderSagaMessage.getCalculateTotalAmount();
@@ -124,8 +126,8 @@ public class CouponReceiver {
 		}
 	}
 
-	private long calculateDiscountAmount(long totalAmount, CouponTemplate couponTemplate) {
-		long applyAmount = totalAmount * couponTemplate.getDiscountAmount() / 100;
+	private long calculateDiscountAmount(long bookAmount, CouponTemplate couponTemplate) {
+		long applyAmount = bookAmount * couponTemplate.getDiscountAmount() / 100;
 
 		if (applyAmount > couponTemplate.getMaxDiscountAmount()) {
 			log.info("쿠폰 할인 금액이 최대 할인 금액보다 높아 최대할인가로 적용합니다.");
@@ -135,6 +137,10 @@ public class CouponReceiver {
 		return applyAmount;
 	}
 
+	/**
+	 * 보상 트랜잭션 로직
+	 * @param orderSagaMessage
+	 */
 	@RabbitListener(queues = "nova.coupon.compensate.apply.queue")
 	@Transactional
 	public void compensateApplyCoupon(@Payload OrderSagaMessage orderSagaMessage) {
@@ -157,7 +163,6 @@ public class CouponReceiver {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_COMPENSATE_APPLY_COUPON");
 			couponSender.sendToCompensateApplyCouponQueue(orderSagaMessage);
-			throw e;
 		}
 	}
 
