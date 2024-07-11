@@ -21,8 +21,10 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+
   file:
     path: ${user.dir}
+
 
 #유레카 활성화
 eureka:
