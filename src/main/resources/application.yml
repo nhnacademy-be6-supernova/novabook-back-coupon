@@ -1,12 +1,7 @@
 spring:
   application:
     name: coupon
-  cloud:
-    openfeign:
-      client:
-        config:
-          store-service:
-            url: http://localhost:9777/api/v1/store
+
   profiles:
     active: dev
 
@@ -49,4 +44,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,pause,resume
