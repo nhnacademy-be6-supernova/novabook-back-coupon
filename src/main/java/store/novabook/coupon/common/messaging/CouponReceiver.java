@@ -114,6 +114,7 @@ public class CouponReceiver {
 
 			long applyAmount = calculateDiscountAmount(bookAmount, couponTemplate);
 			orderSagaMessage.setCalculateTotalAmount(orderSagaMessage.getCalculateTotalAmount() - applyAmount);
+			orderSagaMessage.setCouponAmount(applyAmount);
 
 			log.debug("쿠폰 적용가 {}", applyAmount);
 			log.debug("쿠폰 적용 후  {}", couponTemplate.getDiscountAmount());
