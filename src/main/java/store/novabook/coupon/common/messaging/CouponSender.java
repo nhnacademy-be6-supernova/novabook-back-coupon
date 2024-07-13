@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.common.messaging.dto.OrderSagaMessage;
 import store.novabook.coupon.common.messaging.dto.RegisterCouponMessage;
+import store.novabook.coupon.common.messaging.dto.RequestPayCancelMessage;
 
 /**
  * 쿠폰 메시지를 전송하는 서비스 클래스.
@@ -42,5 +43,10 @@ public class CouponSender {
 	public void sendToCompensateApplyCouponQueue(OrderSagaMessage orderSagaMessage) {
 		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.orders.saga.dead.routing.key", orderSagaMessage);
 	}
+
+	public void sendToRequestPayCancelQueue(RequestPayCancelMessage requestPayCancelMessage) {
+		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.orders.saga.dead.routing.key", requestPayCancelMessage);
+	}
+
 
 }

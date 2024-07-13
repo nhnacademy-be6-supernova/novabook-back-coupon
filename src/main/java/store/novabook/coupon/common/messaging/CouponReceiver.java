@@ -19,6 +19,7 @@ import store.novabook.coupon.common.messaging.dto.CreateCouponMessage;
 import store.novabook.coupon.common.messaging.dto.CreateCouponNotifyMessage;
 import store.novabook.coupon.common.messaging.dto.OrderSagaMessage;
 import store.novabook.coupon.common.messaging.dto.RegisterCouponMessage;
+import store.novabook.coupon.common.messaging.dto.RequestPayCancelMessage;
 import store.novabook.coupon.coupon.dto.response.CreateCouponResponse;
 import store.novabook.coupon.coupon.entity.Coupon;
 import store.novabook.coupon.coupon.entity.CouponStatus;
@@ -140,7 +141,7 @@ public class CouponReceiver {
 
 	/**
 	 * 보상 트랜잭션 로직
-	 * @param orderSagaMessage
+	 * @param orderSagaMessage couponId를 가지고 있음
 	 */
 	@RabbitListener(queues = "nova.coupon.compensate.apply.queue")
 	@Transactional
@@ -164,6 +165,20 @@ public class CouponReceiver {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_COMPENSATE_APPLY_COUPON");
 			couponSender.sendToCompensateApplyCouponQueue(orderSagaMessage);
+		}
+	}
+
+	@RabbitListener(queues = "nova.coupon.request.pay.cancel.queue")
+	public void couponChangeStatusUnUse(@Payload RequestPayCancelMessage message) {
+		try {
+			if (message.getCouponId() == null) {
+				throw new NotFoundException(ErrorCode.COUPON_NOT_FOUND);
+			}
+			couponService.updateStatus(message.getCouponId(), CouponStatus.UNUSED);
+		} catch (Exception e) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			message.setStatus("FAIL_COUPON_CHANGE_UNUSE_STATUS");
+			couponSender.sendToRequestPayCancelQueue(message);
 		}
 	}
 

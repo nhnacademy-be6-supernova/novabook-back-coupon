@@ -34,6 +34,11 @@ public class OrdersRabbitMQConfig {
 		return QueueBuilder.durable("nova.coupon.apply.queue").build();
 	}
 
+	@Bean
+	public Queue requestPayCancelQueue() {
+		return QueueBuilder.durable("nova.coupon.request.pay.cancel.queue").build();
+	}
+
 
 	/*보상 트랜잭션 큐*/
 	@Bean
@@ -72,6 +77,14 @@ public class OrdersRabbitMQConfig {
 		return BindingBuilder.bind(ordersApplyCouponQueue()).to(sagaExchange())
 			.with("coupon.apply.routing.key").noargs();
 	}
+
+
+	@Bean
+	public Binding requestPayCancelBinding() {
+		return BindingBuilder.bind(requestPayCancelQueue()).to(sagaExchange())
+			.with("coupon.request.pay.cancel.routing.key").noargs();
+	}
+
 
 	@Bean
 	public Binding deadOrdersSagaBinding() {

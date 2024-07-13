@@ -40,7 +40,7 @@ public class CategoryCouponTemplateController implements CategoryCouponTemplateC
 	 */
 	@GetMapping
 	public ResponseEntity<Page<GetCategoryCouponTemplateResponse>> getCategoryCouponTemplateAll(
-		@RequestParam(defaultValue = "true ") boolean isValid, Pageable pageable) {
+		@RequestParam(defaultValue = "true") boolean isValid, Pageable pageable) {
 		Page<GetCategoryCouponTemplateResponse> response;
 
 		if (isValid) {
