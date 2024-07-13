@@ -6,6 +6,8 @@ package store.novabook.coupon.common.security.dto.response;
  * @param membersId 회원 ID
  */
 public record GetMembersUUIDResponse(
-	String membersId
+	Long membersId,
+	String role
 ) {
 }
+
