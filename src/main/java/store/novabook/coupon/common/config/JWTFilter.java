@@ -17,7 +17,7 @@ import reactor.util.annotation.NonNull;
 import store.novabook.coupon.common.security.dto.CustomUserDetails;
 import store.novabook.coupon.common.security.dto.request.GetMembersUUIDRequest;
 import store.novabook.coupon.common.security.dto.response.GetMembersUUIDResponse;
-import store.novabook.coupon.common.security.entity.AuthMembers;
+import store.novabook.coupon.common.security.entity.AuthenticationMembers;
 import store.novabook.coupon.common.security.service.AuthMembersClient;
 
 /**
@@ -52,19 +52,18 @@ public class JWTFilter extends OncePerRequestFilter {
 		}
 
 		GetMembersUUIDRequest getMembersUUIDRequest = new GetMembersUUIDRequest(username);
-		GetMembersUUIDResponse getMembersUUIDResponse = authMembersClient.getMembersId(getMembersUUIDRequest);
+		GetMembersUUIDResponse getMembersUUIDResponse = authMembersClient.getMembersId(getMembersUUIDRequest).getBody();
+		AuthenticationMembers authenticationMembers = AuthenticationMembers.of(
+			getMembersUUIDResponse.membersId(),
+			null,
+			null,
+			getMembersUUIDResponse.role()
+		);
 
-		AuthMembers membersEntity = new AuthMembers();
-		membersEntity.setId(Long.parseLong(getMembersUUIDResponse.membersId()));
-		membersEntity.setUsername(getMembersUUIDResponse.membersId());
-		membersEntity.setPassword("temppassword");
-		membersEntity.setRole(role);
-
-		CustomUserDetails customUserDetails = new CustomUserDetails(membersEntity);
-
-		Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null,
+		CustomUserDetails customUserDetails = new CustomUserDetails(authenticationMembers);
+		Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null,
 			customUserDetails.getAuthorities());
-		SecurityContextHolder.getContext().setAuthentication(authToken);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		filterChain.doFilter(request, response);
 	}

@@ -4,6 +4,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import jakarta.validation.Valid;
+import store.novabook.coupon.common.dto.ApiResponse;
 import store.novabook.coupon.common.security.dto.request.GetMembersUUIDRequest;
 import store.novabook.coupon.common.security.dto.response.GetMembersUUIDResponse;
 
@@ -20,5 +22,5 @@ public interface AuthMembersClient {
 	 * @return 회원 UUID 응답 객체
 	 */
 	@PostMapping
-	GetMembersUUIDResponse getMembersId(@RequestBody GetMembersUUIDRequest getMembersUUIDRequest);
+	ApiResponse<GetMembersUUIDResponse> getMembersId(@Valid @RequestBody GetMembersUUIDRequest getMembersUUIDRequest);
 }
