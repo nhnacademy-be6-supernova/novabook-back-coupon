@@ -6,21 +6,21 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import store.novabook.coupon.common.security.entity.AuthMembers;
+import store.novabook.coupon.common.security.entity.AuthenticationMembers;
 
 /**
  * 사용자 인증 정보를 담은 UserDetails 구현 클래스.
  */
 public class CustomUserDetails implements UserDetails {
-	private final transient AuthMembers authMembers;
+	private final transient AuthenticationMembers authenticationMembers;
 
 	/**
 	 * CustomUserDetails 생성자.
 	 *
-	 * @param authMembers 인증된 회원 정보
+	 * @param authenticationMembers 인증된 회원 정보
 	 */
-	public CustomUserDetails(AuthMembers authMembers) {
-		this.authMembers = authMembers;
+	public CustomUserDetails(AuthenticationMembers authenticationMembers) {
+		this.authenticationMembers = authenticationMembers;
 	}
 
 	/**
@@ -31,7 +31,7 @@ public class CustomUserDetails implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> collection = new ArrayList<>();
-		collection.add((GrantedAuthority)authMembers::getRole);
+		collection.add((GrantedAuthority)authenticationMembers::getRole);
 
 		return collection;
 	}
@@ -41,8 +41,8 @@ public class CustomUserDetails implements UserDetails {
 	 *
 	 * @return 사용자 ID
 	 */
-	public long getId() {
-		return authMembers.getId();
+	public long getMembersId() {
+		return authenticationMembers.getMembersId();
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class CustomUserDetails implements UserDetails {
 	 */
 	@Override
 	public String getPassword() {
-		return authMembers.getPassword();
+		return authenticationMembers.getLoginPassword();
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class CustomUserDetails implements UserDetails {
 	 */
 	@Override
 	public String getUsername() {
-		return Long.toString(authMembers.getId());
+		return authenticationMembers.getLoginId();
 	}
 
 	/**
@@ -111,6 +111,6 @@ public class CustomUserDetails implements UserDetails {
 	 * @return 회원 정보
 	 */
 	public Object getDetails() {
-		return authMembers;
+		return authenticationMembers;
 	}
 }
