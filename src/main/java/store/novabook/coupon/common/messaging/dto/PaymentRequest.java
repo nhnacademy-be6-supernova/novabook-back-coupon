@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 public record PaymentRequest(
 	PaymentType type,
 	Long memberId,
+	String orderCode,
 	@NotNull
 	UUID orderId,
 	Object paymentInfo
