@@ -129,14 +129,14 @@ public class CouponReceiver {
 	}
 
 	private long calculateDiscountAmount(long bookAmount, CouponTemplate couponTemplate) {
-		long applyAmount = bookAmount * couponTemplate.getDiscountAmount() / 100;
+		float applyAmount = bookAmount * ((float)couponTemplate.getDiscountAmount() / 100);
 
 		if (applyAmount > couponTemplate.getMaxDiscountAmount()) {
 			log.info("쿠폰 할인 금액이 최대 할인 금액보다 높아 최대할인가로 적용합니다.");
 			applyAmount = couponTemplate.getMaxDiscountAmount();
 		}
 
-		return applyAmount;
+		return (long)applyAmount;
 	}
 
 	/**
