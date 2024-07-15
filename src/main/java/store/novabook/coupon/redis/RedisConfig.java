@@ -32,11 +32,7 @@ public class RedisConfig {
 	 */
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
-
-
 		RedisConfigDto config = KeyManagerUtil.getRedisConfig(environment);
-
-
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
 		redisStandaloneConfiguration.setHostName(config.host());
 		redisStandaloneConfiguration.setPort(config.port());
