@@ -48,7 +48,7 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(authorize -> authorize.requestMatchers("/**").permitAll())
-			.addFilterAt(new JWTFilter(authMembersClient), UsernamePasswordAuthenticationFilter.class)
+			.addFilterAt(new JWTFilter(), UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		return http.build();
