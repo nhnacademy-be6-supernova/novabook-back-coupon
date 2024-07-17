@@ -42,6 +42,7 @@ public class CouponController implements CouponControllerDocs {
 	 * @param request 유효한 쿠폰 조회 요청
 	 * @return 유효한 쿠폰의 응답
 	 */
+
 	@PostMapping("/sufficient")
 	public ResponseEntity<GetCouponAllResponse> getSufficientCouponAll(
 		@Valid @RequestBody GetCouponAllRequest request) {

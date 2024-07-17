@@ -1,8 +1,4 @@
 spring:
-  config:
-    activate:
-      #      기본 개발 프로필
-      on-profile: prod
   rabbitmq:
     listener:
       simple:
@@ -14,8 +10,6 @@ spring:
           max-attempts: 3 # 최대 재시도 횟수
           multiplier: 2.0 # 이전 interval * multiplier = 다음 interval
 
-  application:
-    name: 'coupon'
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -28,15 +22,6 @@ spring:
       validation-query: SELECT 1  # 커넥션 유효성 검사를 위한 쿼리
       default-auto-commit: true  # 기본 자동 커밋 설정
 
-  #절대 변경 금지
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-    show-sql: true
-    open-in-view: false
 
 logging:
   level:
@@ -65,15 +50,6 @@ eureka:
   instance:
     prefer-ip-address: true
 
----
-spring:
-  data:
-    redis:
-      host: 133.186.241.167
-      database: 31
-      password: \*N2vya7H@muDTwdNMR!
-      port: 6379
-
 nhn:
   cloud:
     keyManager:
@@ -83,4 +59,3 @@ nhn:
       rabbitMQKey: 5070b197613e4db6a73e9db96c54789f
       userAccessKey: J9VxQFQEsmerR1n7FeJ6
       secretAccessKey: zZEVopUHt6dxgRMt
-

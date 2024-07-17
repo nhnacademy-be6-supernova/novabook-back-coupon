@@ -12,11 +12,9 @@ import store.novabook.coupon.common.dto.ApiResponse;
 /**
  * {@code StoreAdapter} 인터페이스는 외부의 스토어 서비스와의 통신을 위한 Feign 클라이언트를 정의합니다.
  */
-@FeignClient(name = "store-service")
+@FeignClient(name = "gateway-service", path = "/api/v1/store", contextId = "storeAdapter")
 public interface StoreAdapter {
-
 	@PostMapping("/members/coupons/register")
 	ApiResponse<CreateMemberCouponResponse> registerCoupon(@RequestHeader("Authorization") String token,
-		@RequestHeader("Refresh") String refresh,
-		@RequestBody RegisterCouponRequest request);
+		@RequestHeader("Refresh") String refresh, @RequestBody RegisterCouponRequest request);
 }
