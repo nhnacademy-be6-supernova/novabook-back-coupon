@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import store.novabook.coupon.common.dto.DatabaseConfigDto;
 import store.novabook.coupon.common.dto.RabbitMQConfigDto;
 import store.novabook.coupon.common.dto.RedisConfigDto;
-import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.KeyManagerException;
 
 @Slf4j
@@ -45,13 +44,9 @@ public class KeyManagerUtil {
 
 		HttpEntity<String> entity = new HttpEntity<>(headers);
 
-		ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-			url,
-			HttpMethod.GET,
-			entity,
+		ResponseEntity<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.GET, entity,
 			new ParameterizedTypeReference<Map<String, Object>>() {
-			}
-		);
+			});
 
 		var body = getStringObjectMap(response);
 

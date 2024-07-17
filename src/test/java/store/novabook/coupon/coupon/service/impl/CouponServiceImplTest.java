@@ -68,9 +68,8 @@ class CouponServiceImplTest {
 		coupon.updateStatus(CouponStatus.USED);
 		when(couponRepository.findById(anyLong())).thenReturn(Optional.of(coupon));
 
-		BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-			couponService.updateStatusToUsed(coupon.getId());
-		});
+		BadRequestException exception = assertThrows(BadRequestException.class,
+			() -> couponService.updateStatusToUsed(coupon.getId()));
 
 		assertEquals(ErrorCode.ALREADY_USED_COUPON, exception.getErrorCode());
 	}

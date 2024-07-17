@@ -83,21 +83,18 @@ class CustomCouponRepositoryImplTest {
 	}
 
 	private void createCategoryCouponTemplate(CouponTemplate couponTemplate, Long categoryId) {
-		CategoryCouponTemplate categoryCouponTemplate = CategoryCouponTemplate.builder()
+		CategoryCouponTemplate test = CategoryCouponTemplate.builder()
 			.couponTemplate(couponTemplate)
 			.categoryId(categoryId)
 			.build();
 
-		categoryCouponTemplateRepository.save(categoryCouponTemplate);
+		categoryCouponTemplateRepository.save(test);
 	}
 
 	private void createBookCouponTemplate(CouponTemplate couponTemplate, Long bookId) {
-		BookCouponTemplate bookCouponTemplate = BookCouponTemplate.builder()
-			.couponTemplate(couponTemplate)
-			.bookId(bookId)
-			.build();
+		BookCouponTemplate test = BookCouponTemplate.builder().couponTemplate(couponTemplate).bookId(bookId).build();
 
-		bookCouponTemplateRepository.save(bookCouponTemplate);
+		bookCouponTemplateRepository.save(test);
 	}
 
 	private void createCoupon(CouponTemplate couponTemplate) {
@@ -117,7 +114,6 @@ class CustomCouponRepositoryImplTest {
 
 		List<GetCouponResponse> result = customCouponRepositoryImpl.findSufficientCoupons(request);
 
-		assertThat(result).isNotEmpty();
-		assertThat(result).hasSize(3);
+		assertThat(result).isNotEmpty().hasSize(3);
 	}
 }

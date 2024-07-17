@@ -40,15 +40,10 @@ class LimitedCouponTemplateServiceImplTest {
 
 	@Test
 	void testCreate() {
-		CreateLimitedCouponTemplateRequest request = new CreateLimitedCouponTemplateRequest(
-			100L, "Test Coupon", 1000L, DiscountType.AMOUNT, 5000L, 10000L,
-			LocalDateTime.now(), LocalDateTime.now().plusDays(30), 7
-		);
+		CreateLimitedCouponTemplateRequest request = new CreateLimitedCouponTemplateRequest(100L, "Test Coupon", 1000L,
+			DiscountType.AMOUNT, 5000L, 10000L, LocalDateTime.now(), LocalDateTime.now().plusDays(30), 7);
 
-		LimitedCouponTemplate savedTemplate = new LimitedCouponTemplate(
-			CouponTemplate.of(request),
-			request.quantity()
-		);
+		LimitedCouponTemplate savedTemplate = new LimitedCouponTemplate(CouponTemplate.of(request), request.quantity());
 		when(limitedCouponTemplateRepository.save(any(LimitedCouponTemplate.class))).thenReturn(savedTemplate);
 
 		CreateCouponTemplateResponse response = limitedCouponTemplateService.create(request);
@@ -60,10 +55,8 @@ class LimitedCouponTemplateServiceImplTest {
 	@Test
 	void testFindAll() {
 		Pageable pageable = PageRequest.of(0, 10);
-		List<LimitedCouponTemplate> templateList = List.of(
-			createMockLimitedCouponTemplate(100L),
-			createMockLimitedCouponTemplate(200L)
-		);
+		List<LimitedCouponTemplate> templateList = List.of(createMockLimitedCouponTemplate(100L),
+			createMockLimitedCouponTemplate(200L));
 		Page<LimitedCouponTemplate> templatePage = new PageImpl<>(templateList, pageable, templateList.size());
 
 		when(limitedCouponTemplateRepository.findAll(pageable)).thenReturn(templatePage);
@@ -78,17 +71,14 @@ class LimitedCouponTemplateServiceImplTest {
 	@Test
 	void testFindAllWithValid() {
 		Pageable pageable = PageRequest.of(0, 10);
-		List<LimitedCouponTemplate> templateList = List.of(
-			createMockLimitedCouponTemplate(100L),
-			createMockLimitedCouponTemplate(200L)
-		);
+		List<LimitedCouponTemplate> templateList = List.of(createMockLimitedCouponTemplate(100L),
+			createMockLimitedCouponTemplate(200L));
 		Page<LimitedCouponTemplate> templatePage = new PageImpl<>(templateList, pageable, templateList.size());
 
 		when(
 			limitedCouponTemplateRepository.findAllByCouponTemplateExpirationAtAfterAndCouponTemplateStartedAtBeforeAndQuantityGreaterThan(
 				any(LocalDateTime.class), any(LocalDateTime.class), eq(LimitedCouponTemplateServiceImpl.MIN_QUANTITY),
-				eq(pageable)
-			)).thenReturn(templatePage);
+				eq(pageable))).thenReturn(templatePage);
 
 		Page<GetLimitedCouponTemplateResponse> result = limitedCouponTemplateService.findAllWithValid(pageable);
 
@@ -97,8 +87,7 @@ class LimitedCouponTemplateServiceImplTest {
 		verify(limitedCouponTemplateRepository,
 			times(1)).findAllByCouponTemplateExpirationAtAfterAndCouponTemplateStartedAtBeforeAndQuantityGreaterThan(
 			any(LocalDateTime.class), any(LocalDateTime.class), eq(LimitedCouponTemplateServiceImpl.MIN_QUANTITY),
-			eq(pageable)
-		);
+			eq(pageable));
 	}
 
 	private LimitedCouponTemplate createMockLimitedCouponTemplate(Long quantity) {
