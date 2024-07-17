@@ -49,23 +49,14 @@ public class KeyManagerUtil {
 			url,
 			HttpMethod.GET,
 			entity,
-			new ParameterizedTypeReference<Map<String, Object>>() {
+			new ParameterizedTypeReference<>() {
 			}
 		);
 
-		var body = getStringObjectMap(response);
-
-		String result = (String)body.get("secret");
-		if (result.isEmpty()) {
-			log.error("\"secret\" key is missing in responsxcle body");
-			log.error("{}", body);
-			throw new KeyManagerException(MISSING_BODY_KEY);
-		}
-
-		return result;
+		return getStringObjectMap(response);
 	}
 
-	private static @NotNull Map<String, Object> getStringObjectMap(ResponseEntity<Map<String, Object>> response) {
+	private static String getStringObjectMap(ResponseEntity<Map<String, Object>> response) {
 		if (response.getBody() == null) {
 			throw new KeyManagerException(RESPONSE_BODY_IS_NULL);
 		}
@@ -79,13 +70,13 @@ public class KeyManagerUtil {
 		}
 
 		String result = (String)body.get("secret");
-		if (result == null || result.isEmpty()) {
-			log.error("\"secret\" key is missing or empty in response body");
+		if (result.isEmpty()) {
+			log.error("\"secret\" key is missing in responsxcle body");
 			log.error("{}", body);
-			throw new KeyManagerException(MISSING_SECRET_KEY);
+			throw new KeyManagerException(MISSING_BODY_KEY);
 		}
 
-		return body;
+		return result;
 	}
 
 	public static DatabaseConfigDto getDatabaseConfig(Environment environment) {
