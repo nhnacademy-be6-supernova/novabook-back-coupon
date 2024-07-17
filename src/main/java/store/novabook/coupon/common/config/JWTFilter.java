@@ -24,10 +24,7 @@ import store.novabook.coupon.common.security.service.AuthMembersClient;
  * JWTFilter 클래스는 요청 헤더에서 JWT 토큰을 처리하고 현재 세션에 대한 인증을 설정합니다.
  */
 @Slf4j
-@RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
-
-	private final AuthMembersClient authMembersClient;
 
 	/**
 	 * 각 요청을 필터링하고 헤더에 username과 role이 있는 경우 인증을 설정합니다.
@@ -42,22 +39,20 @@ public class JWTFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
 		@NonNull FilterChain filterChain) throws ServletException, IOException {
 
-		String username = request.getHeader("X-USER-ID");
+		String membersId = request.getHeader("X-USER-ID");
 		String role = request.getHeader("X-USER-ROLE");
 
-		if (username == null || role == null) {
-			log.error("username 또는 role이 null입니다");
+		if (membersId == null || role == null) {
+			log.error("username or role is null");
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		GetMembersUUIDRequest getMembersUUIDRequest = new GetMembersUUIDRequest(username);
-		GetMembersUUIDResponse getMembersUUIDResponse = authMembersClient.getMembersId(getMembersUUIDRequest).getBody();
 		AuthenticationMembers authenticationMembers = AuthenticationMembers.of(
-			getMembersUUIDResponse.membersId(),
+			Long.parseLong(membersId),
 			null,
 			null,
-			getMembersUUIDResponse.role()
+			role
 		);
 
 		CustomUserDetails customUserDetails = new CustomUserDetails(authenticationMembers);
