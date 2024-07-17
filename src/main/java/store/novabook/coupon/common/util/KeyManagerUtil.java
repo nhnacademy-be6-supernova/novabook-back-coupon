@@ -64,7 +64,11 @@ public class KeyManagerUtil {
 		if (response.getBody() == null) {
 			throw new KeyManagerException(RESPONSE_BODY_IS_NULL);
 		}
+
 		Object bodyObj = response.getBody().get("body");
+		if (bodyObj == null) {
+			throw new KeyManagerException(MISSING_BODY_KEY);
+		}
 
 		Map<String, Object> body;
 		try {
