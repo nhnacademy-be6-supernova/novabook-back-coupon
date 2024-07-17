@@ -9,7 +9,6 @@ import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +38,6 @@ public class OrdersRabbitMQConfig {
 		return QueueBuilder.durable("nova.coupon.request.pay.cancel.queue").build();
 	}
 
-
 	/*보상 트랜잭션 큐*/
 	@Bean
 	public Queue compensateOrdersApplyCouponQueue() {
@@ -51,8 +49,6 @@ public class OrdersRabbitMQConfig {
 	public Queue deadOrdersSagaQueue() {
 		return QueueBuilder.durable("nova.orders.saga.dead.queue").build();
 	}
-
-
 
 	// SAGA QUEUE
 	@Bean
@@ -70,35 +66,39 @@ public class OrdersRabbitMQConfig {
 		return QueueBuilder.durable("nova.api3-producer-queue").build();
 	}
 
-
 	// BINDING
 	@Bean
 	public Binding applyCouponBinding() {
-		return BindingBuilder.bind(ordersApplyCouponQueue()).to(sagaExchange())
-			.with("coupon.apply.routing.key").noargs();
+		return BindingBuilder.bind(ordersApplyCouponQueue())
+			.to(sagaExchange())
+			.with("coupon.apply.routing.key")
+			.noargs();
 	}
-
 
 	@Bean
 	public Binding requestPayCancelBinding() {
-		return BindingBuilder.bind(requestPayCancelQueue()).to(sagaExchange())
-			.with("coupon.request.pay.cancel.routing.key").noargs();
+		return BindingBuilder.bind(requestPayCancelQueue())
+			.to(sagaExchange())
+			.with("coupon.request.pay.cancel.routing.key")
+			.noargs();
 	}
-
 
 	@Bean
 	public Binding deadOrdersSagaBinding() {
-		return BindingBuilder.bind(deadOrdersSagaQueue()).to(sagaExchange())
-			.with("nova.orders.saga.dead.routing.key").noargs();
+		return BindingBuilder.bind(deadOrdersSagaQueue())
+			.to(sagaExchange())
+			.with("nova.orders.saga.dead.routing.key")
+			.noargs();
 	}
 	// dead queue
 
 	@Bean
 	public Binding compensateApplyCouponBinding() {
-		return BindingBuilder.bind(compensateOrdersApplyCouponQueue()).to(sagaExchange())
-			.with("compensate.coupon.apply.routing.key").noargs();
+		return BindingBuilder.bind(compensateOrdersApplyCouponQueue())
+			.to(sagaExchange())
+			.with("compensate.coupon.apply.routing.key")
+			.noargs();
 	}
-
 
 	@Bean
 	public RabbitTemplate ordersRabbitTemplate(ConnectionFactory connectionFactory) {
@@ -108,7 +108,7 @@ public class OrdersRabbitMQConfig {
 	}
 
 	@Bean
-	public RabbitListenerContainerFactory<?> rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
 		factory.setMessageConverter(converter());
@@ -118,17 +118,26 @@ public class OrdersRabbitMQConfig {
 	// SAGA BINDING
 	@Bean
 	public Binding api1ProducerBinding() {
-		return BindingBuilder.bind(api1ProducerQueue()).to(sagaExchange()).with("nova.api1-producer-routing-key").noargs();
+		return BindingBuilder.bind(api1ProducerQueue())
+			.to(sagaExchange())
+			.with("nova.api1-producer-routing-key")
+			.noargs();
 	}
 
 	@Bean
 	public Binding api2ProducerBinding() {
-		return BindingBuilder.bind(api2ProducerQueue()).to(sagaExchange()).with("nova.api2-producer-routing-key").noargs();
+		return BindingBuilder.bind(api2ProducerQueue())
+			.to(sagaExchange())
+			.with("nova.api2-producer-routing-key")
+			.noargs();
 	}
 
 	@Bean
 	public Binding api3ProducerBinding() {
-		return BindingBuilder.bind(api3ProducerQueue()).to(sagaExchange()).with("nova.api3-producer-routing-key").noargs();
+		return BindingBuilder.bind(api3ProducerQueue())
+			.to(sagaExchange())
+			.with("nova.api3-producer-routing-key")
+			.noargs();
 	}
 
 }

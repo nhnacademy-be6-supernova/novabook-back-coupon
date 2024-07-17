@@ -16,6 +16,7 @@ import store.novabook.coupon.common.messaging.dto.RequestPayCancelMessage;
 @RequiredArgsConstructor
 public class CouponSender {
 
+	public static final String NOVA_ORDERS_SAGA_EXCHANGE = "nova.orders.saga.exchange";
 	private final RabbitTemplate rabbitTemplate;
 
 	@Value("${rabbitmq.exchange.couponOperation}")
@@ -37,16 +38,16 @@ public class CouponSender {
 	}
 
 	public void sendToApplyCouponQueue(OrderSagaMessage orderSagaMessage) {
-		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.api2-producer-routing-key", orderSagaMessage);
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.api2-producer-routing-key", orderSagaMessage);
 	}
 
 	public void sendToCompensateApplyCouponQueue(OrderSagaMessage orderSagaMessage) {
-		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.orders.saga.dead.routing.key", orderSagaMessage);
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key", orderSagaMessage);
 	}
 
 	public void sendToRequestPayCancelQueue(RequestPayCancelMessage requestPayCancelMessage) {
-		rabbitTemplate.convertAndSend("nova.orders.saga.exchange", "nova.orders.saga.dead.routing.key", requestPayCancelMessage);
+		rabbitTemplate.convertAndSend(NOVA_ORDERS_SAGA_EXCHANGE, "nova.orders.saga.dead.routing.key",
+			requestPayCancelMessage);
 	}
-
 
 }

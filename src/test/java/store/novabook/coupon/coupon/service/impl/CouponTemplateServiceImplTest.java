@@ -41,10 +41,9 @@ class CouponTemplateServiceImplTest {
 	void testFindByTypeAndValid_Valid() {
 		CouponType type = CouponType.GENERAL;
 		Pageable pageable = PageRequest.of(0, 10);
-		LocalDateTime now = LocalDateTime.now();
 
-		List<CouponTemplate> templateList = List.of(createMockCouponTemplate(1L, type),
-			createMockCouponTemplate(2L, type));
+		List<CouponTemplate> templateList = List.of(createMockCouponTemplate(type),
+			createMockCouponTemplate(type));
 		Page<CouponTemplate> templatePage = new PageImpl<>(templateList, pageable, templateList.size());
 
 		when(couponTemplateRepository.findAllByTypeAndStartedAtBeforeAndExpirationAtAfter(eq(type),
@@ -63,24 +62,24 @@ class CouponTemplateServiceImplTest {
 		CouponType type = CouponType.GENERAL;
 		Pageable pageable = PageRequest.of(0, 10);
 
-		List<CouponTemplate> templateList = List.of(createMockCouponTemplate(1L, type),
-			createMockCouponTemplate(2L, type));
+		List<CouponTemplate> templateList = List.of(createMockCouponTemplate(type),
+			createMockCouponTemplate(type));
 		Page<CouponTemplate> templatePage = new PageImpl<>(templateList, pageable, templateList.size());
 
-		when(couponTemplateRepository.findAllByType(eq(type), eq(pageable))).thenReturn(templatePage);
+		when(couponTemplateRepository.findAllByType(type, pageable)).thenReturn(templatePage);
 
 		Page<GetCouponTemplateResponse> result = couponTemplateService.findByTypeAndValid(type, false, pageable);
 
 		assertNotNull(result);
 		assertEquals(2, result.getContent().size());
-		verify(couponTemplateRepository, times(1)).findAllByType(eq(type), eq(pageable));
+		verify(couponTemplateRepository, times(1)).findAllByType(type, pageable);
 	}
 
 	@Test
 	void testFindAll() {
 		Pageable pageable = PageRequest.of(0, 10);
-		List<CouponTemplate> templateList = List.of(createMockCouponTemplate(1L, CouponType.GENERAL),
-			createMockCouponTemplate(2L, CouponType.BIRTHDAY));
+		List<CouponTemplate> templateList = List.of(createMockCouponTemplate(CouponType.GENERAL),
+			createMockCouponTemplate(CouponType.BIRTHDAY));
 		Page<CouponTemplate> templatePage = new PageImpl<>(templateList, pageable, templateList.size());
 
 		when(couponTemplateRepository.findAll(pageable)).thenReturn(templatePage);
@@ -101,7 +100,7 @@ class CouponTemplateServiceImplTest {
 		verify(couponTemplateRepository, never()).save(any(CouponTemplate.class));
 	}
 
-	private CouponTemplate createMockCouponTemplate(Long id, CouponType type) {
+	private CouponTemplate createMockCouponTemplate(CouponType type) {
 		return CouponTemplate.builder()
 			.name("Test Coupon")
 			.type(type)

@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import store.novabook.coupon.common.dto.DatabaseConfigDto;
 import store.novabook.coupon.common.dto.RabbitMQConfigDto;
 import store.novabook.coupon.common.dto.RedisConfigDto;
-import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.KeyManagerException;
 
 @Slf4j
@@ -45,29 +44,11 @@ public class KeyManagerUtil {
 
 		HttpEntity<String> entity = new HttpEntity<>(headers);
 
-		ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-			url,
-			HttpMethod.GET,
-			entity,
-			new ParameterizedTypeReference<>() {
-			}
-		);
+		ResponseEntity<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.GET, entity,
+			new ParameterizedTypeReference<Map<String, Object>>() {
+			});
 
-		return getStringObjectMap(response);
-	}
-
-	private static String getStringObjectMap(ResponseEntity<Map<String, Object>> response) {
-		if (response.getBody() == null) {
-			throw new KeyManagerException(RESPONSE_BODY_IS_NULL);
-		}
-		Object bodyObj = response.getBody().get("body");
-
-		Map<String, Object> body;
-		try {
-			body = TypeUtil.castMap(bodyObj, String.class, Object.class);
-		} catch (ClassCastException e) {
-			throw new KeyManagerException(MISSING_BODY_KEY);
-		}
+		var body = getStringObjectMap(response);
 
 		String result = (String)body.get("secret");
 		if (result.isEmpty()) {
@@ -77,6 +58,33 @@ public class KeyManagerUtil {
 		}
 
 		return result;
+	}
+
+	private static @NotNull Map<String, Object> getStringObjectMap(ResponseEntity<Map<String, Object>> response) {
+		if (response.getBody() == null) {
+			throw new KeyManagerException(RESPONSE_BODY_IS_NULL);
+		}
+
+		Object bodyObj = response.getBody().get("body");
+		if (bodyObj == null) {
+			throw new KeyManagerException(MISSING_BODY_KEY);
+		}
+
+		Map<String, Object> body;
+		try {
+			body = TypeUtil.castMap(bodyObj, String.class, Object.class);
+		} catch (ClassCastException e) {
+			throw new KeyManagerException(MISSING_BODY_KEY);
+		}
+
+		String result = (String)body.get("secret");
+		if (result == null || result.isEmpty()) {
+			log.error("\"secret\" key is missing or empty in response body");
+			log.error("{}", body);
+			throw new KeyManagerException(MISSING_SECRET_KEY);
+		}
+
+		return body;
 	}
 
 	public static DatabaseConfigDto getDatabaseConfig(Environment environment) {

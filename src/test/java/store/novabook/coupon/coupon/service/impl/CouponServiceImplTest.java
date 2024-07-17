@@ -52,7 +52,7 @@ class CouponServiceImplTest {
 	@Test
 	@DisplayName("쿠폰 상태 업데이트 - 사용")
 	void updateStatusToUsed() {
-		Coupon coupon = createMockCoupon(1L);
+		Coupon coupon = createMockCoupon();
 		when(couponRepository.findById(anyLong())).thenReturn(Optional.of(coupon));
 
 		couponService.updateStatusToUsed(coupon.getId());
@@ -64,13 +64,12 @@ class CouponServiceImplTest {
 	@Test
 	@DisplayName("이미 사용된 쿠폰 상태 업데이트")
 	void updateStatusToUsed_AlreadyUsed() {
-		Coupon coupon = createMockCoupon(1L);
+		Coupon coupon = createMockCoupon();
 		coupon.updateStatus(CouponStatus.USED);
 		when(couponRepository.findById(anyLong())).thenReturn(Optional.of(coupon));
 
-		BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-			couponService.updateStatusToUsed(coupon.getId());
-		});
+		BadRequestException exception = assertThrows(BadRequestException.class,
+			() -> couponService.updateStatusToUsed(coupon.getId()));
 
 		assertEquals(ErrorCode.ALREADY_USED_COUPON, exception.getErrorCode());
 	}
@@ -78,7 +77,7 @@ class CouponServiceImplTest {
 	@Test
 	@DisplayName("쿠폰 상태 업데이트")
 	void updateStatus() {
-		Coupon coupon = createMockCoupon(1L);
+		Coupon coupon = createMockCoupon();
 		when(couponRepository.findById(anyLong())).thenReturn(Optional.of(coupon));
 
 		couponService.updateStatus(coupon.getId(), CouponStatus.USED);
@@ -91,7 +90,7 @@ class CouponServiceImplTest {
 	@DisplayName("유효한 모든 쿠폰 조회")
 	void findAllValidById() {
 		List<Long> couponIdList = List.of(1L);
-		Coupon coupon = createMockCoupon(1L);
+		Coupon coupon = createMockCoupon();
 		when(couponRepository.findAllByIdInAndStatusAndExpirationAtAfter(any(), any(), any())).thenReturn(
 			List.of(coupon));
 
@@ -118,7 +117,7 @@ class CouponServiceImplTest {
 		CreateCouponMessage message = createMockCreateCouponMessage();
 		CouponTemplate couponTemplate = createMockCouponTemplate();
 		when(couponTemplateRepository.findById(message.couponTemplateId())).thenReturn(Optional.of(couponTemplate));
-		Coupon savedCoupon = createMockCoupon(1L);
+		Coupon savedCoupon = createMockCoupon();
 		when(couponRepository.save(any(Coupon.class))).thenReturn(savedCoupon);
 
 		CreateCouponResponse response = couponService.createByMessage(message);
@@ -128,7 +127,7 @@ class CouponServiceImplTest {
 		verify(couponRepository, times(1)).save(any(Coupon.class));
 	}
 
-	private Coupon createMockCoupon(Long id) {
+	private Coupon createMockCoupon() {
 		CouponTemplate couponTemplate = CouponTemplate.builder()
 			.name("Sample Coupon")
 			.type(CouponType.GENERAL)
@@ -147,7 +146,7 @@ class CouponServiceImplTest {
 			.expirationAt(LocalDateTime.now().plusDays(10))
 			.build());
 
-		doReturn(id).when(coupon).getId();
+		doReturn(1L).when(coupon).getId();
 
 		return coupon;
 	}

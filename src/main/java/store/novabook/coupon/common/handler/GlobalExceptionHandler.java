@@ -17,6 +17,7 @@ import store.novabook.coupon.common.dto.ErrorResponse;
 import store.novabook.coupon.common.dto.ValidErrorResponse;
 import store.novabook.coupon.common.exception.ErrorCode;
 import store.novabook.coupon.common.exception.ForbiddenException;
+import store.novabook.coupon.common.exception.InternalServerException;
 import store.novabook.coupon.common.exception.NotFoundException;
 import store.novabook.coupon.common.exception.NovaException;
 
@@ -79,6 +80,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		log.error("handleForbiddenException - Exception: {} | Location: {} | URI: {}", exception.getMessage(),
 			getLocation(exception), request.getRequestURI(), exception);
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.from(exception));
+	}
+
+	@ExceptionHandler(InternalServerException.class)
+	public ResponseEntity<ErrorResponse> handleInternalServerException(InternalServerException exception,
+		HttpServletRequest request) {
+		exception.printStackTrace();
+		log.error("handleInternalServerException - Exception: {} | Location: {} | URI: {}", exception.getMessage(),
+			getLocation(exception), request.getRequestURI(), exception);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse.from(exception));
 	}
 
 	/**
