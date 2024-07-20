@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.web.client.RestTemplate;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.common.dto.RabbitMQConfigDto;
@@ -68,14 +69,14 @@ public class RabbitMQConfig {
 
 	@Bean
 	public ConnectionFactory connectionFactory() {
-		RabbitMQConfigDto config = KeyManagerUtil.getRabbitMQConfig(env);
+		RestTemplate restTemplate = new RestTemplate();
+		RabbitMQConfigDto config = KeyManagerUtil.getRabbitMQConfig(env, restTemplate);
 		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(config.host());
 		connectionFactory.setPort(config.port());
 		connectionFactory.setUsername(config.username());
 		connectionFactory.setPassword(config.password());
 		return connectionFactory;
 	}
-
 
 	/**
 	 * couponOperationExchange 빈을 생성합니다.
