@@ -3,6 +3,7 @@ package store.novabook.coupon.common.util;
 import static store.novabook.coupon.common.exception.ErrorCode.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.ParameterizedTypeReference;
@@ -29,15 +30,14 @@ public class KeyManagerUtil {
 	private KeyManagerUtil() {
 	}
 
-	private static String getDataSource(Environment environment, String keyid) {
+	private static String getDataSource(Environment environment, String keyid, RestTemplate restTemplate) {
 
 		String appkey = environment.getProperty("nhn.cloud.keyManager.appkey");
 		String userId = environment.getProperty("nhn.cloud.keyManager.userAccessKey");
 		String secretKey = environment.getProperty("nhn.cloud.keyManager.secretAccessKey");
 
-		RestTemplate restTemplate = new RestTemplate();
 		String baseUrl = "https://api-keymanager.nhncloudservice.com/keymanager/v1.2/appkey/{appkey}/secrets/{keyid}";
-		String url = baseUrl.replace("{appkey}", appkey).replace("{keyid}", keyid);
+		String url = baseUrl.replace("{appkey}", Objects.requireNonNull(appkey)).replace("{keyid}", keyid);
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("X-TC-AUTHENTICATION-ID", userId);
 		headers.set("X-TC-AUTHENTICATION-SECRET", secretKey);
@@ -45,22 +45,13 @@ public class KeyManagerUtil {
 		HttpEntity<String> entity = new HttpEntity<>(headers);
 
 		ResponseEntity<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.GET, entity,
-			new ParameterizedTypeReference<Map<String, Object>>() {
+			new ParameterizedTypeReference<>() {
 			});
 
-		var body = getStringObjectMap(response);
-
-		String result = (String)body.get("secret");
-		if (result.isEmpty()) {
-			log.error("\"secret\" key is missing in responsxcle body");
-			log.error("{}", body);
-			throw new KeyManagerException(MISSING_BODY_KEY);
-		}
-
-		return result;
+		return getStringObjectMap(response);
 	}
 
-	private static @NotNull Map<String, Object> getStringObjectMap(ResponseEntity<Map<String, Object>> response) {
+	private static String getStringObjectMap(ResponseEntity<Map<String, Object>> response) {
 		if (response.getBody() == null) {
 			throw new KeyManagerException(RESPONSE_BODY_IS_NULL);
 		}
@@ -84,24 +75,24 @@ public class KeyManagerUtil {
 			throw new KeyManagerException(MISSING_SECRET_KEY);
 		}
 
-		return body;
+		return result;
 	}
 
-	public static DatabaseConfigDto getDatabaseConfig(Environment environment) {
+	public static DatabaseConfigDto getDatabaseConfig(Environment environment, RestTemplate restTemplate) {
 		// JSON 문자열을 DTO로 변환
 		try {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.couponKey");
-			return objectMapper.readValue(getDataSource(environment, keyid), DatabaseConfigDto.class);
+			return objectMapper.readValue(getDataSource(environment, keyid, restTemplate), DatabaseConfigDto.class);
 		} catch (JsonProcessingException e) {
 			log.error("DatabaseConfig{}", FAILED_CONVERSION.getMessage());
 			throw new KeyManagerException(FAILED_CONVERSION);
 		}
 	}
 
-	public static RedisConfigDto getRedisConfig(Environment environment) {
+	public static RedisConfigDto getRedisConfig(Environment environment,  RestTemplate restTemplate) {
 		try {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.redisKey");
-			return objectMapper.readValue(getDataSource(environment, keyid), RedisConfigDto.class);
+			return objectMapper.readValue(getDataSource(environment, keyid, restTemplate), RedisConfigDto.class);
 		} catch (JsonProcessingException e) {
 			//오류처리
 			log.error("RedisConfig{}", FAILED_CONVERSION.getMessage());
@@ -109,10 +100,10 @@ public class KeyManagerUtil {
 		}
 	}
 
-	public static RabbitMQConfigDto getRabbitMQConfig(Environment environment) {
+	public static RabbitMQConfigDto getRabbitMQConfig(Environment environment,  RestTemplate restTemplate) {
 		try {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.rabbitMQKey");
-			return objectMapper.readValue(getDataSource(environment, keyid), RabbitMQConfigDto.class);
+			return objectMapper.readValue(getDataSource(environment, keyid, restTemplate), RabbitMQConfigDto.class);
 		} catch (JsonProcessingException e) {
 			//오류처리
 			log.error("RabbitMQConfig{}", FAILED_CONVERSION.getMessage());
