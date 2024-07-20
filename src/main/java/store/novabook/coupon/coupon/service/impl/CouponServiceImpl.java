@@ -84,7 +84,7 @@ public class CouponServiceImpl implements CouponService {
 		checkQuantity(couponTemplate);
 
 		Coupon coupon = Coupon.of(couponTemplate, CouponStatus.UNUSED,
-			couponTemplate.getStartedAt().plusHours(couponTemplate.getUsePeriod()));
+			LocalDateTime.now().plusHours(couponTemplate.getUsePeriod()));
 		Coupon saved = couponRepository.save(coupon);
 		return CreateCouponResponse.fromEntity(saved);
 	}
@@ -171,13 +171,12 @@ public class CouponServiceImpl implements CouponService {
 	@Override
 	public Coupon findById(Long id) {
 		Optional<Coupon> optionalCoupon = couponRepository.findById(id);
-		if(optionalCoupon.isEmpty()) {
+		if (optionalCoupon.isEmpty()) {
 			throw new NotFoundException(ErrorCode.COUPON_NOT_FOUND);
 		}
 
 		return optionalCoupon.get();
 	}
-
 
 	private void checkQuantity(CouponTemplate couponTemplate) {
 		if (couponTemplate.getType().equals(CouponType.LIMITED)) {
