@@ -11,14 +11,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.util.annotation.NonNull;
 import store.novabook.coupon.common.security.dto.CustomUserDetails;
-import store.novabook.coupon.common.security.dto.request.GetMembersUUIDRequest;
-import store.novabook.coupon.common.security.dto.response.GetMembersUUIDResponse;
 import store.novabook.coupon.common.security.entity.AuthenticationMembers;
-import store.novabook.coupon.common.security.service.AuthMembersClient;
 
 /**
  * JWTFilter 클래스는 요청 헤더에서 JWT 토큰을 처리하고 현재 세션에 대한 인증을 설정합니다.

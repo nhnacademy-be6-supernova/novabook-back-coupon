@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import store.novabook.coupon.coupon.controller.docs.LimitedCouponTemplateControllerDocs;
 import store.novabook.coupon.coupon.dto.request.CreateLimitedCouponTemplateRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponTemplateResponse;
 import store.novabook.coupon.coupon.dto.response.GetLimitedCouponTemplateResponse;
@@ -24,7 +25,7 @@ import store.novabook.coupon.coupon.service.LimitedCouponTemplateService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/coupon/templates/limited")
-public class LimitedCouponTemplateController {
+public class LimitedCouponTemplateController implements LimitedCouponTemplateControllerDocs {
 
 	private final LimitedCouponTemplateService limitedCouponTemplateService;
 

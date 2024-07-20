@@ -14,59 +14,107 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Orders 서비스에 대한 RabbitMQ 설정 클래스입니다.
+ */
 @Configuration
 public class OrdersRabbitMQConfig {
 
+	/**
+	 * 사가(Saga)를 위한 direct exchange를 생성합니다.
+	 *
+	 * @return 생성된 exchange
+	 */
 	@Bean
 	public Exchange sagaExchange() {
 		return ExchangeBuilder.directExchange("nova.orders.saga.exchange").build();
 	}
 
+	/**
+	 * Jackson2JsonMessageConverter를 사용하는 메시지 컨버터를 생성합니다.
+	 *
+	 * @return 메시지 컨버터
+	 */
 	@Bean
 	public MessageConverter converter() {
 		return new Jackson2JsonMessageConverter();
 	}
 
-	// QUEUES
+	/**
+	 * 쿠폰 적용을 위한 큐를 생성합니다.
+	 *
+	 * @return 생성된 큐
+	 */
 	@Bean
 	public Queue ordersApplyCouponQueue() {
 		return QueueBuilder.durable("nova.coupon.apply.queue").build();
 	}
 
+	/**
+	 * 결제 취소 요청을 위한 큐를 생성합니다.
+	 *
+	 * @return 생성된 큐
+	 */
 	@Bean
 	public Queue requestPayCancelQueue() {
 		return QueueBuilder.durable("nova.coupon.request.pay.cancel.queue").build();
 	}
 
-	/*보상 트랜잭션 큐*/
+	/**
+	 * 적용된 쿠폰 보상을 위한 큐를 생성합니다.
+	 *
+	 * @return 생성된 큐
+	 */
 	@Bean
 	public Queue compensateOrdersApplyCouponQueue() {
 		return QueueBuilder.durable("nova.coupon.compensate.apply.queue").build();
 	}
 
-	// Dead queue
+	/**
+	 * 주문 사가의 데드 레터 큐를 생성합니다.
+	 *
+	 * @return 생성된 큐
+	 */
 	@Bean
 	public Queue deadOrdersSagaQueue() {
 		return QueueBuilder.durable("nova.orders.saga.dead.queue").build();
 	}
 
-	// SAGA QUEUE
+	/**
+	 * API1을 위한 프로듀서 큐를 생성합니다.
+	 *
+	 * @return 생성된 큐
+	 */
 	@Bean
 	public Queue api1ProducerQueue() {
 		return QueueBuilder.durable("nova.api1-producer-queue").build();
 	}
 
+	/**
+	 * API2를 위한 프로듀서 큐를 생성합니다.
+	 *
+	 * @return 생성된 큐
+	 */
 	@Bean
 	public Queue api2ProducerQueue() {
 		return QueueBuilder.durable("nova.api2-producer-queue").build();
 	}
 
+	/**
+	 * API3을 위한 프로듀서 큐를 생성합니다.
+	 *
+	 * @return 생성된 큐
+	 */
 	@Bean
 	public Queue api3ProducerQueue() {
 		return QueueBuilder.durable("nova.api3-producer-queue").build();
 	}
 
-	// BINDING
+	/**
+	 * 주문 쿠폰 적용 큐를 사가 익스체인지에 라우팅 키로 바인딩합니다.
+	 *
+	 * @return 바인딩
+	 */
 	@Bean
 	public Binding applyCouponBinding() {
 		return BindingBuilder.bind(ordersApplyCouponQueue())
@@ -75,6 +123,11 @@ public class OrdersRabbitMQConfig {
 			.noargs();
 	}
 
+	/**
+	 * 결제 취소 요청 큐를 사가 익스체인지에 라우팅 키로 바인딩합니다.
+	 *
+	 * @return 바인딩
+	 */
 	@Bean
 	public Binding requestPayCancelBinding() {
 		return BindingBuilder.bind(requestPayCancelQueue())
@@ -83,6 +136,11 @@ public class OrdersRabbitMQConfig {
 			.noargs();
 	}
 
+	/**
+	 * 주문 사가 데드 레터 큐를 사가 익스체인지에 라우팅 키로 바인딩합니다.
+	 *
+	 * @return 바인딩
+	 */
 	@Bean
 	public Binding deadOrdersSagaBinding() {
 		return BindingBuilder.bind(deadOrdersSagaQueue())
@@ -90,8 +148,12 @@ public class OrdersRabbitMQConfig {
 			.with("nova.orders.saga.dead.routing.key")
 			.noargs();
 	}
-	// dead queue
 
+	/**
+	 * 쿠폰 적용 보상 큐를 사가 익스체인지에 라우팅 키로 바인딩합니다.
+	 *
+	 * @return 바인딩
+	 */
 	@Bean
 	public Binding compensateApplyCouponBinding() {
 		return BindingBuilder.bind(compensateOrdersApplyCouponQueue())
@@ -100,6 +162,12 @@ public class OrdersRabbitMQConfig {
 			.noargs();
 	}
 
+	/**
+	 * 주문을 위한 RabbitTemplate을 생성하고, 커스텀 메시지 컨버터를 설정합니다.
+	 *
+	 * @param connectionFactory 연결 팩토리
+	 * @return 생성된 RabbitTemplate
+	 */
 	@Bean
 	public RabbitTemplate ordersRabbitTemplate(ConnectionFactory connectionFactory) {
 		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
@@ -107,6 +175,12 @@ public class OrdersRabbitMQConfig {
 		return rabbitTemplate;
 	}
 
+	/**
+	 * RabbitListenerContainerFactory를 생성하고, 커스텀 메시지 컨버터를 설정합니다.
+	 *
+	 * @param connectionFactory 연결 팩토리
+	 * @return 생성된 SimpleRabbitListenerContainerFactory
+	 */
 	@Bean
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
@@ -115,7 +189,11 @@ public class OrdersRabbitMQConfig {
 		return factory;
 	}
 
-	// SAGA BINDING
+	/**
+	 * API1 프로듀서 큐를 사가 익스체인지에 라우팅 키로 바인딩합니다.
+	 *
+	 * @return 바인딩
+	 */
 	@Bean
 	public Binding api1ProducerBinding() {
 		return BindingBuilder.bind(api1ProducerQueue())
@@ -124,6 +202,11 @@ public class OrdersRabbitMQConfig {
 			.noargs();
 	}
 
+	/**
+	 * API2 프로듀서 큐를 사가 익스체인지에 라우팅 키로 바인딩합니다.
+	 *
+	 * @return 바인딩
+	 */
 	@Bean
 	public Binding api2ProducerBinding() {
 		return BindingBuilder.bind(api2ProducerQueue())
@@ -132,6 +215,11 @@ public class OrdersRabbitMQConfig {
 			.noargs();
 	}
 
+	/**
+	 * API3 프로듀서 큐를 사가 익스체인지에 라우팅 키로 바인딩합니다.
+	 *
+	 * @return 바인딩
+	 */
 	@Bean
 	public Binding api3ProducerBinding() {
 		return BindingBuilder.bind(api3ProducerQueue())
@@ -139,5 +227,4 @@ public class OrdersRabbitMQConfig {
 			.with("nova.api3-producer-routing-key")
 			.noargs();
 	}
-
 }
