@@ -13,6 +13,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+/**
+ * 로그 이벤트를 HTTP 엔드포인트로 전송하는 Logback appender 클래스입니다.
+ */
 @Setter
 public class HttpAppender extends AppenderBase<ILoggingEvent> {
 
@@ -31,7 +34,11 @@ public class HttpAppender extends AppenderBase<ILoggingEvent> {
 	private String logLevel;
 	private String platform;
 
-
+	/**
+	 * 로그 이벤트를 HTTP 엔드포인트로 전송합니다.
+	 *
+	 * @param eventObject 로그 이벤트 객체
+	 */
 	@Override
 	protected void append(ILoggingEvent eventObject) {
 		Response response = null;

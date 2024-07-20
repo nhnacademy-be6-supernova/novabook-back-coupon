@@ -28,7 +28,7 @@ import store.novabook.coupon.coupon.entity.DiscountType;
 import store.novabook.coupon.coupon.service.CouponService;
 
 /**
- * 쿠폰 메시지를 수신하고 처리하는 서비스 클래스.
+ * 쿠폰 메시지를 수신하고 처리하는 서비스 클래스입니다.
  */
 @Slf4j
 @Service
@@ -43,10 +43,17 @@ public class CouponReceiver {
 	private final StoreAdapter storeAdapter;
 	private final RedisTemplate<String, String> redisTemplate;
 
-	// 선착순 쿠폰
+	/**
+	 * 선착순 쿠폰 생성 메시지를 수신하여 처리합니다.
+	 *
+	 * @param message 쿠폰 생성 알림 메시지
+	 * @param token   인증 토큰
+	 * @param refresh 갱신 토큰
+	 */
 	@RabbitListener(queues = "${rabbitmq.queue.couponCreateHighTraffic}")
 	public void receiveCreateCouponHighTrafficMessage(@Payload CreateCouponNotifyMessage message,
-		@Header("Authorization") String token, @Header("Refresh") String refresh) {
+		@Header("Authorization") String token,
+		@Header("Refresh") String refresh) {
 		try {
 			CreateCouponResponse response = couponService.createByMessage(CreateCouponMessage.fromEntity(message));
 			storeAdapter.registerCoupon(token, refresh,
@@ -58,7 +65,11 @@ public class CouponReceiver {
 		couponNotifier.notify(String.valueOf(message.uuid()), SUCCESS_MESSAGE);
 	}
 
-	// 웰컴쿠폰 ( 토큰이 없음_
+	/**
+	 * 웰컴 쿠폰 생성 메시지를 수신하여 처리합니다.
+	 *
+	 * @param message 쿠폰 생성 메시지
+	 */
 	@RabbitListener(queues = "${rabbitmq.queue.couponCreateNormal}")
 	public void receiveCreateCouponNormalMessage(CreateCouponMessage message) {
 		CreateCouponResponse response = couponService.createByMessage(message);
@@ -67,9 +78,9 @@ public class CouponReceiver {
 	}
 
 	/**
-	 * 주문서에서 couponID를 가져와 검증
-	 * coupon을 적용
-	 * @param orderSagaMessage
+	 * 주문서에서 쿠폰 ID를 가져와 검증하고 쿠폰을 적용합니다.
+	 *
+	 * @param orderSagaMessage 주문 사가 메시지
 	 */
 	@RabbitListener(queues = "nova.coupon.apply.queue")
 	@Transactional
@@ -80,7 +91,7 @@ public class CouponReceiver {
 			String field = "couponId";
 
 			HashOperations<String, Object, Object> hashOperation = redisTemplate.opsForHash();
-			String stringCouponId = (String) hashOperation.get(key, field);
+			String stringCouponId = (String)hashOperation.get(key, field);
 
 			if (stringCouponId == null) {
 				throw new NotFoundException(ErrorCode.COUPON_NOT_FOUND);
@@ -97,7 +108,7 @@ public class CouponReceiver {
 		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_APPLY_COUPON");
-			log.error("{}",e.getMessage());
+			log.error("{}", e.getMessage());
 		} finally {
 			couponSender.sendToApplyCouponQueue(orderSagaMessage);
 		}
@@ -140,8 +151,9 @@ public class CouponReceiver {
 	}
 
 	/**
-	 * 보상 트랜잭션 로직
-	 * @param orderSagaMessage couponId를 가지고 있음
+	 * 보상 트랜잭션 로직을 처리합니다.
+	 *
+	 * @param orderSagaMessage 주문 사가 메시지
 	 */
 	@RabbitListener(queues = "nova.coupon.compensate.apply.queue")
 	@Transactional
@@ -168,6 +180,11 @@ public class CouponReceiver {
 		}
 	}
 
+	/**
+	 * 결제 취소 요청 메시지를 수신하여 쿠폰 상태를 미사용으로 변경합니다.
+	 *
+	 * @param message 결제 취소 요청 메시지
+	 */
 	@RabbitListener(queues = "nova.coupon.request.pay.cancel.queue")
 	public void couponChangeStatusUnUse(@Payload RequestPayCancelMessage message) {
 		try {
