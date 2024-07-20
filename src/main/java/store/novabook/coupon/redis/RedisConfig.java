@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.web.client.RestTemplate;
 
 import lombok.RequiredArgsConstructor;
 import store.novabook.coupon.common.dto.RedisConfigDto;
@@ -32,7 +33,8 @@ public class RedisConfig {
 	 */
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
-		RedisConfigDto config = KeyManagerUtil.getRedisConfig(environment);
+		RestTemplate restTemplate = new RestTemplate();
+		RedisConfigDto config = KeyManagerUtil.getRedisConfig(environment, restTemplate);
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
 		redisStandaloneConfiguration.setHostName(config.host());
 		redisStandaloneConfiguration.setPort(config.port());
