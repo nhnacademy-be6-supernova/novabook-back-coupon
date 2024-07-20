@@ -10,7 +10,7 @@ import store.novabook.coupon.common.security.dto.request.GetMembersUUIDRequest;
 import store.novabook.coupon.common.security.dto.response.GetMembersUUIDResponse;
 
 /**
- * 인증된 회원의 UUID를 가져오는 클라이언트 인터페이스.
+ * 인증된 회원의 UUID를 가져오는 클라이언트 인터페이스입니다.
  */
 @FeignClient(name = "authMemberClient", url = "http://localhost:9777/auth/members/uuid")
 public interface AuthMembersClient {

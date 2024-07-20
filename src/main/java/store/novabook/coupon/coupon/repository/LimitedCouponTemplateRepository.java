@@ -1,7 +1,6 @@
 package store.novabook.coupon.coupon.repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +19,6 @@ public interface LimitedCouponTemplateRepository extends JpaRepository<LimitedCo
 	Page<LimitedCouponTemplate> findAllByCouponTemplateExpirationAtAfterAndCouponTemplateStartedAtBeforeAndQuantityGreaterThan(
 		@NotNull LocalDateTime expirationAt, @NotNull LocalDateTime startedAt, @NotNull Long quantity,
 		Pageable pageable);
-
-	List<LimitedCouponTemplate> findAllByCouponTemplateId(Long couponTemplateId);
 
 	@NonNull
 	@EntityGraph(attributePaths = {"couponTemplate"})

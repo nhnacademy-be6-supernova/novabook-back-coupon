@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 로그 이벤트 정보를 담는 클래스입니다.
+ */
 @AllArgsConstructor
 @Getter
 @Setter

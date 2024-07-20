@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import store.novabook.coupon.coupon.repository.CouponRepository;
 
 @SpringBootTest
-@ActiveProfiles("dev")
+@ActiveProfiles("local")
 class CouponApplicationTests {
 	@Autowired
 	private CouponRepository couponRepository;
