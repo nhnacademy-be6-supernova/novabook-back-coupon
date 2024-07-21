@@ -46,4 +46,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,pause,resume
+        include: health, info, shutdown
+  endpoint:
+    shutdown:
+      enabled: true
