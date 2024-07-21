@@ -5,7 +5,6 @@ import static store.novabook.coupon.common.exception.ErrorCode.*;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -30,7 +29,7 @@ public class KeyManagerUtil {
 	private KeyManagerUtil() {
 	}
 
-	private static String getDataSource(Environment environment, String keyid, RestTemplate restTemplate) {
+	static String getDataSource(Environment environment, String keyid, RestTemplate restTemplate) {
 
 		String appkey = environment.getProperty("nhn.cloud.keyManager.appkey");
 		String userId = environment.getProperty("nhn.cloud.keyManager.userAccessKey");
@@ -69,7 +68,7 @@ public class KeyManagerUtil {
 		}
 
 		String result = (String)body.get("secret");
-		if (result == null || result.isEmpty()) {
+		if (result.isEmpty()) {
 			log.error("\"secret\" key is missing or empty in response body");
 			log.error("{}", body);
 			throw new KeyManagerException(MISSING_SECRET_KEY);
