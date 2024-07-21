@@ -54,11 +54,7 @@ public class KeyManagerUtil {
 		if (response.getBody() == null) {
 			throw new KeyManagerException(RESPONSE_BODY_IS_NULL);
 		}
-
 		Object bodyObj = response.getBody().get("body");
-		if (bodyObj == null) {
-			throw new KeyManagerException(MISSING_BODY_KEY);
-		}
 
 		Map<String, Object> body;
 		try {
@@ -68,7 +64,7 @@ public class KeyManagerUtil {
 		}
 
 		String result = (String)body.get("secret");
-		if (result.isEmpty()) {
+		if (result == null || result.isEmpty()) {
 			log.error("\"secret\" key is missing or empty in response body");
 			log.error("{}", body);
 			throw new KeyManagerException(MISSING_SECRET_KEY);
@@ -88,7 +84,7 @@ public class KeyManagerUtil {
 		}
 	}
 
-	public static RedisConfigDto getRedisConfig(Environment environment,  RestTemplate restTemplate) {
+	public static RedisConfigDto getRedisConfig(Environment environment, RestTemplate restTemplate) {
 		try {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.redisKey");
 			return objectMapper.readValue(getDataSource(environment, keyid, restTemplate), RedisConfigDto.class);
@@ -99,7 +95,7 @@ public class KeyManagerUtil {
 		}
 	}
 
-	public static RabbitMQConfigDto getRabbitMQConfig(Environment environment,  RestTemplate restTemplate) {
+	public static RabbitMQConfigDto getRabbitMQConfig(Environment environment, RestTemplate restTemplate) {
 		try {
 			String keyid = environment.getProperty("nhn.cloud.keyManager.rabbitMQKey");
 			return objectMapper.readValue(getDataSource(environment, keyid, restTemplate), RabbitMQConfigDto.class);
