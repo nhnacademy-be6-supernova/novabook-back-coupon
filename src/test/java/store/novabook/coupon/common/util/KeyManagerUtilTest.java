@@ -224,6 +224,7 @@ class KeyManagerUtilTest {
 		assertThrows(KeyManagerException.class, () -> KeyManagerUtil.getRabbitMQConfig(environment, restTemplate));
 	}
 
+
 	@Test
 	void getRabbitMQConfig_secretIsNull_throwsException() {
 		// given
