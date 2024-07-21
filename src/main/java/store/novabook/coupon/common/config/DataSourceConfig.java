@@ -32,7 +32,7 @@ public class DataSourceConfig {
 	 */
 	@Bean
 	@Profile({"prod", "dev"})
-	public DataSource storeDataSource() {
+	public DataSource dataSource() {
 		RestTemplate restTemplate = new RestTemplate();
 		DatabaseConfigDto config = KeyManagerUtil.getDatabaseConfig(environment, restTemplate);
 
