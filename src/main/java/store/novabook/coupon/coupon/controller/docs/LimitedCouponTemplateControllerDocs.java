@@ -12,11 +12,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import store.novabook.coupon.coupon.dto.request.CreateLimitedCouponTemplateRequest;
 import store.novabook.coupon.coupon.dto.response.CreateCouponTemplateResponse;
 import store.novabook.coupon.coupon.dto.response.GetLimitedCouponTemplateResponse;
 
+@Tag(name = "Limited Coupon Template API", description = "선착순 쿠폰 템플릿 API")
 public interface LimitedCouponTemplateControllerDocs {
 
 	@Operation(summary = "선착순 쿠폰 템플릿 조회", description = "유효한 모든 선착순 쿠폰 템플릿을 조회합니다.")
