@@ -122,7 +122,7 @@ class CouponReceiverTest {
 
 	@Test
 	void testOrderApplyCouponSuccess() {
-		PaymentRequest paymentRequest = new PaymentRequest(PaymentType.TOSS, 1L, "orderCode", UUID.randomUUID(), null);
+		PaymentRequest paymentRequest = new PaymentRequest(PaymentType.TOSS, 1L, "orderCode",  null);
 
 		OrderSagaMessage orderSagaMessage = OrderSagaMessage.builder()
 			.bookAmount(1000L)
@@ -155,7 +155,7 @@ class CouponReceiverTest {
 
 	@Test
 	void testCompensateApplyCouponSuccess() {
-		PaymentRequest paymentRequest = new PaymentRequest(PaymentType.TOSS, 1L, "orderCode", UUID.randomUUID(), null);
+		PaymentRequest paymentRequest = new PaymentRequest(PaymentType.TOSS, 1L, "orderCode", null);
 
 		OrderSagaMessage orderSagaMessage = OrderSagaMessage.builder().paymentRequest(paymentRequest).build();
 
