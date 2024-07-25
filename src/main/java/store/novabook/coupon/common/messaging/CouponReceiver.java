@@ -106,9 +106,9 @@ public class CouponReceiver {
 			couponService.updateStatus(couponId, CouponStatus.UNUSED);
 			orderSagaMessage.setStatus("SUCCESS_APPLY_COUPON");
 		} catch (Exception e) {
+			log.error("", e);
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			orderSagaMessage.setStatus("FAIL_APPLY_COUPON");
-			log.error("{}", e.getMessage());
 		} finally {
 			couponSender.sendToApplyCouponQueue(orderSagaMessage);
 		}

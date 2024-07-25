@@ -6,10 +6,12 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 주문 사가 메시지를 담는 클래스입니다.
  */
+@ToString
 @Setter
 @Getter
 @Builder
@@ -38,17 +40,17 @@ public class OrderSagaMessage {
 	/**
 	 * 적립금 사용 여부
 	 */
-	boolean noEarnPoint;
+	boolean isNoEarnPoint;
 
 	/**
 	 * 포인트 사용 여부
 	 */
-	boolean noUsePoint;
+	boolean isNoUsePoint;
 
 	/**
 	 * 쿠폰 사용 여부
 	 */
-	boolean noUseCoupon;
+	boolean isNoUseCoupon;
 
 	/**
 	 * 주문 상태
