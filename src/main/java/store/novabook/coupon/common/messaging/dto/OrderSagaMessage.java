@@ -40,17 +40,17 @@ public class OrderSagaMessage {
 	/**
 	 * 적립금 사용 여부
 	 */
-	boolean isNoEarnPoint;
+	Boolean isNoEarnPoint;
 
 	/**
 	 * 포인트 사용 여부
 	 */
-	boolean isNoUsePoint;
+	Boolean isNoUsePoint;
 
 	/**
 	 * 쿠폰 사용 여부
 	 */
-	boolean isNoUseCoupon;
+	Boolean isNoUseCoupon;
 
 	/**
 	 * 주문 상태
