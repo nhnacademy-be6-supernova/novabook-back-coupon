@@ -1,13 +1,8 @@
 package store.novabook.coupon.coupon.entity;
 
+import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,7 +23,7 @@ public class BookCouponTemplate {
 	private Long id;
 
 	@MapsId
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "coupon_template_id")
 	@NotNull
 	private CouponTemplate couponTemplate;

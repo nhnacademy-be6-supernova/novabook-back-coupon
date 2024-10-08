@@ -1,10 +1,6 @@
 package store.novabook.coupon.coupon.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,7 +20,7 @@ public class LimitedCouponTemplate {
 	private Long id;
 
 	@MapsId
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "coupon_template_id")
 	@NotNull
 	private CouponTemplate couponTemplate;
